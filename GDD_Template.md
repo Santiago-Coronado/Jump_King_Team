@@ -5,9 +5,9 @@
 ---
 
 ##### **Copyright notice / author information / boring legal stuff nobody likes**
-Santiago Coronado Hernández
-Juan de Dios Gastélum Flores 
-Antonio Pires
+- Santiago Coronado Hernández
+- Juan de Dios Gastélum Flores 
+- Antonio Pires
 ##
 ## _Index_
 
