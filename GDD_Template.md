@@ -1,11 +1,13 @@
-# **Game Name Here**
+# **Knight's Fall**
 
 ## _Game Design Document_
 
 ---
 
 ##### **Copyright notice / author information / boring legal stuff nobody likes**
-
+Santiago Coronado Hernández
+Juan de Dios Gastélum Flores 
+Antonio Pires
 ##
 ## _Index_
 
