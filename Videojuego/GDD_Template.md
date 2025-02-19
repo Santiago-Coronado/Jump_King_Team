@@ -48,13 +48,19 @@
 
 ### **Summary**
 
+Imagine the fun challenge of games like jump king but with the addictive gameplay of a roguelite. Welcome to Knight's Fall, where every leap is a gamble, and every fall is a lesson.
+
 Sum up your game idea in 2 sentences. A kind of elevator pitch. Keep it simple!
 
 ### **Gameplay**
 
+Enter a mysterious tower, were every level is a different biome that you have to climb by jumping from platform to platform, but you have to be careful!, because there are enemies everywhere, you will have to avoid them until you get an ability to deal with them directly. The levels will get harder the further up you go, but don't worry, because each level will come with a new ability to traverse it, be it double jump or other abilities.
+
 What should the gameplay be like? What is the goal of the game, and what kind of obstacles are in the way? What tactics should the player use to overcome them?
 
 ### **Mindset**
+
+In this game, platforming will be the main gameplay, that is why we want our players to have difficulty at first (when they have to avoid enemies while traversing the tower), but feel more powerful as they play more (when they unlock one of the attack abilities).
 
 What kind of mindset do you want to provoke in the player? Do you want them to feel powerful, or weak? Adventurous, or nervous? Hurried, or calm? How do you intend to provoke those emotions?
 
