@@ -48,21 +48,20 @@
 
 ### **Summary**
 
-Imagine the fun challenge of games like jump king but with the addictive gameplay of a roguelite. Welcome to Knight's Fall, where every leap is a gamble, and every fall is a lesson.
+Imagine the fun challenge of games like jump king but with the addictive gameplay of a roguelite. Welcome to Knight's Fall, where every leap is a gamble, and every fall is a lesson. 
 
-Sum up your game idea in 2 sentences. A kind of elevator pitch. Keep it simple!
+In this unique platformer, you won't have the problem of feeling the game repetitive, because with our randomized platforms, power-ups and enemy positions, you can make each run of the game as fresh and rewarding as it can, so give it your all to try and beat the Knight's Fall
+
 
 ### **Gameplay**
 
-Enter a mysterious tower, were every level is a different biome that you have to climb by jumping from platform to platform, but you have to be careful!, because there are enemies everywhere, you will have to avoid them until you get an ability to deal with them directly. The levels will get harder the further up you go, but don't worry, because each level will come with a new ability to traverse it, be it double jump or other abilities.
+You'll be a knight that will enter a mysterious tower to save the princess, when you enter the tower, you will be met with a platforming level with that you will have to climb, when climbin each level you will realize that many things change, the biome will change the further up you go, there will be enemies everywhere, but don't worry to much, because you will get stronger as well, you will get different types of jumps in each level to help clear each biome, also there will be some items that will help you attack the enemies, so that you can traverse the tower easier. If you die trying to save the princess, then pick yourself up and try again, beware that the platforms, biomes, enemy positions and attack items positions will change with each try, so give it your all to end the cycle of trying.
 
-What should the gameplay be like? What is the goal of the game, and what kind of obstacles are in the way? What tactics should the player use to overcome them?
 
 ### **Mindset**
 
-In this game, platforming will be the main gameplay, that is why we want our players to have difficulty at first (when they have to avoid enemies while traversing the tower), but feel more powerful as they play more (when they unlock one of the attack abilities).
+In this game, platforming will be the main gameplay, that is why we want our players to have difficulty at first (by having to avoid the enemies instead of killing them, or by not being able to memorize the levels because they will be randomly generated), but feel more powerful as they play more (when they unlock one of the attack abilities). Also we want them to try completing the game as many times as possible, that is why we will be implementing a highscore system, so that the players can try and get highest score to flex on other players.
 
-What kind of mindset do you want to provoke in the player? Do you want them to feel powerful, or weak? Adventurous, or nervous? Hurried, or calm? How do you intend to provoke those emotions?
 
 ## _Technical_
 
