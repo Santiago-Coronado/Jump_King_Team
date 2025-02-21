@@ -50,8 +50,7 @@
 
 Imagine the fun challenge of games like jump king but with the addictive gameplay of a roguelite. Welcome to Knight's Fall, where every leap is a gamble, and every fall is a lesson. 
 
-In this unique platformer, you won't have the problem of feeling the game repetitive, because with our randomized platforms, power-ups and enemy positions, you can make each run of the game as fresh and rewarding as it can, so give it your all to try and beat the Knight's Fall
-
+You control a knight who must climb a mysterious tower to rescue the princess. However, the tower changes with each attempt: platforms, enemies, biomes and objects are randomly generated. As you climb, you'll unlock new jumping abilities and attacks that will make you feel more powerful. Can you break the cycle and reach the top?
 
 ### **Gameplay**
 
