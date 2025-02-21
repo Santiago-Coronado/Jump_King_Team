@@ -55,7 +55,7 @@ In this unique platformer, you won't have the problem of feeling the game repeti
 
 ### **Gameplay**
 
-You'll be a knight that will enter a mysterious tower to save the princess, when you enter the tower, you will be met with a platforming level with that you will have to climb, when climbin each level you will realize that many things change, the biome will change the further up you go, there will be enemies everywhere, but don't worry to much, because you will get stronger as well, you will get different types of jumps in each level to help clear each biome, also there will be some items that will help you attack the enemies, so that you can traverse the tower easier. If you die trying to save the princess, then pick yourself up and try again, beware that the platforms, biomes, enemy positions and attack items positions will change with each try, so give it your all to end the cycle of trying.
+You'll be a knight that will enter a mysterious tower to save the princess, when you enter the tower, you will be met with a platforming level with that you will have to climb, when climbing each level you will realize that many things change, the biome will change the further up you go and there will be enemies everywhere, but don't worry to much, because you will get stronger as well, you will get different types of jumps in each level to help clear each biome, also there will be some items that will help you attack enemies, so that you can traverse the tower easier. If you die trying to save the princess, then pick yourself up and try again, beware that the platforms, biomes, enemy positions and attack items positions will change with each try, so give it your all to end the cycle of trying.
 
 
 ### **Mindset**
