@@ -5,6 +5,7 @@
 ---
 
 ##### **Copyright notice / author information / boring legal stuff nobody likes**
+Middle Earth Studios
 - Santiago Coronado Hernández
 - Juan de Dios Gastélum Flores 
 - Antonio Pires
