@@ -5,6 +5,7 @@
 ---
 
 ##### **Copyright notice / author information / boring legal stuff nobody likes**
+Middle Earth Studios
 - Santiago Coronado Hernández
 - Juan de Dios Gastélum Flores 
 - Antonio Pires
@@ -50,12 +51,11 @@
 
 Imagine the fun challenge of games like jump king but with the addictive gameplay of a roguelite. Welcome to Knight's Fall, where every leap is a gamble, and every fall is a lesson. 
 
-In this unique platformer, you won't have the problem of feeling the game repetitive, because with our randomized platforms, power-ups and enemy positions, you can make each run of the game as fresh and rewarding as it can, so give it your all to try and beat the Knight's Fall
-
+You control a knight who must climb a mysterious tower to rescue the princess. However, the tower changes with each attempt: platforms, enemies, biomes and objects are randomly generated. As you climb, you'll unlock new jumping abilities and attacks that will make you feel more powerful. Can you break the cycle and reach the top?
 
 ### **Gameplay**
 
-You'll be a knight that will enter a mysterious tower to save the princess, when you enter the tower, you will be met with a platforming level with that you will have to climb, when climbin each level you will realize that many things change, the biome will change the further up you go, there will be enemies everywhere, but don't worry to much, because you will get stronger as well, you will get different types of jumps in each level to help clear each biome, also there will be some items that will help you attack the enemies, so that you can traverse the tower easier. If you die trying to save the princess, then pick yourself up and try again, beware that the platforms, biomes, enemy positions and attack items positions will change with each try, so give it your all to end the cycle of trying.
+You'll be a knight that will enter a mysterious tower to save the princess, when you enter the tower, you will be met with a platforming level with that you will have to climb, when climbing each level you will realize that many things change, the biome will change the further up you go and there will be enemies everywhere, but don't worry to much, because you will get stronger as well, you will get different types of jumps in each level to help clear each biome, also there will be some items that will help you attack enemies, so that you can traverse the tower easier. If you die trying to save the princess, then pick yourself up and try again, beware that the platforms, biomes, enemy positions and attack items positions will change with each try, so give it your all to end the cycle of trying.
 
 
 ### **Mindset**
