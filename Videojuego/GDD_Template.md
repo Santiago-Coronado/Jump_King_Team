@@ -51,7 +51,7 @@ Middle Earth Studios
 
 Imagine the fun challenge of games like jump king but with the addictive gameplay of a roguelite. Welcome to Knight's Fall, where every leap is a gamble, and every fall is a lesson. 
 
-You control a knight who must climb a mysterious tower to rescue the princess. However, the tower changes with each attempt: platforms, enemies, biomes and objects are randomly generated. As you climb, you'll unlock new jumping abilities and attacks that will make you feel more powerful. Can you break the cycle and reach the top?
+You control a knight who must climb a mysterious tower to rescue the princess. However, the tower changes with each attempt: platforms, enemies, biomes and objects are randomly selected. As you climb, you'll unlock new jumping abilities that will make you feel more powerful. Can you break the cycle and reach the top?
 
 ### **Gameplay**
 
