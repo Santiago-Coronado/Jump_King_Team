@@ -55,12 +55,12 @@ You control a knight who must climb a mysterious tower to rescue the princess. H
 
 ### **Gameplay**
 
-You'll be a knight that will enter a mysterious tower to save the princess, when you enter the tower, you will be met with a platforming level with that you will have to climb, when climbing each level you will realize that many things change, the biome will change the further up you go and there will be enemies everywhere, but don't worry to much, because you will get stronger as well, you will get different types of jumps in each level to help clear each biome, also there will be some items that will help you attack enemies, so that you can traverse the tower easier. If you die trying to save the princess, then pick yourself up and try again, beware that the platforms, biomes, enemy positions and attack items positions will change with each try, so give it your all to end the cycle of trying.
+You'll be a knight that will enter a mysterious tower to save the princess, when you enter the tower, you will be met with a platforming level that you will have to climb, when climbing each level you will realize that many things change, the biome will change the further up you go and there will be enemies everywhere, but don't worry to much, because you will get harder to hit as well, you will get different types of jumps in each level, so that you can traverse the tower easier. If you die trying to save the princess, then pick yourself up and try again, beware that the platforms, biomes, enemy positions positions will change with each try, so give it your all to end the cycle of trying.
 
 
 ### **Mindset**
 
-In this game, platforming will be the main gameplay, that is why we want our players to have difficulty at first (by having to avoid the enemies instead of killing them, or by not being able to memorize the levels because they will be randomly generated), but feel more powerful as they play more (when they unlock one of the attack abilities). Also we want them to try completing the game as many times as possible, that is why we will be implementing a highscore system, so that the players can try and get highest score to flex on other players.
+In this game, platforming will be the main gameplay, that is why we want our players to have difficulty at first (by having less tools to avoid the enemies, or by not being able to memorize the levels right away because they will be randomly selected), but feel more powerful as they play more (when they unlock movement tools). Also we want them to try completing the game as many times as possible, that is why we will be implementing a highscore system, so that the players can try and get highest score to flex on other players.
 
 
 ## _Technical_
@@ -82,7 +82,10 @@ _(example)_
 
 ### **Controls**
 
-Keys WASD for movement, SPACEBAR for jump and RIGHT CLICK for attack
+-Keys ASD for movement
+-SPACEBAR for jump
+-Double SPACEBAR for double jump
+- Q for dash
 
 How will the player interact with the game? Will they be able to choose the controls? What kind of in-game events are they going to be able to trigger, and how? (e.g. pressing buttons, opening doors, etc.)
 
