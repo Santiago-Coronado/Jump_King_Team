@@ -8,7 +8,7 @@
 Middle Earth Studios
 - Santiago Coronado Hernández
 - Juan de Dios Gastélum Flores 
-- Antonio Pires
+- Enrique Antonio Pires Rodríguez
 ##
 ## _Index_
 
