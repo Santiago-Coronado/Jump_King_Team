@@ -71,15 +71,18 @@ In this game, platforming will be the main gameplay, that is why we want our pla
 
 1. Title Screen
     1. Options
-2. Level Select
 3. Game
     1. Inventory
-    2. Assessment / Next Level
-4. End Credits
+    2. Level 1
+    3. Level 2
+    4. Level 3
+4. End Credits (Saved the princess)
 
 _(example)_
 
 ### **Controls**
+
+Keys WASD for movement, SPACEBAR for jump and RIGHT CLICK for attack
 
 How will the player interact with the game? Will they be able to choose the controls? What kind of in-game events are they going to be able to trigger, and how? (e.g. pressing buttons, opening doors, etc.)
 
