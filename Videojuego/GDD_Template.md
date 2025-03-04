@@ -76,7 +76,6 @@ In this game, platforming will be the main gameplay, that is why we want our pla
   - Text field for password.
   - "Log In" button.
   - "Register" button.
-  - Password recovery link.
 - **Interaction**: Players enter their credentials to access the game.
 
 ---
@@ -98,7 +97,7 @@ In this game, platforming will be the main gameplay, that is why we want our pla
 - **Description**: Screen where the main level is played.
 - **Elements**:
   - Game area.
-  - HUD (Heads-Up Display) showing health, score, and available abilities.
+  - HUD (Heads-Up Display) showing score and available abilities.
   - "Pause" button.
 - **Interaction**: Players control the knight using the defined controls (A, D, SPACEBAR, Q).
 
@@ -118,7 +117,6 @@ In this game, platforming will be the main gameplay, that is why we want our pla
 - **Description**: Screen that displays a leaderboard with the highest scores.
 - **Elements**:
   - Table with player names and their scores.
-  - Option to sort by score, time, etc.
 - **Interaction**: Players can see how they compare to others.
 
 ---
@@ -170,7 +168,7 @@ In this game, platforming will be the main gameplay, that is why we want our pla
 ### **Levels and Themes**
 
 - **Structure**: A single level with different screens (sections) that change themes as the player progresses.
-- **Themes**: Each section will have a unique visual design (e.g., forest, cave, sky, etc.) that reflects the progress towards the top of the tower.
+- **Themes**: Each group of sections will have a unique visual design (e.g., forest, cave, sky, etc.) that reflects the progress towards the top of the tower.
 - **Objective**: Rescue the princess in the final section.
 
 
