@@ -69,25 +69,111 @@ In this game, platforming will be the main gameplay, that is why we want our pla
 
 ### **Screens**
 
-1. Title Screen
-    1. Options
-3. Game
-    1. Inventory
-    2. Level 1
-    3. Level 2
-    4. Level 3
-4. End Credits (Saved the princess)
+## 1. Login/Register Screen (HTML)
+- **Description**: Initial screen where players can log in or register.
+- **Elements**:
+  - Text field for username.
+  - Text field for password.
+  - "Log In" button.
+  - "Register" button.
+  - Password recovery link.
+- **Interaction**: Players enter their credentials to access the game.
 
-_(example)_
+---
+
+## 2. Main Menu Screen (HTML)
+- **Description**: Main screen with the game logo and menu options.
+- **Elements**:
+  - Game logo.
+  - "Play" button.
+  - "Controls" button.
+  - "Leaderboard" button.
+  - "Game Description" button.
+  - "Exit" button.
+- **Interaction**: Players select an option to navigate to the corresponding screen.
+
+---
+
+## 3. Game Screen (HTML)
+- **Description**: Screen where the main level is played.
+- **Elements**:
+  - Game area.
+  - HUD (Heads-Up Display) showing health, score, and available abilities.
+  - "Pause" button.
+- **Interaction**: Players control the knight using the defined controls (A, D, SPACEBAR, Q).
+
+---
+
+## 4. Player Statistics Screen (HTML)
+- **Description**: Screen where players can view their statistics.
+- **Elements**:
+  - Highest score.
+  - Total playtime.
+  - Other relevant metrics.
+- **Interaction**: Players can review their progress and achievements.
+
+---
+
+## 5. Leaderboard Screen (HTML)
+- **Description**: Screen that displays a leaderboard with the highest scores.
+- **Elements**:
+  - Table with player names and their scores.
+  - Option to sort by score, time, etc.
+- **Interaction**: Players can see how they compare to others.
+
+---
+
+## 6. Controls Screen (HTML)
+- **Description**: Screen that displays the game controls.
+- **Elements**:
+  - List of controls (A, D, SPACEBAR, Q).
+  - Brief description of each control.
+- **Interaction**: Players can check the controls before playing.
+
+---
+
+## 7. Game Description Screen (HTML)
+- **Description**: Screen that displays the game description.
+- **Elements**:
+  - Text describing the game premise.
+  - Related images or graphics.
+- **Interaction**: Players can read about the story and objective of the game.
+
+---
+
+## 8. End Credits Screen (HTML)
+- **Description**: Screen shown after rescuing the princess.
+- **Elements**:
+  - Congratulatory message.
+  - Development team credits.
+  - Option to return to the main menu or play again.
+- **Interaction**: Players can celebrate their victory and decide what to do next.
+
+---
 
 ### **Controls**
 
--Keys ASD for movement
--SPACEBAR for jump
--Double SPACEBAR for double jump
-- Q for dash
+- **Movement**:
+  - **A**: Move left.
+  - **D**: Move right.
+- **Jumps**:
+  - **SPACEBAR**: Jump.
+  - **Hold SPACEBAR**: Charge jump for a higher jump.
+  - **SPACEBAR in the air**: Double jump.
+- **Dash**:
+  - **Q**: Perform a quick dash in the current direction.
 
-How will the player interact with the game? Will they be able to choose the controls? What kind of in-game events are they going to be able to trigger, and how? (e.g. pressing buttons, opening doors, etc.)
+**Note**: Controls are not customizable by the player.
+
+---
+
+### **Levels and Themes**
+
+- **Structure**: A single level with different screens (sections) that change themes as the player progresses.
+- **Themes**: Each section will have a unique visual design (e.g., forest, cave, sky, etc.) that reflects the progress towards the top of the tower.
+- **Objective**: Rescue the princess in the final section.
+
+
 
 ### **Mechanics**
 
