@@ -242,24 +242,15 @@ _(example)_
 
 1. BasePlayer
     1. PlayerMain
-    2. PlayerUnlockable
 2. BaseEnemy
-    1. EnemyWolf
-    2. EnemyGoblin
-    3. EnemyGuard (may drop key)
-    4. EnemyGiantRat
-    5. EnemyPrisoner
-3. BaseObject
-    1. ObjectRock (pick-up-able, throwable)
-    2. ObjectChest (pick-up-able, throwable, spits gold coins with key)
-    3. ObjectGoldCoin (cha-ching!)
-    4. ObjectKey (pick-up-able, throwable)
-4. BaseObstacle
-    1. ObstacleWindow (destroyed with rock)
-    2. ObstacleWall
-    3. ObstacleGate (watches to see if certain buttons are pressed)
-5. BaseInteractable
-    1. InteractableButton
+    1. EnemyDemon
+    2. EnemySkeleton
+    3. EnemyJumper
+4. BaseObject
+    1. ObjectShoes
+    2. ObjectEXP
+5. BaseObstacle
+    1. ObstacleWall
 
 _(example)_
 
@@ -269,42 +260,32 @@ _(example)_
 
 ### **Style Attributes**
 
-What kinds of colors will you be using? Do you have a limited palette to work with? A post-processed HSV map/image? Consistency is key for immersion.
-
-What kind of graphic style are you going for? Cartoony? Pixel-y? Cute? How, specifically? Solid, thick outlines with flat hues? Non-black outlines with limited tints/shades? Emphasize smooth curvatures over sharp angles? Describe a set of general rules depicting your style here.
-
-Well-designed feedback, both good (e.g. leveling up) and bad (e.g. being hit), are great for teaching the player how to play through trial and error, instead of scripting a lengthy tutorial. What kind of visual feedback are you going to use to let the player know they&#39;re interacting with something? That they \*can\* interact with something?
+The characters will have a pixel-y design with attack, movement and death animations, the protagonist when jumping and moving will always make an animation, the enemies will always be moving and if you are in their range, they will attack you with an animation, the princess will have an animation that asks for rescue. The scenarios where the player will explore and interact with the castle will be pixel-y, with variations depending on what level you are, if you are in level 1, you will have a medieval atmosphere, in the second level you will change your environment for a frozen one and the last level will have a more lively style, because as you are approaching the princess, she will be in a better state.
 
 ### **Graphics Needed**
 
-1. Characters
-    1. Human-like
-        1. Goblin (idle, walking, throwing)
-        2. Guard (idle, walking, stabbing)
-        3. Prisoner (walking, running)
-    2. Other
-        1. Wolf (idle, walking, running)
-        2. Giant Rat (idle, scurrying)
-2. Blocks
-    1. Dirt
-    2. Dirt/Grass
-    3. Stone Block
-    4. Stone Bricks
-    5. Tiled Floor
-    6. Weathered Stone Block
-    7. Weathered Stone Bricks
-3. Ambient
-    1. Tall Grass
-    2. Rodent (idle, scurrying)
-    3. Torch
-    4. Armored Suit
-    5. Chains (matching Weathered Stone Bricks)
-    6. Blood stains (matching Weathered Stone Bricks)
-4. Other
-    1. Chest
-    2. Door (matching Stone Bricks)
-    3. Gate
-    4. Button (matching Weathered Stone Bricks)
+Characters
+    i.	Human-like
+        a.	Knigjt (Stay, move, jump,bend)
+        b.	Princess (Request help, move)
+    ii.	Other
+        a.	Skeleton(Move, attacks)
+        b.	Demon (Fly)
+2.	Blocks
+    i.	 Brick
+    ii.	Ice
+    iii.	Dirt
+    iv.	Dirt/Grass
+    v.	Stone
+    vi.	Tilded florr
+    vii.	Walls
+3.	Ambient
+    i.	 Tower abandoned
+    ii.	Freeze
+    iii.	Gold
+4.	Other
+    i.	Door
+
 
 _(example)_
 
