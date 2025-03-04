@@ -130,13 +130,12 @@ _(example)_
 
 ### **Game Flow**
 
-1. Player starts in forest
-2. Pond to the left, must move right
-3. To the right is a hill, player jumps to traverse it (&quot;jump&quot; taught)
-4. Player encounters castle - door&#39;s shut and locked
-5. There&#39;s a window within jump height, and a rock on the ground
-6. Player picks up rock and throws at glass (&quot;throw&quot; taught)
-7. … etc.
+1. Player starts at the bottom of the tower
+2. Pass first two screens by jumping from platform to platform and killing or evading enemies
+3. Take first powerup from the last platform of the second screen
+4. Jump to the next screen were the level will take your jumps into account
+5. Complete each screen until you reach the top, while you are passing each screen you will be getting points by killing enemies, when you reach a certain number you will gain an increase in velocity, also you may encounter more powerups in the way so be sure to get them
+7. Once you reach the top just walk and save the princess
 
 _(example)_
 
