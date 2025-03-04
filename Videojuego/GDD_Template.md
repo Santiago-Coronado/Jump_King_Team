@@ -236,8 +236,6 @@ _(example)_
 2. BaseObstacle
 3. BaseInteractable
 
-_(example)_
-
 ### **Derived Classes / Component Compositions**
 
 1. BasePlayer
@@ -252,7 +250,7 @@ _(example)_
 5. BaseObstacle
     1. ObstacleWall
 
-_(example)_
+
 
 ## _Graphics_
 
@@ -264,30 +262,28 @@ The characters will have a pixel-y design with attack, movement and death animat
 
 ### **Graphics Needed**
 
-Characters
-    i.	Human-like
-        a.	Knigjt (Stay, move, jump,bend)
-        b.	Princess (Request help, move)
-    ii.	Other
-        a.	Skeleton(Move, attacks)
-        b.	Demon (Fly)
-2.	Blocks
-    i.	 Brick
-    ii.	Ice
-    iii.	Dirt
-    iv.	Dirt/Grass
-    v.	Stone
-    vi.	Tilded florr
-    vii.	Walls
-3.	Ambient
-    i.	 Tower abandoned
-    ii.	Freeze
-    iii.	Gold
-4.	Other
-    i.	Door
+1. Characters
+    1. Human-like
+        1.	Knigjt (Stay, move, jump,bend)
+        2.	Princess (Request help, move)
+    2.	Other
+        1.	Skeleton(Move, attacks)
+        2.	Demon (Fly)
+3.	Blocks
+    1.	Brick
+    2.	Magma
+    3.	Dirt
+    4.	Dirt/Grass
+    5.	Stone
+    6.	Tilded florr
+    7.	Walls
+4.	Ambient
+    1.	Tower abandoned
+    2.	Freeze
+    3.	Magma
+5.	Other
+    1.	Door
 
-
-_(example)_
 
 
 ## _Sounds/Music_
