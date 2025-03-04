@@ -264,7 +264,7 @@ The characters will have a pixel-y design with attack, movement and death animat
 
 1. Characters
     1. Human-like
-        1.	Knigjt (Stay, move, jump,bend)
+        1.	Knight (Stay, move, jump,bend)
         2.	Princess (Request help, move)
     2.	Other
         1.	Skeleton(Move, attacks)
@@ -275,7 +275,7 @@ The characters will have a pixel-y design with attack, movement and death animat
     3.	Dirt
     4.	Dirt/Grass
     5.	Stone
-    6.	Tilded florr
+    6.	Tilded floor
     7.	Walls
 4.	Ambient
     1.	Tower abandoned
