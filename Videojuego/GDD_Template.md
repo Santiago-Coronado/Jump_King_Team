@@ -235,6 +235,7 @@ _(example)_
     3. BaseObject
 2. BaseObstacle
 3. BaseInteractable
+4. BaseLevel
 
 ### **Derived Classes / Component Compositions**
 
