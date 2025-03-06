@@ -97,7 +97,7 @@ In this game, platforming will be the main gameplay, that is why we want our pla
 - **Description**: Screen where the main level is played.
 - **Elements**:
   - Game area.
-  - HUD (Heads-Up Display) showing score and available abilities.
+  - HUD (Heads-Up Display) showing score and available powerups.
   - "Pause" button.
 - **Interaction**: Players control the knight using the defined controls (A, D, SPACEBAR, Q).
 
@@ -175,7 +175,46 @@ In this game, platforming will be the main gameplay, that is why we want our pla
 
 ### **Mechanics**
 
-Are there any interesting mechanics? If so, how are you going to accomplish them? Physics, algorithms, etc.
+## Gameloops
+---
+# Main Loop
+You as the knight climb the tower to save the princess, you do this by jumping from platfrom to platform defeating or evading enemies, you also get powerups to make your journey in the tower more interesting.
+
+# Knight Loop
+The knight can move horizontally and vertically, the knight can also gain more movement options by using powerups, with all this tools the knight can reach different platforms to complete each screen or section.
+
+# Screen Loop
+The first two screens or sections will always be the same, so that the player can have some time to get used to the controls, at the end of that screen their will always be a powerup, but it will be random between the three powerups that we will create double jump, charged jump, and dash.
+
+After that screen, each new screen will have a base (some platforms that will never change), and then an area that will be randomly generated based on the different movement tools the player has at the moment. Then the enemies will be randomly generated and the powerups will have a chance of spawining in a specific area.
+
+That will continue until you reach the top were the screen will just be the floor and the princess at the other edge of the tower.
+
+## Rules
+- Powerups
+    - There will be three powerups, double jump, charged jump and dash.
+    - Double Jump: This powerup is the classic one, all you need to do is press SPACEBAR after making a jump to make a second one. The second jump will have half height as the first one. (This is tentative, will test when making the game).
+    - Charged Jump: With this powerup, you keep pressing SPACEBAR until you either cannot charge it anymore or you think that you have enough juice to make the cut. Then you just release SPACEBAR and see how high you jump. The charged jump will be 2 times the height of the normal jump at full charge. (This is tentative, will test when making the game).
+    - Dash: With this powerup you jump, after that all you need to do is press Q to move horizontally for a little while, after that time or distance is finished, you fall like normal. The dash will move to the direction you are pressing (a or d).
+    - A limit that the three powerups will have is that they will not be able to be used at the same time, when the player uses one jump, a cooldown will start (for now we are thinking 3 seconds, but this will also be tested in the game), in that cooldown period, the player will only be able to move horizontally and use the normal jump.
+- Platforms
+    - The platforms will be completely interactable with the player (meaning that the player will never be able to jump through the platform from the bottom, the only way the player will be able to use the platform is to stand on top of it).
+- Score
+    - The score will have an impact in the gameplay, when the player reaches a threshold, they will receive a 2.5% increase in speed (by speed we mean horizontal movement), this will happen three times, so that if you have a good enough score, you can get a 7.5% increase in your horizontal movement.
+- Deaths
+    - When the player dies, all the game will be reset, the only thing that will remain from your previous run will be the powerups you unlocked. The progress, increase in stats and other things will not be kept.
+    - The player will die when the vertical velocity reaches a threshold (this number will be set when we test the game), which means that if the player falls from high enough, they will reach the threshold and die on impact.
+
+
+## Interactions
+- Player with Enemies
+    - When enemies attack the player, the player will not have health, so the consequence of getting hit will be to be pushed some distance. If they are unlucky that push will make them fall to their death.
+- Player with Platforms
+    - Like we said before, the player will only be able to stand on top of the platforms, they will not be able to pass through them in any capacity. Once the player is on top of the platform, they will use it to make the next jump.
+- Player with Powerups
+    - The powerups will be objects that player can grab by walking into them, once the player touches them, they will be able to use them, but they will have the limit stated before (the cooldown stuff), so they will have to used them strategically.
+- Player with Screens or Sections
+    - When the player reaches the top of a screen, there will always be a section of the roff that is empty, the player will have to jump through that gap to get to the next screen.
 
 ## _Level Design_
 
@@ -217,9 +256,9 @@ _(example)_
 1. Player starts at the bottom of the tower
 2. Pass first two screens by jumping from platform to platform and killing or evading enemies
 3. Take first powerup from the last platform of the second screen
-4. Jump to the next screen were the level will take your jumps into account
+4. Jump to the next screen were the level will take your jumps into account to generate its platforms
 5. Complete each screen until you reach the top, while you are passing each screen you will be getting points by killing enemies, when you reach a certain number you will gain an increase in velocity, also you may encounter more powerups in the way so be sure to get them
-7. Once you reach the top just walk and save the princess
+6. Once you reach the top just walk to the right and save the princess
 
 _(example)_
 
@@ -282,10 +321,6 @@ The characters will have a pixel-y design with attack, movement and death animat
     1.	Tower abandoned
     2.	Freeze
     3.	Magma
-5.	Other
-    1.	Door
-
-
 
 ## _Sounds/Music_
 
