@@ -324,40 +324,52 @@ The characters will have a pixel-y design with attack, movement and death animat
 
 ## _Sounds/Music_
 
+## **i. Style Attributes**  
+A consistent **16-bit medieval-style** soundtrack will be maintained throughout the game. Various sound effects will be used in different mechanics to provide the player with responsive audio feedback for their actions.  
+
+- **Sound Effects:**  
+  - Will provide feedback to the player about their actions.  
+  - When colliding with an enemy, the player does not take damage but is pushed back, so they will hear a responsive sound corresponding to the push.  
+
+- **Music:**  
+  - A single medieval-style song will be used throughout the entire game.  
+  - The song will be immersive to prevent auditory fatigue.  
+
 ---
 
-### **Style Attributes**
+## **ii. Sounds Needed**  
 
-Again, consistency is key. Define that consistency here. What kind of instruments do you want to use in your music? Any particular tempo, key? Influences, genre? Mood?
+### **1. Effects**  
 
-Stylistically, what kind of sound effects are you looking for? Do you want to exaggerate actions with lengthy, cartoony sounds (e.g. mario&#39;s jump), or use just enough to let the player know something happened (e.g. mega man&#39;s landing)? Going for realism? You can use the music style as a bit of a reference too.
+#### **Movement**  
+- **i.** Soft footsteps (dirt, wood, stone).  
+- **ii.** Jump sound.  
+- **iii.** Charging sound for the charged jump.  
+- **iv.** Double jump sound.  
+- **v.** Dash sound.  
 
- Remember, auditory feedback should stand out from the music and other sound effects so the player hears it well. Volume, panning, and frequency/pitch are all important aspects to consider in both music _and_ sounds - so plan accordingly!
+#### **Falls and Landings**  
+- **vi.** Soft landing (low fall impact).  
+- **vii.** Mortal fall sound.  
 
-### **Sounds Needed**
+#### **Enemy Interactions**  
+- **viii.** Push sound when colliding with an enemy.  
+- **ix.** Enemy-specific sounds.  
 
-1. Effects
-    1. Soft Footsteps (dirt floor)
-    2. Sharper Footsteps (stone floor)
-    3. Jump
-    4. Dash
-    5. Soft Landing (low vertical velocity)
-    6. Hard Landing (high vertical velocity)
-    7. Door Opening
-2. Feedback
-    1. Shocked &quot;Ooomph!&quot; (attacked)
-    3. Sad chime (died)
+---
 
-_(example)_
+## **iii. Music Needed**  
 
-### **Music Needed**
+### **1. Main Theme**  
+- A single track will be used throughout the entire game.  
+- Medieval ambiance.  
+- Moderate rhythm to avoid auditory fatigue.  
 
-1. Slow-paced, nerve-racking &quot;forest&quot; track
-2. Exciting &quot;castle/medieval&quot; track
-3. Happy ending credits track
-4. Track for Game Over
-_(example)_
+### **2. Menu Theme**  
+- A calmer variation of the main theme with reduced instrumentation.  
 
+### **3. Game Over Theme**  
+- A short sound fragment that indicates the end of the game without being frustrating.
 
 ## _Schedule_
 
