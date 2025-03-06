@@ -258,7 +258,7 @@ _(example)_
     2. BaseEnemy
     3. BaseObject
 2. BaseObstacle
-3. BaseInteractable
+3. BaseInteractuable
 4. BaseLevel
 
 ### **Derived Classes / Component Compositions**
@@ -294,18 +294,16 @@ The characters will have a pixel-y design with attack, movement and death animat
     2.	Other
         1.	Skeleton(Move, attacks)
         2.	Demon (Fly)
+        3.	Jumper (Jump)
 3.	Blocks
     1.	Brick
-    2.	Magma
-    3.	Dirt
-    4.	Dirt/Grass
-    5.	Stone
-    6.	Tilded floor
-    7.	Walls
+    2.	Stone
+    3.	Walls
 4.	Ambient
-    1.	Tower abandoned
-    2.	Freeze
-    3.	Magma
+    1.	Tower
+    2.	Medieval
+    3.	Pixel-art
+    4.	Fantasy 
 
 ## _Sounds/Music_
 
@@ -362,32 +360,37 @@ A consistent **16-bit medieval-style** soundtrack will be maintained throughout 
 
 _(define the main activities and the expected dates when they should be finished. This is only a reference, and can change as the project is developed)_
 
-1. develop base classes
-    1. base entity
-        1. base player
-        2. base enemy
-        3. base block
-  2. base app state
-        1. game world
-        2. menu world
-2. develop player and basic block classes
-    1. physics / collisions
-3. find some smooth controls/physics
-4. develop other derived classes
-    1. blocks
-        1. moving
-        2. falling
-        3. breaking
-        4. cloud
-    2. enemies
-        1. soldier
-        2. rat
-        3. etc.
-5. design levels
+1. Make Entity Relationship Model (14/03/2025)
+2. Make Draft of DataBase with Dummy Data (24/03/2025)
+3. develop base classes
+    1. BasePhysics (14/03/2025)
+        1. BasePlayer
+        2. BaseEnemy
+        3. BaseObject
+    2. BaseObstacle (24/03/2025)    
+    3. BaseInteractuable (27/03/2025)
+    4. BaseLevel (29/03/2025)
+4. base web page state 
+    1. Log in screen (14/03/2025)
+    2. Main screen (16/03/2025)
+5. develop the base of the game
+    1. physics / collisions (14/03/2025)
+6. find some smooth controls/physics (31/03/2025)
+7. develop other derived classes 
+    1. PlayerMain (03/04/2025)
+    2. EnemySkeleton
+    3. EnemyDemon
+    4. EnemyJumper
+    5. ObjectStats
+    6. ObjectScore
+    7. ObstacleWall
+8. design levels
     1. introduce motion/jumping
-    2. introduce throwing
+    2. introduce powerups
     3. mind the pacing, let the player play between lessons
-6. design sounds
-7. design music
+9.  Make API
+10. Make other screens of web page
+11. design sounds
+12. design music
 
 _(example)_
