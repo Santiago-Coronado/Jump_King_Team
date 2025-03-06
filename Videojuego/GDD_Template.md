@@ -165,10 +165,9 @@ In this game, platforming will be the main gameplay, that is why we want our pla
 
 ---
 
-### **Levels and Themes**
+### **Structure and Objective**
 
-- **Structure**: A single level with different screens (sections) that change themes as the player progresses.
-- **Themes**: Each group of sections will have a unique visual design (e.g., forest, cave, sky, etc.) that reflects the progress towards the top of the tower.
+- **Structure**: A single level with different screens (sections) that change some things as the player progresses.
 - **Objective**: Rescue the princess in the final section.
 
 
@@ -177,13 +176,13 @@ In this game, platforming will be the main gameplay, that is why we want our pla
 
 ## Gameloops
 ---
-# Main Loop
+## Main Loop
 You as the knight climb the tower to save the princess, you do this by jumping from platfrom to platform defeating or evading enemies, you also get powerups to make your journey in the tower more interesting.
 
-# Knight Loop
+## Knight Loop
 The knight can move horizontally and vertically, the knight can also gain more movement options by using powerups, with all this tools the knight can reach different platforms to complete each screen or section.
 
-# Screen Loop
+## Screen Loop
 The first two screens or sections will always be the same, so that the player can have some time to get used to the controls, at the end of that screen their will always be a powerup, but it will be random between the three powerups that we will create double jump, charged jump, and dash.
 
 After that screen, each new screen will have a base (some platforms that will never change), and then an area that will be randomly generated based on the different movement tools the player has at the moment. Then the enemies will be randomly generated and the powerups will have a chance of spawining in a specific area.
@@ -224,21 +223,9 @@ _(Note : These sections can safely be skipped if they&#39;re not relevant, or yo
 
 ### **Themes**
 
-1. Forest
+1. Tower
     1. Mood
-        1. Dark, calm, foreboding
-    2. Objects
-        1. _Ambient_
-            1. Fireflies
-            2. Beams of moonlight
-            3. Tall grass
-        2. _Interactive_
-            1. Wolves
-            2. Goblins
-            3. Rocks
-2. Castle
-    1. Mood
-        1. Dangerous, tense, active
+        1. Medieval Lo-fi
     2. Objects
         1. _Ambient_
             1. Rodents
