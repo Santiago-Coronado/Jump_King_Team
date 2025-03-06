@@ -225,16 +225,14 @@ _(Note : These sections can safely be skipped if they&#39;re not relevant, or yo
 
 1. Tower
     1. Mood
-        1. Medieval Lo-fi
+        1. Medieval kinda Adventorous (because of music)
     2. Objects
         1. _Ambient_
-            1. Rodents
-            2. Torches
-            3. Suits of armor
+            1. N/A :(
         2. _Interactive_
-            1. Guards
-            2. Giant rats
-            3. Chests
+            1. Flying demons
+            2. Skeletons
+            3. Jumper
 
 _(example)_
 
