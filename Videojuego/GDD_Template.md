@@ -265,7 +265,7 @@ The characters will have a pixel-y design with attack, movement and death animat
 
 1. Characters
     1. Human-like
-        1.	Knight (Stay, move, jump,bend)
+        1.	Knight (Stay, move, jump)
         2.	Princess (Request help, move)
     2.	Other
         1.	Skeleton(Move, attacks)
@@ -304,27 +304,23 @@ Stylistically, what kind of sound effects are you looking for? Do you want to ex
 1. Effects
     1. Soft Footsteps (dirt floor)
     2. Sharper Footsteps (stone floor)
-    3. Soft Landing (low vertical velocity)
-    4. Hard Landing (high vertical velocity)
-    5. Glass Breaking
-    6. Chest Opening
+    3. Jump
+    4. Dash
+    5. Soft Landing (low vertical velocity)
+    6. Hard Landing (high vertical velocity)
     7. Door Opening
 2. Feedback
-    1. Relieved &quot;Ahhhh!&quot; (health)
-    2. Shocked &quot;Ooomph!&quot; (attacked)
-    3. Happy chime (extra life)
-    4. Sad chime (died)
+    1. Shocked &quot;Ooomph!&quot; (attacked)
+    3. Sad chime (died)
 
 _(example)_
 
 ### **Music Needed**
 
 1. Slow-paced, nerve-racking &quot;forest&quot; track
-2. Exciting &quot;castle&quot; track
-3. Creepy, slow &quot;dungeon&quot; track
-4. Happy ending credits track
-5. Rick Astley&#39;s hit #1 single &quot;Never Gonna Give You Up&quot;
-
+2. Exciting &quot;castle/medieval&quot; track
+3. Happy ending credits track
+4. Track for Game Over
 _(example)_
 
 
