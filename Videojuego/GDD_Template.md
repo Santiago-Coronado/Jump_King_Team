@@ -208,6 +208,7 @@ That will continue until you reach the top were the screen will just be the floo
 ## Interactions
 - Player with Enemies
     - When enemies attack the player, the player will not have health, so the consequence of getting hit will be to be pushed some distance. If they are unlucky that push will make them fall to their death.
+    - Also the player will be able to jump on enemies to kill them, for that to happen the player needs to land in top of it.
 - Player with Platforms
     - Like we said before, the player will only be able to stand on top of the platforms, they will not be able to pass through them in any capacity. Once the player is on top of the platform, they will use it to make the next jump.
 - Player with Powerups
