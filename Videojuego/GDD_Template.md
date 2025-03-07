@@ -270,7 +270,7 @@ _(example)_
     2. EnemySkeleton
     3. EnemyJumper
 4. BaseObject
-    1. ObjectStats
+    1. ObjectPowerUp
     2. ObjectScore
 5. BaseObstacle
     1. ObstacleWall
