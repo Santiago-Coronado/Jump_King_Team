@@ -300,11 +300,13 @@ The characters will have a pixel-y design with attack, movement and death animat
     1.	Brick
     2.	Stone
     3.	Walls
-4.	Ambient
-    1.	Tower
-    2.	Medieval
-    3.	Pixel-art
-    4.	Fantasy 
+4. Powerups
+    1. Double Jump
+    2. Charged Jump
+    3. Dash
+5.	Ambient
+    1.	Tower (Medieval, Pixel-Art and Fantasy)
+
 
 ## _Sounds/Music_
 
