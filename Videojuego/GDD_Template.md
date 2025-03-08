@@ -259,8 +259,7 @@ _(example)_
     2. BaseEnemy
     3. BaseObject
 2. BaseObstacle
-3. BaseInteractuable
-4. BaseLevel
+3. BaseLevel
 
 ### **Derived Classes / Component Compositions**
 
@@ -371,8 +370,7 @@ _(define the main activities and the expected dates when they should be finished
         2. BaseEnemy
         3. BaseObject
     2. BaseObstacle (24/03/2025)    
-    3. BaseInteractuable (27/03/2025)
-    4. BaseLevel (29/03/2025)
+    3. BaseLevel (29/03/2025)
 4. base web page state 
     1. Log in screen (14/03/2025)
     2. Main screen (16/03/2025)
