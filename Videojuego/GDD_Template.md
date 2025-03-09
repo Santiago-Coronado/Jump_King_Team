@@ -208,6 +208,7 @@ That will continue until you reach the top were the screen will just be the floo
 ## Interactions
 - Player with Enemies
     - When enemies attack the player, the player will not have health, so the consequence of getting hit will be to be pushed some distance. If they are unlucky that push will make them fall to their death.
+    - Also the player will be able to jump on enemies to kill them, for that to happen the player needs to land in top of it.
 - Player with Platforms
     - Like we said before, the player will only be able to stand on top of the platforms, they will not be able to pass through them in any capacity. Once the player is on top of the platform, they will use it to make the next jump.
 - Player with Powerups
@@ -258,8 +259,7 @@ _(example)_
     2. BaseEnemy
     3. BaseObject
 2. BaseObstacle
-3. BaseInteractuable
-4. BaseLevel
+3. BaseLevel
 
 ### **Derived Classes / Component Compositions**
 
@@ -270,7 +270,7 @@ _(example)_
     2. EnemySkeleton
     3. EnemyJumper
 4. BaseObject
-    1. ObjectStats
+    1. ObjectPowerUp
     2. ObjectScore
 5. BaseObstacle
     1. ObstacleWall
@@ -299,11 +299,13 @@ The characters will have a pixel-y design with attack, movement and death animat
     1.	Brick
     2.	Stone
     3.	Walls
-4.	Ambient
-    1.	Tower
-    2.	Medieval
-    3.	Pixel-art
-    4.	Fantasy 
+4. Powerups
+    1. Double Jump
+    2. Charged Jump
+    3. Dash
+5.	Ambient
+    1.	Tower (Medieval, Pixel-Art and Fantasy)
+
 
 ## _Sounds/Music_
 
@@ -368,8 +370,7 @@ _(define the main activities and the expected dates when they should be finished
         2. BaseEnemy
         3. BaseObject
     2. BaseObstacle (24/03/2025)    
-    3. BaseInteractuable (27/03/2025)
-    4. BaseLevel (29/03/2025)
+    3. BaseLevel (29/03/2025)
 4. base web page state 
     1. Log in screen (14/03/2025)
     2. Main screen (16/03/2025)
