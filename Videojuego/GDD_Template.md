@@ -214,8 +214,13 @@ That will continue until you reach the top were the screen will just be the floo
 
 - Player with Powerups
     - The powerups will be objects that player can grab by walking into them, once the player touches them, they will be able to use them, but they will have the limit stated before (the cooldown stuff), so they will have to used them strategically.
+
+![PowerupExample](GDD_Images/powerupinteraction_example.jpg)
+
 - Player with Screens or Sections
     - When the player reaches the top of a screen, there will always be a section of the roff that is empty, the player will have to jump through that gap to get to the next screen.
+
+![ScreenExample](GDD_Images/ScreenInteraction_example.jpg)
 
 ## _Level Design_
 
