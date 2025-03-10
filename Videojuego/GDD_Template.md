@@ -1,5 +1,7 @@
 # **Knight's Fall**
 
+![Logo](GDD_Images/Knight_Fall_Logo.png)
+
 ## _Game Design Document_
 
 ---
