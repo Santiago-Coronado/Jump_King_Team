@@ -84,11 +84,11 @@ In this game, platforming will be the main gameplay, that is why we want our pla
 - **Description**: Main screen with the game logo and menu options.
 - **Elements**:
   - Game logo.
-  - "Play" button.
-  - "Controls" button.
-  - "Leaderboard" button.
-  - "Game Description" button.
-  - "Exit" button.
+  - "Game" link.
+  - "Statistics" link.
+  - "Relevant Information" link.
+  - "Leaderboard" link.
+  - "Game Description and Controls" link.
 - **Interaction**: Players select an option to navigate to the corresponding screen.
 
 ---
@@ -106,9 +106,12 @@ In this game, platforming will be the main gameplay, that is why we want our pla
 ## 4. Player Statistics Screen (HTML)
 - **Description**: Screen where players can view their statistics.
 - **Elements**:
-  - Highest score.
-  - Total playtime.
-  - Other relevant metrics.
+  - Total time played (hour, minutes, and seconds).
+  - Number of cumulative kills (integer).
+  - Number of games completed (integer).
+  - Number of games played (integer).
+  - Personal best (best time and best score) (hour, minutes, and seconds for time and integer for score).
+  - Number of enemies defeated (integer).
 - **Interaction**: Players can review their progress and achievements.
 
 ---
@@ -116,36 +119,19 @@ In this game, platforming will be the main gameplay, that is why we want our pla
 ## 5. Leaderboard Screen (HTML)
 - **Description**: Screen that displays a leaderboard with the highest scores.
 - **Elements**:
-  - Table with player names and their scores.
+  - Table with player names, their scores and their time of completion.
 - **Interaction**: Players can see how they compare to others.
 
 ---
 
-## 6. Controls Screen (HTML)
-- **Description**: Screen that displays the game controls.
+## 6. Controls Screen and Game Description (HTML)
+- **Description**: Screen that displays the game controls and the game description.
 - **Elements**:
-  - List of controls (A, D, SPACEBAR, Q).
+  - Table of controls (A, D, SPACEBAR, Q).
   - Brief description of each control.
-- **Interaction**: Players can check the controls before playing.
-
----
-
-## 7. Game Description Screen (HTML)
-- **Description**: Screen that displays the game description.
-- **Elements**:
   - Text describing the game premise.
   - Related images or graphics.
-- **Interaction**: Players can read about the story and objective of the game.
-
----
-
-## 8. End Credits Screen (HTML)
-- **Description**: Screen shown after rescuing the princess.
-- **Elements**:
-  - Congratulatory message.
-  - Development team credits.
-  - Option to return to the main menu or play again.
-- **Interaction**: Players can celebrate their victory and decide what to do next.
+- **Interaction**: Players can read about the story and objective, and/or check the controls before playing.
 
 ---
 
@@ -193,8 +179,17 @@ That will continue until you reach the top were the screen will just be the floo
 - Powerups
     - There will be three powerups, double jump, charged jump and dash.
     - Double Jump: This powerup is the classic one, all you need to do is press SPACEBAR after making a jump to make a second one. The second jump will have half height as the first one. (This is tentative, will test when making the game).
+ 
+    ![DoublExample](GDD_Images/doublejump_example.gif)
+  
     - Charged Jump: With this powerup, you keep pressing SPACEBAR until you either cannot charge it anymore or you think that you have enough juice to make the cut. Then you just release SPACEBAR and see how high you jump. The charged jump will be 2 times the height of the normal jump at full charge. (This is tentative, will test when making the game).
+
+    ![ChargExample](GDD_Images/Charged_jump_example.gif)
+  
     - Dash: With this powerup you jump, after that all you need to do is press Q to move horizontally for a little while, after that time or distance is finished, you fall like normal. The dash will move to the direction you are pressing (a or d).
+ 
+    ![DashExample](GDD_Images/dash_example.gif)
+
     - A limit that the three powerups will have is that they will not be able to be used at the same time, when the player uses one jump, a cooldown will start (for now we are thinking 3 seconds, but this will also be tested in the game), in that cooldown period, the player will only be able to move horizontally and use the normal jump.
 - Platforms
     - The platforms will be completely interactable with the player (meaning that the player will never be able to jump through the platform from the bottom, the only way the player will be able to use the platform is to stand on top of it).
@@ -209,8 +204,14 @@ That will continue until you reach the top were the screen will just be the floo
 - Player with Enemies
     - When enemies attack the player, the player will not have health, so the consequence of getting hit will be to be pushed some distance. If they are unlucky that push will make them fall to their death.
     - Also the player will be able to jump on enemies to kill them, for that to happen the player needs to land in top of it.
+
+![MarioExample](GDD_Images/Mario_stomp.gif)
+   
 - Player with Platforms
     - Like we said before, the player will only be able to stand on top of the platforms, they will not be able to pass through them in any capacity. Once the player is on top of the platform, they will use it to make the next jump.
+
+![PlatformExample](GDD_Images/platformsInteraction_example.gif)
+
 - Player with Powerups
     - The powerups will be objects that player can grab by walking into them, once the player touches them, they will be able to use them, but they will have the limit stated before (the cooldown stuff), so they will have to used them strategically.
 - Player with Screens or Sections
@@ -290,11 +291,10 @@ The characters will have a pixel-y design with attack, movement and death animat
 1. Characters
     1. Human-like
         1.	Knight (Stay, move, jumps, death, hit)
-            ![Charged](GDD_Images/Charged_jump.gif)
-            ![Double](GDD_Images/Double_jump.gif)
-            ![Jump king](GDD_Images/Jump_king.gif)
-
-        3.	Princess (Request help, move)
+        2.	Princess (Celebration)
+       
+            ![Jump king](GDD_Images/Knight_Princess_Spritesheet)
+          	
     2.	Other
         1.	Skeleton(Move, attacks, hit, death)
 
@@ -318,7 +318,13 @@ The characters will have a pixel-y design with attack, movement and death animat
     3.	Walls
 4. Powerups
     1. Double Jump
+       
+       ![Double](GDD_Images/Double_Jump.gif)
+       
     2. Charged Jump
+     
+       ![Charged](GDD_Images/Charged_Jump.gif)
+       
     3. Dash
 5.	Ambient
     1.	Tower (Medieval, Pixel-Art and Fantasy)
@@ -382,20 +388,20 @@ _(define the main activities and the expected dates when they should be finished
 1. Make Entity Relationship Model (14/03/2025)
 2. Make Draft of DataBase with Dummy Data (24/03/2025)
 3. develop base classes
-    1. BasePhysics (14/03/2025)
+    1. BasePhysics 
         1. BasePlayer
         2. BaseEnemy
         3. BaseObject
-    2. BaseObstacle (24/03/2025)    
-    3. BaseLevel (29/03/2025)
+    2. BaseObstacle    
+    3. BaseLevel 
 4. base web page state 
-    1. Log in screen (14/03/2025)
-    2. Main screen (16/03/2025)
+    1. Log in screen 
+    2. Main screen 
 5. develop the base of the game
-    1. physics / collisions (14/03/2025)
-6. find some smooth controls/physics (31/03/2025)
+    1. physics / collisions 
+6. find some smooth controls/physics 
 7. develop other derived classes 
-    1. PlayerMain (03/04/2025)
+    1. PlayerMain 
     2. EnemySkeleton
     3. EnemyDemon
     4. EnemyJumper
