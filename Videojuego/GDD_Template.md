@@ -332,7 +332,9 @@ The characters will have a pixel-y design with attack, movement and death animat
        
     3. Dash
    
-    4. Bar with PowerUps
+       ![Charged](GDD_Images/Dash.gif)
+       
+    5. Bar with PowerUps
 5.	Ambient
     1.	Tower (Medieval, Pixel-Art and Fantasy)
 
