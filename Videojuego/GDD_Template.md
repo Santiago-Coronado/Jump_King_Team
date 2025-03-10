@@ -197,6 +197,14 @@ That will continue until you reach the top were the screen will just be the floo
     - The platforms will be completely interactable with the player (meaning that the player will never be able to jump through the platform from the bottom, the only way the player will be able to use the platform is to stand on top of it).
 - Score
     - The score will have an impact in the gameplay, when the player reaches a threshold, they will receive a 2.5% increase in speed (by speed we mean horizontal movement), this will happen three times, so that if you have a good enough score, you can get a 7.5% increase in your horizontal movement.
+
+
+|**Threshold**  |  **Increase in velocity**  |
+|-----------|------------------------|
+|1500       |   2.5%                 |
+|3000       |   5.0%                 |
+|4500       |   7.5%                 |
+
 - Deaths
     - When the player dies, all the game will be reset, the only thing that will remain from your previous run will be the powerups you unlocked. The progress, increase in stats and other things will not be kept.
     - The player will die when the vertical velocity reaches a threshold (this number will be set when we test the game), which means that if the player falls from high enough, they will reach the threshold and die on impact.
@@ -207,8 +215,16 @@ That will continue until you reach the top were the screen will just be the floo
     - When enemies attack the player, the player will not have health, so the consequence of getting hit will be to be pushed some distance. If they are unlucky that push will make them fall to their death.
     - Also the player will be able to jump on enemies to kill them, for that to happen the player needs to land in top of it.
 
-![MarioExample](GDD_Images/Mario_stomp.gif)
-   
+      ![MarioExample](GDD_Images/Mario_stomp.gif)
+
+    - When the player kills an enemy, they will give the player some score to activate the velocity boost and to get on the leaderboards (this numbers are tentative)
+    
+|**Enemies**  |  **Score**           |
+|-------------|----------------------|
+|Skeleton     |   150                |
+|Demon        |   400                |
+|Jumper       |    250               |
+
 - Player with Platforms
     - Like we said before, the player will only be able to stand on top of the platforms, they will not be able to pass through them in any capacity. Once the player is on top of the platform, they will use it to make the next jump.
 
@@ -222,7 +238,9 @@ That will continue until you reach the top were the screen will just be the floo
 - Player with Screens or Sections
     - When the player reaches the top of a screen, there will always be a section of the roff that is empty, the player will have to jump through that gap to get to the next screen.
 
-![ScreenExample](GDD_Images/ScreenInteraction_example.jpg)
+    ![ScreenExample](GDD_Images/ScreenInteraction_example.jpg)
+
+    - Also when the player completes a screen, the player will receive 100 points to get stat boosts and a leaderboard position. (The number is tentative)
 
 ## _Level Design_
 
