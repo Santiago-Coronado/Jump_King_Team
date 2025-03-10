@@ -336,10 +336,14 @@ The characters will have a pixel-y design with attack, movement and death animat
           	
             ![Death](GDD_Images/with_outline_Demon_fly/DEATH.png)
 
-        3.	Jumper (Jump)
-           ![stand](GDD_Images/Blop_Character_Pack/Blue_Blob_sheets/Blue_Blob_Idle.png)
-          	![stand](GDD_Images/Blop_Character_Pack/Blue_Blob_sheets/Blue_Blob_Jump.png)
-          	![stand](GDD_Images/Blop_Character_Pack/Blue_Blob_sheets/Blue_Blob_Dissasemble.png)
+        3.	Jumper (Idle,Jump,death)
+
+            ![stand](GDD_Images/Blob_Character_Pack/Blue-Blob-sheets/Blue_Blob_Idle.png)
+          	
+          	![stand](GDD_Images/Blob_Character_Pack/Blue-Blob-sheets/Blue_Blob_Jump.png)
+          	
+          	![stand](GDD_Images/Blob_Character_Pack/Blue-Blob-sheets/Blue_Blob_Dissasemble.png)
+          	
 3.	Blocks
     1.	Brick
     2.	Stone
@@ -357,7 +361,7 @@ The characters will have a pixel-y design with attack, movement and death animat
    
        ![Charged](GDD_Images/Dash.gif)
        
-    5. Bar with PowerUps
+    4. Bar with PowerUps
 5.	Ambient
     1.	Tower (Medieval, Pixel-Art and Fantasy)
 
