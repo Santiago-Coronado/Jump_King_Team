@@ -289,12 +289,29 @@ The characters will have a pixel-y design with attack, movement and death animat
 
 1. Characters
     1. Human-like
-        1.	Knight (Stay, move, jump)
-        2.	Princess (Request help, move)
+        1.	Knight (Stay, move, jumps, death, hit)
+            ![Charged](GDD_Images/Charged_jump.gif)
+            ![Double](GDD_Images/Double_jump.gif)
+            ![Jump king](GDD_Images/Jump_king.gif)
+
+        3.	Princess (Request help, move)
     2.	Other
-        1.	Skeleton(Move, attacks)
-        2.	Demon (Fly)
-        3.	Jumper (Jump)
+        1.	Skeleton(Move, attacks, hit, death)
+
+            ![Move](GDD_Images/GIFS_Skeleton/Skeleton_Walk.gif)
+            ![Attack](GDD_Images/GIFS_Skeleton/Skeleton_Attack.gif)
+            ![Hit](GDD_Images/GIFS_Skeleton/Skeleton_Hit.gif)
+            ![Death](GDD_Images/GIFS_Skeleton/Skeleton_Dead.gif)
+
+        3.	Demon (Fly, hit, death)
+
+            ![Fly](GDD_Images/with_outline_Demon_fly/FLYING.png)
+          	
+            ![Hit](GDD_Images/with_outline_Demon_fly/HURT.png)
+          	
+            ![Death](GDD_Images/with_outline_Demon_fly/DEATH.png)
+
+        5.	Jumper (Jump)
 3.	Blocks
     1.	Brick
     2.	Stone
