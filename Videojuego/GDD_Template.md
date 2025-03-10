@@ -328,7 +328,7 @@ The characters will have a pixel-y design with attack, movement and death animat
             ![Hit](GDD_Images/GIFS_Skeleton/Skeleton_Hit.gif)
             ![Death](GDD_Images/GIFS_Skeleton/Skeleton_Dead.gif)
 
-        3.	Demon (Fly, hit, death)
+        2.	Demon (Fly, hit, death)
 
             ![Fly](GDD_Images/with_outline_Demon_fly/FLYING.png)
           	
@@ -336,7 +336,10 @@ The characters will have a pixel-y design with attack, movement and death animat
           	
             ![Death](GDD_Images/with_outline_Demon_fly/DEATH.png)
 
-        5.	Jumper (Jump)
+        3.	Jumper (Jump)
+           ![stand](GDD_Images/Blop_Character_Pack/Blue_Blob_sheets/Blue_Blob_Idle.png)
+          	![stand](GDD_Images/Blop_Character_Pack/Blue_Blob_sheets/Blue_Blob_Jump.png)
+          	![stand](GDD_Images/Blop_Character_Pack/Blue_Blob_sheets/Blue_Blob_Dissasemble.png)
 3.	Blocks
     1.	Brick
     2.	Stone
