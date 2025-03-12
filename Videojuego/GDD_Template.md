@@ -286,16 +286,14 @@ _(ejemplo)_
 7. Game
 
 ### **Clases Derivadas / Composiciones de Componentes**
-
-1. BasePlayer
-2. BaseEnemy
+1. BaseEnemy
     1. EnemyDemon
     2. EnemySkeleton
     3. EnemyJumper
-4. BaseObject
+2. BaseObject
     1. ObjectPowerUp
     2. ObjectScore
-5. BaseObstacle
+3. BaseObstacle
     1. ObstacleWall
 
 ## _Gráficos_
