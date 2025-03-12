@@ -278,16 +278,16 @@ _(ejemplo)_
 ### **Clases Abstractas / Componentes**
 
 1. BasePhysics
-    1. BasePlayer
-    2. BaseEnemy
-    3. BaseObject
-2. BaseObstacle
-3. BaseLevel
+2. BasePlayer
+3. BaseEnemy
+4. BaseObject
+5. BaseObstacle
+6. BaseLevel
+7. Game
 
 ### **Clases Derivadas / Composiciones de Componentes**
 
 1. BasePlayer
-    1. PlayerMain
 2. BaseEnemy
     1. EnemyDemon
     2. EnemySkeleton
