@@ -23,7 +23,7 @@ let level;
 
 // Scale of the whole world, to be applied to all objects
 // Each unit in the level file will be drawn as these many square pixels
-const scale = 29;
+const scale = 14.3;
 
 let debugJump = false;
 
@@ -41,7 +41,6 @@ class Player extends AnimatedObject {
         super("green", width, height, x, y, "player");
         this.physics = physics;  // Store physics so that they can be used
         this.velocity = new Vec(0.0, 0.0);
-        this.money = 0;
 
         this.isFacingRight = true;
         this.isJumping = false;
@@ -327,9 +326,28 @@ class Player extends AnimatedObject {
 }
 
 
-class Coin extends AnimatedObject {
+class Dash extends AnimatedObject {
     constructor(_color, width, height, x, y, _type) {
-        super("yellow", width, height, x, y, "coin");
+        super("yellow", width, height, x, y, "powerup");
+    }
+
+    update(_level, deltaTime) {
+        this.updateFrame(deltaTime);
+    }
+}
+
+class Charged extends AnimatedObject {
+    constructor(_color, width, height, x, y, _type) {
+        super("yellow", width, height, x, y, "powerup");
+    }
+
+    update(_level, deltaTime) {
+        this.updateFrame(deltaTime);
+    }
+}
+class Double extends AnimatedObject {
+    constructor(_color, width, height, x, y, _type) {
+        super("yellow", width, height, x, y, "powerup");
     }
 
     update(_level, deltaTime) {
@@ -346,8 +364,6 @@ class Level {
         this.width = rows[0].length;
         this.actors = [];
 
-        // Variable to randomize environments
-        let rnd = Math.random();
 
         // Fill the rows array with a label for the type of element in the cell
         // Most cells are 'empty', except for the 'wall'
@@ -373,10 +389,13 @@ class Level {
                     actor.setAnimation(...item.startFrame, false, 100);
                     this.player = actor;
                     cellType = "empty";
-                } else if (actor.type == "coin") {
+                } else if (actor.type == "powerup") {
                     // Also instantiate a floor tile below the player
                     this.addBackgroundFloor(x, y);
 
+                    actor.position = actor.position.plus(new Vec(-1, -1));
+                    actor.size = new Vec(2, 2); 
+                    
                     actor.setSprite(item.sprite, item.rect);
                     actor.sheetCols = item.sheetCols;
                     actor.setAnimation(...item.startFrame, true, 100);
@@ -384,13 +403,10 @@ class Level {
                     cellType = "empty";
                 } else if (actor.type == "wall") {
                     // Randomize sprites for each wall tile
-                    item.rect = this.randomEvironment(rnd);
                     actor.setSprite(item.sprite, item.rect);
                     this.actors.push(actor);
                     cellType = "wall";
                 } else if (actor.type == "floor") {
-                    //actor.setSprite(item.sprite, item.rect);
-                    this.actors.push(actor);
                     cellType = "floor";
                 }
                 return cellType;
@@ -401,27 +417,11 @@ class Level {
     addBackgroundFloor(x, y) {
         let floor = levelChars['.'];
         let floorActor = new GameObject("skyblue", 1, 1, x, y, floor.label);
-        //floorActor.setSprite(floor.sprite, floor.rect);
+        floorActor.setSprite(floor.sprite, floor.rect);
         this.actors.push(floorActor);
     }
 
-    // Randomize sprites for each wall tile
-    randomTile(xStart, xRange, y) {
-        let tile = Math.floor(Math.random() * xRange + xStart);
-        return new Rect(tile, y, 32, 32);
-    }
 
-    randomEvironment(rnd) {
-        let rect;
-        if (rnd < 0.33) {
-            rect = this.randomTile(1, 10, 6);    // yellow marble
-        } else if (rnd < 0.66) {
-            rect = this.randomTile(1, 12, 16);     // green marble with carvings
-        } else {
-            rect = this.randomTile(21, 12, 16);  // brown and yellow pebbles
-        }
-        return rect;
-    }
 
     // Detect when the player touches a wall
     contact(playerPos, playerSize, type) {
@@ -458,13 +458,7 @@ class Game {
         this.player = level.player;
         this.actors = level.actors;
 
-        this.labelMoney = new TextLabel(20, canvasHeight - 30,
-                                        "30px Ubuntu Mono", "white");
-
-        this.labelDebug = new TextLabel(canvasWidth / 2, canvasHeight - 80,
-                                        "20px Ubuntu Mono", "black");
-
-        console.log(`############ LEVEL ${level} START ###################`);
+        this.background = new Background('../assets/Castle1.png', canvasWidth, canvasHeight);
     }
 
     update(deltaTime) {
@@ -480,12 +474,9 @@ class Game {
         // Detect collisions
         for (let actor of currentActors) {
             if (actor.type != 'floor' && overlapRectangles(this.player, actor)) {
-                //console.log(`Collision of ${this.player.type} with ${actor.type}`);
-                if (actor.type == 'wall') {
-                    //console.log("Hit a wall");
 
-                } else if (actor.type == 'coin') {
-                    this.player.money += 1;
+                 
+                if (actor.type == 'powerup') {
                     this.actors = this.actors.filter(item => item !== actor);
                 }
             }
@@ -493,14 +484,29 @@ class Game {
     }
 
     draw(ctx, scale) {
+        this.background.draw(ctx);
+        
+        // Draw only non-floor actors
         for (let actor of this.actors) {
-            actor.draw(ctx, scale);
+            if (actor.type !== 'floor') {
+                actor.draw(ctx, scale);
+            }
         }
         this.player.draw(ctx, scale);
+    }
+}
 
-        this.labelMoney.draw(ctx, `Money: ${this.player.money}`);
+class Background {
+    constructor(imagePath, width, height) {
+        this.image = new Image();
+        this.image.src = imagePath;
+        this.width = width;
+        this.height = height;
+    }
 
-        this.labelDebug.draw(ctx, `Velocity: ( ${this.player.velocity.x.toFixed(3)}, ${this.player.velocity.y.toFixed(3)} )`);
+    draw(ctx) {
+        // Draw the background image to fill the entire canvas
+        ctx.drawImage(this.image, 0, 0, canvasWidth, canvasHeight/2 +50);
     }
 }
 
@@ -511,24 +517,36 @@ const levelChars = {
     // Rect defined as offset from the first tile, and size of the tiles
     ".": {objClass: GameObject,
           label: "floor",
-          sprite: '../assets/sprites/ProjectUtumno_full.png',
+          sprite: 'none',
           rect: new Rect(12, 17, 32, 32)},
     "#": {objClass: GameObject,
           label: "wall",
-          sprite: '../assets/sprites/ProjectUtumno_full.png',
-          rect: new Rect(1, 6, 32, 32)},
+          sprite: '../assets/BlueWalls.png',
+          rect: new Rect(0, 0, 256, 256)},
     "@": {objClass: Player,
           label: "player",
           sprite: '../assets/Knight/Knight_Assets.png',
           rect: new Rect(0, 0, 32, 33.5),
           sheetCols: 18,
           startFrame: [0, 0]},
-    "$": {objClass: Coin,
+    "$": {objClass: Dash,
           label: "collectible",
-          sprite: '../assets/sprites/coin_gold.png',
+          sprite: '../assets/PowerUps/Dash.png',
           rect: new Rect(0, 0, 32, 32),
-          sheetCols: 8,
-          startFrame: [0, 7]},
+          sheetCols: 3,
+          startFrame: [0, 1]},
+    "%": {objClass: Charged,
+          label: "collectible",
+          sprite: '../assets/PowerUps/Charged_Jump.png',
+          rect: new Rect(0, 0, 32, 32),
+          sheetCols: 3,
+          startFrame: [0, 1]},
+    "&": {objClass: Double,
+          label: "collectible",
+          sprite: '../assets/PowerUps/Double_jump.png',
+          rect: new Rect(0, 0, 32, 32),
+          sheetCols: 3,
+          startFrame: [0, 1]},
 };
 
 
@@ -545,13 +563,15 @@ function init() {
     canvas.height = canvasHeight;
     ctx = canvas.getContext('2d');
 
+
+
     gameStart();
 }
 
 function gameStart() {
     const physics = new BasePhysics();  // Create an instance of BasePhysics
     // Register the game object, which creates all other objects
-    game = new Game('playing', new Level(GAME_LEVELS[1], physics));  // Pass physics to Level
+    game = new Game('playing', new Level(GAME_LEVELS[0], physics));  // Pass physics to Level
 
     setEventListeners();
 
