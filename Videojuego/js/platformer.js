@@ -46,6 +46,9 @@ class Player extends AnimatedObject {
         this.isJumping = false;
         this.isCrouching = false;
 
+        this.heightThreshold = 3; 
+        this.inHigherLevel = false;
+
         // Movement variables to define directions and animations
         this.movement = {
             right:  { status: false,
@@ -171,6 +174,12 @@ class Player extends AnimatedObject {
         if (!level.contact(newXPosition, this.size, 'wall')) {
             this.position = newXPosition;
         }
+
+        if (this.inHigherLevel && this.position.y >= level.height - 3.5) {
+            this.fallToLowerLevel(game);
+            return; 
+        }
+
 
         // Find out where the player should end if it moves
         let newYPosition = this.position.plus(new Vec(0, velY * deltaTime));
@@ -323,6 +332,83 @@ class Player extends AnimatedObject {
             }
         }
     }
+
+    checkLevelChange(game){
+        if(this.position.y <this.heightThreshold && !this.inHigherLevel){
+            this.inHigherLevel=true;
+            if (game.currentLevelIndex < game.availableLevels.length - 1){
+
+                const currentXPosition = this.position.x;
+                const facingRight = this.isFacingRight;
+                const velocity = new Vec(this.velocity.x, this.velocity.y);
+                const isJumping = this.isJumping;
+                const isCrouching = this.isCrouching;
+
+                const movementState = {
+                    right: this.movement.right.status,
+                    left: this.movement.left.status
+                }
+
+                game.changeLevel(game.currentLevelIndex + 1);
+
+                const bottomPosition = game.level.height - 4;
+
+                game.player.position = new Vec(currentXPosition,bottomPosition);
+                game.player.isFacingRight = facingRight;
+                game.player.velocity = velocity;
+                game.player.inHigherLevel = true;
+                game.player.isJumping = isJumping;
+                game.player.isCrouching = isCrouching;
+
+                if (movementState.right) {
+                    game.player.movement.right.status = true;
+                }
+                if (movementState.left) {
+                    game.player.movement.left.status = true;
+                }
+                
+                game.player.updateMovementState();   
+            }
+        }
+    }
+
+    fallToLowerLevel(game){
+        if(game.currentLevelIndex > 0){
+            this.inHigherLevel = false;
+
+            const currentXPosition = this.position.x;
+            const facingRight = this.isFacingRight;
+            const velocityX = this.velocity.x;
+            const isJumping = this.isJumping;
+            const isCrouching = this.isCrouching;
+
+            const movementState = {
+                right: this.movement.right.status,
+                left: this.movement.left.status
+            };
+
+            game.changeLevel(game.currentLevelIndex - 1);
+
+            const topPosition = 4;
+
+            game.player.position = new Vec(currentXPosition, topPosition);
+            game.player.isFacingRight = facingRight;
+            game.player.velocity = new Vec (velocityX, 0.01);
+            game.player.inHigherLevel = false;
+
+            game.player.isJumping = isJumping;
+            game.player.isCrouching = isCrouching;
+
+            if (movementState.right) {
+                game.player.movement.right.status = true;
+            }
+            if (movementState.left) {
+                game.player.movement.left.status = true;
+            }
+            
+            game.player.updateMovementState();
+        }
+    }
 }
 
 
@@ -356,14 +442,13 @@ class Double extends AnimatedObject {
 }
 
 
-class Level {
+class BaseLevel {
     constructor(plan, physics) {
         // Split the plan string into a matrix of strings
         let rows = plan.trim().split('\n').map(l => [...l]);
         this.height = rows.length;
         this.width = rows[0].length;
         this.actors = [];
-
 
         // Fill the rows array with a label for the type of element in the cell
         // Most cells are 'empty', except for the 'wall'
@@ -451,18 +536,26 @@ class Level {
 
 
 class Game {
-    constructor(state, level) {
+    constructor(state, levelIndex) {
         this.state = state;
-        this.level = level;
+        this.currentLevelIndex = levelIndex;
         this.physics = new BasePhysics();  // Create an instance of BasePhysics
-        this.player = level.player;
-        this.actors = level.actors;
+        
+        this.availableLevels = GAME_LEVELS;
+
+        this.level = new BaseLevel (this.availableLevels[levelIndex], this.physics)
+
+        this.player = this.level.player;
+        this.actors = this.level.actors;
 
         this.background = new Background('../assets/Castle1.png', canvasWidth, canvasHeight);
     }
 
     update(deltaTime) {
+
         this.player.update(this.level, deltaTime);
+
+        this.player.checkLevelChange(this);
 
         for (let actor of this.actors) {
             actor.update(this.level, deltaTime);
@@ -481,6 +574,15 @@ class Game {
                 }
             }
         }
+    }
+
+    changeLevel(levelIndex){
+        
+        this.level = new BaseLevel(this.availableLevels[levelIndex], this.physics);
+        this.player = this.level.player;
+        this.actors=this.level.actors;
+
+        this.currentLevelIndex=levelIndex;
     }
 
     draw(ctx, scale) {
@@ -571,7 +673,7 @@ function init() {
 function gameStart() {
     const physics = new BasePhysics();  // Create an instance of BasePhysics
     // Register the game object, which creates all other objects
-    game = new Game('playing', new Level(GAME_LEVELS[0], physics));  // Pass physics to Level
+    game = new Game('playing', 0);  // Pass physics to Level
 
     setEventListeners();
 
