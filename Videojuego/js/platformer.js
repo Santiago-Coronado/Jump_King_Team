@@ -9,7 +9,7 @@
 
 // Global variables
 const canvasWidth = 800;
-const canvasHeight = 600;
+const canvasHeight = 450;
 
 // Context for the display canvas
 let ctx;
@@ -46,7 +46,7 @@ class Player extends AnimatedObject {
         this.isJumping = false;
         this.isCrouching = false;
 
-        this.heightThreshold = 3; 
+        this.heightThreshold = 1; 
         this.inHigherLevel = false;
 
         // Movement variables to define directions and animations
@@ -351,7 +351,7 @@ class Player extends AnimatedObject {
 
                 game.changeLevel(game.currentLevelIndex + 1);
 
-                const bottomPosition = game.level.height - 4;
+                const bottomPosition = game.level.height - 5;
 
                 game.player.position = new Vec(currentXPosition,bottomPosition);
                 game.player.isFacingRight = facingRight;
@@ -389,7 +389,7 @@ class Player extends AnimatedObject {
 
             game.changeLevel(game.currentLevelIndex - 1);
 
-            const topPosition = 4;
+            const topPosition = 3;
 
             game.player.position = new Vec(currentXPosition, topPosition);
             game.player.isFacingRight = facingRight;
@@ -608,7 +608,7 @@ class Background {
 
     draw(ctx) {
         // Draw the background image to fill the entire canvas
-        ctx.drawImage(this.image, 0, 0, canvasWidth, canvasHeight/2 +50);
+        ctx.drawImage(this.image, 0, 0, canvasWidth, canvasHeight -100);
     }
 }
 
