@@ -152,3 +152,58 @@ function overlapRectangles(actor1, actor2) {
            actor1.position.y + actor1.size.y > actor2.position.y &&
            actor1.position.y < actor2.position.y + actor2.size.y;
 }
+
+class PowerUpBar {
+    constructor() {
+        this.sprite = new Image();
+        this.sprite.src = '../Assets/PowerUpBar_Combinations.png';
+
+        this.frameCount = 8;
+        this.currentFrame = 0;
+
+        this.frameWidth = 112;
+        this.frameHeight = 40;
+
+        this.scale = 2;
+        this.displayWidth = this.frameWidth * this.scale;
+        this.displayHeight = this.frameHeight * this.scale;
+
+        this.position = {
+            x: canvasWidth - this.displayWidth - 10,
+            y: canvasHeight - this.displayHeight - 10
+        };
+    }
+
+    draw(ctx) {
+        if (!this.sprite.complete) return;
+
+        ctx.drawImage(
+            this.sprite,
+            this.currentFrame * this.frameWidth, 0,
+            this.frameWidth, this.frameHeight,
+            this.position.x, this.position.y,
+            this.displayWidth, this.displayHeight
+        );
+    }
+
+    updateFrame(charged, double, dash) {
+        // Generar un índice basado en las combinaciones exactas del spritesheet
+        if (!charged && !double && !dash) {
+            this.currentFrame = 0;
+        } else if (charged && !double && !dash) {
+            this.currentFrame = 1;
+        } else if (!charged && double && !dash) {
+            this.currentFrame = 2;
+        } else if (!charged && !double && dash) {
+            this.currentFrame = 3;
+        } else if (charged && double && !dash) {
+            this.currentFrame = 4;
+        } else if (charged && !double && dash) {
+            this.currentFrame = 5;
+        } else if (!charged && double && dash) {
+            this.currentFrame = 6;
+        } else if (charged && double && dash) {
+            this.currentFrame = 7;
+        }
+    }
+}

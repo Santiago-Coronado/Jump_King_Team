@@ -49,6 +49,12 @@ class Player extends AnimatedObject {
         this.heightThreshold = 1; 
         this.inHigherLevel = false;
 
+        this.powerUps = {
+            charged: false,
+            double: false,
+            dash: false
+        };
+
         // Movement variables to define directions and animations
         this.movement = {
             right:  { status: false,
@@ -549,6 +555,7 @@ class Game {
         this.actors = this.level.actors;
 
         this.background = new Background('../assets/Castle1.png', canvasWidth, canvasHeight);
+        this.powerUpBar = new PowerUpBar();
     }
 
     update(deltaTime) {
@@ -561,17 +568,26 @@ class Game {
             actor.update(this.level, deltaTime);
         }
 
+        this.powerUpBar.updateFrame(
+            this.player.powerUps.charged,
+            this.player.powerUps.double,
+            this.player.powerUps.dash
+        );
+
         // A copy of the full list to iterate over all of them
         // DOES THIS WORK?
         let currentActors = this.actors;
         // Detect collisions
         for (let actor of currentActors) {
-            if (actor.type != 'floor' && overlapRectangles(this.player, actor)) {
-
-                 
-                if (actor.type == 'powerup') {
-                    this.actors = this.actors.filter(item => item !== actor);
+            if (actor.type == 'powerup' && overlapRectangles(this.player, actor)) {
+                if (actor instanceof Dash) {
+                    this.player.powerUps.dash = true;
+                } else if (actor instanceof Charged) {
+                    this.player.powerUps.charged = true;
+                } else if (actor instanceof Double) {
+                    this.player.powerUps.double = true;
                 }
+                this.actors = this.actors.filter(item => item !== actor); 
             }
         }
     }
@@ -588,13 +604,20 @@ class Game {
     draw(ctx, scale) {
         this.background.draw(ctx);
         
-        // Draw only non-floor actors
+        // Dibujar juego
         for (let actor of this.actors) {
             if (actor.type !== 'floor') {
                 actor.draw(ctx, scale);
             }
         }
         this.player.draw(ctx, scale);
+        
+        // Dibujar HUD
+        ctx.fillStyle = '#5a2c0f';
+        ctx.fillRect(0, canvasHeight - 100, canvasWidth, 100);
+        
+        // Dibujar barra de power-ups
+        this.powerUpBar.draw(ctx);
     }
 }
 
