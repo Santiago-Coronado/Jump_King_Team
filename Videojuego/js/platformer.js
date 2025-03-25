@@ -592,13 +592,19 @@ class Game {
         }
     }
 
-    changeLevel(levelIndex){
-        
+    changeLevel(levelIndex) {
+        // Guardar estado del jugador actual
+        const oldPlayer = this.player;
+        const powerUps = { ...oldPlayer.powerUps };
+    
+        // Crear nuevo nivel
         this.level = new BaseLevel(this.availableLevels[levelIndex], this.physics);
         this.player = this.level.player;
-        this.actors=this.level.actors;
-
-        this.currentLevelIndex=levelIndex;
+        this.actors = this.level.actors;
+        this.currentLevelIndex = levelIndex;
+    
+        // Restaurar power-ups
+        this.player.powerUps = powerUps;
     }
 
     draw(ctx, scale) {
