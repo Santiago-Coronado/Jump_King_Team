@@ -99,7 +99,6 @@ En este juego, las plataformas serán la jugabilidad principal. Por eso queremos
 - **Elementos**:
   - Área del juego.
   - HUD (Heads-Up Display) que muestra la puntuación y los powerups disponibles.
-  - Botón "Pausa".
 - **Interacción**: Los jugadores controlan al caballero usando los controles definidos (A, D, SPACEBAR, Q).
 
 ---
