@@ -27,10 +27,6 @@ const scale = 14.3;
 
 let debugJump = false;
 
-let chargedValue=false;
-let doubleValue = false;
-let dashValue=false;
-
 class BasePhysics {
     constructor() {
         // The project works only with very small values for velocities and acceleration
@@ -317,7 +313,7 @@ class Player extends AnimatedObject {
             this.velocity.y = this.physics.initialJumpSpeed;
             this.isJumping = true;
 
-            if (doubleValue){
+            if (this.powerUps.double){
                 this.canDoubleJump = true;
             }
             const jumpData = this.movement.jump;
@@ -371,7 +367,7 @@ class Player extends AnimatedObject {
     }
 
     dash() {
-        if (dashValue && !this.isDashing) { 
+        if (this.powerUps.dash && !this.isDashing) { 
             if (this.isJumping && this.hasAirDashed) {
                 return; 
             }
@@ -417,7 +413,7 @@ class Player extends AnimatedObject {
         }, effectDuration);
     }
     crouch(){
-        if (chargedValue){
+        if (this.powerUps.charged){
             if (!this.isJumping) {
                 this.isCrouching = true;
                 
@@ -738,14 +734,14 @@ class Game {
         for (let actor of currentActors) {
             if (actor.type != 'floor' && overlapRectangles(this.player, actor)) {
                 if (actor.type == 'powerup1') {
-                    dashValue = true;
+                    this.player.powerUps.dash = true;
                     this.actors = this.actors.filter(item => item !== actor);
                     actorsToRemove.push(actor);
                 } else if (actor.type == 'powerup2') {
-                    chargedValue = true;
+                    this.player.powerUps.charged = true;
                     this.actors = this.actors.filter(item => item !== actor);
                 } else if (actor.type == 'powerup3') {
-                    doubleValue = true;
+                    this.player.powerUps.double = true;
                     this.actors = this.actors.filter(item => item !== actor);
                 }
             }
