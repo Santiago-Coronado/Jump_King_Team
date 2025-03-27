@@ -56,8 +56,16 @@ class Player extends AnimatedObject {
         this.heightThreshold = 1; 
         this.inHigherLevel = false;
 
+
         this.hasAirDashed = false;
 
+
+
+        this.powerUps = {
+            charged: false,
+            double: false,
+            dash: false
+        };
 
 
         // Movement variables to define directions and animations
@@ -703,6 +711,7 @@ class Game {
         this.actors = this.level.actors;
 
         this.background = new Background('../assets/Castle1.png', canvasWidth, canvasHeight);
+        this.powerUpBar = new PowerUpBar();
     }
 
     update(deltaTime) {
@@ -714,6 +723,12 @@ class Game {
         for (let actor of this.actors) {
             actor.update(this.level, deltaTime);
         }
+
+        this.powerUpBar.updateFrame(
+            this.player.powerUps.charged,
+            this.player.powerUps.double,
+            this.player.powerUps.dash
+        );
 
         // A copy of the full list to iterate over all of them
         // DOES THIS WORK?
@@ -737,25 +752,38 @@ class Game {
         }
     }
 
-    changeLevel(levelIndex){
-        
+    changeLevel(levelIndex) {
+        // Guardar estado del jugador actual
+        const oldPlayer = this.player;
+        const powerUps = { ...oldPlayer.powerUps };
+    
+        // Crear nuevo nivel
         this.level = new BaseLevel(this.availableLevels[levelIndex], this.physics);
         this.player = this.level.player;
-        this.actors=this.level.actors;
-
-        this.currentLevelIndex=levelIndex;
+        this.actors = this.level.actors;
+        this.currentLevelIndex = levelIndex;
+    
+        // Restaurar power-ups
+        this.player.powerUps = powerUps;
     }
 
     draw(ctx, scale) {
         this.background.draw(ctx);
         
-        // Draw only non-floor actors
+        // Dibujar juego
         for (let actor of this.actors) {
             if (actor.type !== 'floor') {
                 actor.draw(ctx, scale);
             }
         }
         this.player.draw(ctx, scale);
+        
+        // Dibujar HUD
+        ctx.fillStyle = '#5a2c0f';
+        ctx.fillRect(0, canvasHeight - 100, canvasWidth, 100);
+        
+        // Dibujar barra de power-ups
+        this.powerUpBar.draw(ctx);
     }
 }
 
