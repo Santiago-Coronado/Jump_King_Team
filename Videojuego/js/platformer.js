@@ -45,9 +45,24 @@ class Player extends AnimatedObject {
         this.isFacingRight = true;
         this.isJumping = false;
         this.isCrouching = false;
+        this.canDoubleJump = false;
+        this.isDashing=false;
+        this.dashTime=0;
 
         this.heightThreshold = 1; 
         this.inHigherLevel = false;
+
+
+        this.hasAirDashed = false;
+
+
+
+        this.powerUps = {
+            charged: false,
+            double: false,
+            dash: false
+        };
+
 
         // Movement variables to define directions and animations
         this.movement = {
@@ -160,10 +175,14 @@ class Player extends AnimatedObject {
 
     update(level, deltaTime) {
         // Make the character fall constantly because of gravity
+        if (!this.isDashing){
         this.velocity.y = this.velocity.y + this.physics.gravity * deltaTime;
+        }
 
         // Check movement state and update it if needed
-        this.updateMovementState();
+        if (!this.isDashing) {
+            this.updateMovementState();
+        }
 
         let velX = this.velocity.x;
         let velY = this.velocity.y;
@@ -196,6 +215,10 @@ class Player extends AnimatedObject {
     // Method that calculates velocity based on active movement directions (this is made so that the character doesn't get stuck when pressing
     // many keys in quick succession)
     updateMovementVelocity() {
+
+        if (this.isJumping) return; 
+        if (this.isCrouching) return;
+
         const rightData = this.movement.right;
         const leftData = this.movement.left;
         
@@ -226,12 +249,20 @@ class Player extends AnimatedObject {
             // Give a velocity so that the player starts moving up
             this.velocity.y = this.physics.initialJumpSpeed;
             this.isJumping = true;
+
+            if (this.powerUps.double){
+                this.canDoubleJump = true;
+            }
             const jumpData = this.movement.jump;
-    
+
+            // Get frames for the scurrent direction
             const jumpFrames = this.isFacingRight ? jumpData.right : jumpData.left;
             const minFrame = Math.min(...jumpFrames);
             const maxFrame = Math.max(...jumpFrames);
             this.setAnimation(minFrame, maxFrame, jumpData.repeat, jumpData.duration);
+        }
+        else if (this.canDoubleJump){
+            this.doubleJump()
         }
     }
 
@@ -241,9 +272,12 @@ class Player extends AnimatedObject {
         this.velocity.y = 0;
         // Force the player to move down to touch the floor
         this.position.y = Math.ceil(this.position.y);
+
+        this.hasAirDashed = false;
         if (this.isJumping) {
             // Reset the jump variable
             this.isJumping = false;
+            this.canDoubleJump=false;
             const leftData = this.movement["left"];
             const rightData = this.movement["right"];
             // Continue the running animation if the player is moving
@@ -268,6 +302,103 @@ class Player extends AnimatedObject {
         }
     }
 
+    dash() {
+        if (this.powerUps.dash && !this.isDashing) { 
+            if (this.isJumping && this.hasAirDashed) {
+                return; 
+            }
+            const dashSpeed = this.physics.walkSpeed * 3; 
+            this.isDashing=true;
+            const dashTime = 250;
+
+            if (this.isJumping) {
+                this.hasAirDashed = true;
+            }
+            
+            this.velocity.y= 0;
+            
+            if (this.isFacingRight) {
+                this.velocity.x = dashSpeed;
+            } else {
+                this.velocity.x = -dashSpeed;
+            }
+
+            const originalColor = this.color;
+            this.color = "cyan"; 
+            
+            setTimeout(() => {
+                this.isDashing = false;
+                this.updateMovementState();
+                this.color = originalColor;
+            }, dashTime);
+        }
+    }
+    doubleJump() {
+        this.canDoubleJump = false;
+        
+        this.velocity.y = this.physics.initialJumpSpeed * 0.8; 
+        
+        const originalColor = this.color;
+        this.color = "lime";
+        
+
+        const effectDuration = 150;
+
+        setTimeout(() => {
+            this.color = originalColor;
+        }, effectDuration);
+    }
+    crouch(){
+        if (this.powerUps.charged){
+            if (!this.isJumping) {
+                this.isCrouching = true;
+                
+                const crouchData = this.movement.crouch;
+
+                const crouchFrames = this.isFacingRight ? crouchData.right : crouchData.left;
+                const minFrame = Math.min(...crouchFrames);
+                const maxFrame = Math.max(...crouchFrames);
+        
+                // Set animation with those frames
+                this.setAnimation(minFrame, maxFrame, crouchData.repeat, crouchData.duration);
+                this.velocity.x = 0;
+            }
+    }
+    }
+    standUp(){
+        if (this.isCrouching) {
+
+            this.isCrouching = false;
+
+        
+            const rightData = this.movement.right;
+            const leftData = this.movement.left;
+            
+            // Reset horizontal velocity first
+            this.velocity.x = 0;
+            
+            if (rightData.status && !leftData.status) {
+                this.velocity.x = rightData.sign * this.physics.walkSpeed * 0.4;
+            } else if (leftData.status && !rightData.status) {
+                this.velocity.x = leftData.sign * this.physics.walkSpeed * 0.4;
+            }
+
+            this.isJumping = true;
+            this.velocity.y = this.physics.initialJumpSpeed * 1.5; 
+
+            
+            const jumpData = this.movement.jump;
+             // Get frames for the scurrent direction
+            const jumpFrames = this.isFacingRight ? jumpData.right : jumpData.left;
+            const minFrame = Math.min(...jumpFrames);
+            const maxFrame = Math.max(...jumpFrames);
+        
+            // Set animation with those frames
+            this.setAnimation(minFrame, maxFrame, jumpData.repeat, jumpData.duration);
+            
+        }
+    }
+    
     checkLevelChange(game){
         if(this.position.y <this.heightThreshold && !this.inHigherLevel){
             this.inHigherLevel=true;
@@ -307,6 +438,7 @@ class Player extends AnimatedObject {
         }
     }
 
+    
     fallToLowerLevel(game){
         if(game.currentLevelIndex > 0){
             this.inHigherLevel = false;
@@ -349,7 +481,7 @@ class Player extends AnimatedObject {
 
 class Dash extends AnimatedObject {
     constructor(_color, width, height, x, y, _type) {
-        super("yellow", width, height, x, y, "powerup");
+        super("yellow", width, height, x, y, "powerup1");
     }
 
     update(_level, deltaTime) {
@@ -359,7 +491,7 @@ class Dash extends AnimatedObject {
 
 class Charged extends AnimatedObject {
     constructor(_color, width, height, x, y, _type) {
-        super("yellow", width, height, x, y, "powerup");
+        super("yellow", width, height, x, y, "powerup2");
     }
 
     update(_level, deltaTime) {
@@ -368,7 +500,7 @@ class Charged extends AnimatedObject {
 }
 class Double extends AnimatedObject {
     constructor(_color, width, height, x, y, _type) {
-        super("yellow", width, height, x, y, "powerup");
+        super("yellow", width, height, x, y, "powerup3");
     }
 
     update(_level, deltaTime) {
@@ -410,7 +542,7 @@ class BaseLevel {
                     actor.setAnimation(...item.startFrame, false, 100);
                     this.player = actor;
                     cellType = "empty";
-                } else if (actor.type == "powerup") {
+                } else if (actor.type == "powerup1") {
                     // Also instantiate a floor tile below the player
                     this.addBackgroundFloor(x, y);
 
@@ -422,7 +554,34 @@ class BaseLevel {
                     actor.setAnimation(...item.startFrame, true, 100);
                     this.actors.push(actor);
                     cellType = "empty";
-                } else if (actor.type == "wall") {
+                    
+                } else if (actor.type == "powerup2") {
+                    // Also instantiate a floor tile below the player
+                    this.addBackgroundFloor(x, y);
+
+                    actor.position = actor.position.plus(new Vec(-1, -1));
+                    actor.size = new Vec(2, 2); 
+                    
+                    actor.setSprite(item.sprite, item.rect);
+                    actor.sheetCols = item.sheetCols;
+                    actor.setAnimation(...item.startFrame, true, 100);
+                    this.actors.push(actor);
+                    cellType = "empty";
+                    
+                } else if (actor.type == "powerup3") {
+                    // Also instantiate a floor tile below the player
+                    this.addBackgroundFloor(x, y);
+
+                    actor.position = actor.position.plus(new Vec(-1, -1));
+                    actor.size = new Vec(2, 2); 
+                    
+                    actor.setSprite(item.sprite, item.rect);
+                    actor.sheetCols = item.sheetCols;
+                    actor.setAnimation(...item.startFrame, true, 100);
+                    this.actors.push(actor);
+                    cellType = "empty";
+                    
+                }else if (actor.type == "wall") {
                     // Randomize sprites for each wall tile
                     actor.setSprite(item.sprite, item.rect);
                     this.actors.push(actor);
@@ -515,6 +674,7 @@ class Game {
         this.enemies = this.level.enemies;
 
         this.background = new Background('../assets/Castle1.png', canvasWidth, canvasHeight);
+        this.powerUpBar = new PowerUpBar();
     }
 
     update(deltaTime) {
@@ -530,15 +690,29 @@ class Game {
         for (let enemy of this.enemies) {
             enemy.update(this.level, deltaTime);
         }
+
+        this.powerUpBar.updateFrame(
+            this.player.powerUps.charged,
+            this.player.powerUps.double,
+            this.player.powerUps.dash
+        );
+
         // A copy of the full list to iterate over all of them
         // DOES THIS WORK?
         let currentActors = this.actors;
+        let actorsToRemove = [];
         // Detect collisions
         for (let actor of currentActors) {
             if (actor.type != 'floor' && overlapRectangles(this.player, actor)) {
-
-                 
-                if (actor.type == 'powerup') {
+                if (actor.type == 'powerup1') {
+                    this.player.powerUps.dash = true;
+                    this.actors = this.actors.filter(item => item !== actor);
+                    actorsToRemove.push(actor);
+                } else if (actor.type == 'powerup2') {
+                    this.player.powerUps.charged = true;
+                    this.actors = this.actors.filter(item => item !== actor);
+                } else if (actor.type == 'powerup3') {
+                    this.player.powerUps.double = true;
                     this.actors = this.actors.filter(item => item !== actor);
                 }
             }
@@ -575,20 +749,24 @@ class Game {
         });
     }
 
-    changeLevel(levelIndex){
-        
+    changeLevel(levelIndex) {
+        // Guardar estado del jugador actual
+        const oldPlayer = this.player;
+        const powerUps = { ...oldPlayer.powerUps };
+    
+        // Crear nuevo nivel
         this.level = new BaseLevel(this.availableLevels[levelIndex], this.physics);
         this.player = this.level.player;
         this.actors=this.level.actors;
         this.enemies = this.level.enemies;
-
+        this.player.powerUps = powerUps;
         this.currentLevelIndex=levelIndex;
     }
 
     draw(ctx, scale) {
         this.background.draw(ctx);
         
-        // Draw only non-floor actors
+        // Dibujar juego
         for (let actor of this.actors) {
             if (actor.type !== 'floor') {
                 actor.draw(ctx, scale);
@@ -600,6 +778,13 @@ class Game {
         }
 
         this.player.draw(ctx, scale);
+        
+        // Dibujar HUD
+        ctx.fillStyle = '#5a2c0f';
+        ctx.fillRect(0, canvasHeight - 100, canvasWidth, 100);
+        
+        // Dibujar barra de power-ups
+        this.powerUpBar.draw(ctx);
     }
 }
 
@@ -637,19 +822,19 @@ const levelChars = {
           sheetCols: 18,
           startFrame: [0, 0]},
     "$": {objClass: Dash,
-          label: "collectible",
+          label: "powerup1",
           sprite: '../assets/PowerUps/Dash.png',
           rect: new Rect(0, 0, 32, 32),
           sheetCols: 3,
           startFrame: [0, 1]},
     "%": {objClass: Charged,
-          label: "collectible",
+          label: "powerup2",
           sprite: '../assets/PowerUps/Charged_Jump.png',
           rect: new Rect(0, 0, 32, 32),
           sheetCols: 3,
           startFrame: [0, 1]},
     "&": {objClass: Double,
-          label: "collectible",
+          label: "powerup3",
           sprite: '../assets/PowerUps/Double_jump.png',
           rect: new Rect(0, 0, 32, 32),
           sheetCols: 3,
@@ -709,7 +894,7 @@ function init() {
 
 function gameStart() {
     const physics = new BasePhysics();  // Create an instance of BasePhysics
-    // Register the game object, which creates all other objects
+    // a Register the game object, which creates all other objects
     game = new Game('playing', 0);  // Pass physics to Level
 
     setEventListeners();
@@ -731,6 +916,9 @@ function setEventListeners() {
         }
         if (event.key == 's') {
             game.player.crouch();
+        }
+        if (event.key == 'q') {
+            game.player.dash();
         }
     });
 
