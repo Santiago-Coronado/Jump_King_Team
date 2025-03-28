@@ -53,11 +53,14 @@ class GameObject {
         this.spriteRect = undefined;
     }
 
-    setSprite(imagePath, rect) {
-        this.spriteImage = new Image();
-        this.spriteImage.src = imagePath;
-        if (rect) {
+    setSprite(spritePath, rect) {
+        if (spritePath && rect) {
+            this.spriteImage = new Image();
+            this.spriteImage.src = spritePath;
             this.spriteRect = rect;
+        } else {
+            this.spriteImage = null;
+            this.spriteRect = null;
         }
     }
 
@@ -99,6 +102,7 @@ class AnimatedObject extends GameObject {
         this.sheetCols = 0;
 
         this.repeat = true;
+        this.animationComplete = false;
 
         // Delay between frames (in milliseconds)
         this.frameDuration = 100;
@@ -112,11 +116,18 @@ class AnimatedObject extends GameObject {
         this.repeat = repeat;
         this.totalTime = 0;
         this.frameDuration = duration;
+        this.animationComplete = false; // Reset flag when starting new animation
     }
 
     updateFrame(deltaTime) {
         this.totalTime += deltaTime;
         if (this.totalTime > this.frameDuration) {
+            // Check if animation should complete
+            if (!this.repeat && this.frame >= this.maxFrame) {
+                this.animationComplete = true;
+                return;
+            }
+
             // Loop around the animation frames if the animation is set to repeat
             // Otherwise stay on the last frame
             let restartFrame = (this.repeat ? this.minFrame : this.frame);

@@ -1,5 +1,5 @@
 /*
- * Enemy classes
+ * Enemy Classes
  */
 
 "use strict";
@@ -13,40 +13,83 @@ class BaseEnemy extends AnimatedObject {
         this.isAlive = true;
         this.isDying = false;
         this.isFacingRight = true;
-        
+        this.deathAnimationStarted = false; // Flag to track death animation start
+        this.animationComplete = false; // Flag to track animation completion
+
         // Collision properties
-        this.playerPushForce = new Vec(0.015, -0.01); // Default push force when hitting player
-        this.hitTimer = 0; // Cooldown for attacks
-        this.hitCooldown = 500; // Milliseconds between attacks
-        
-        // Animation properties
-        this.animationState = "idle"; // idle, move, attack, die
-        this.sheetCols = 6; // Default value, should be overridden
+        this.hitTimer = 0; //Cooldown for attacks
+        this.hitCooldown = 500; //Milliseconds between attacks
+        this.playerPushForce = new Vec(0.02, -0.01); // Default push force when hitting player
+
+        // Movement state tracking
+        this.movement = {
+            right: { status: false,
+                    axis: "x",
+                    sign: 1,
+                    repeat: true,
+                    duration: 100 },
+            left:  { status: false,
+                    axis: "x",
+                    sign: -1,
+                    repeat: true,
+                    duration: 100 }
+        };
     }
-    
+
     update(level, deltaTime) {
         if (!this.isAlive) return;
-        
+
         if (this.hitTimer > 0) {
             this.hitTimer -= deltaTime;
         }
-        
+
         if (this.isDying) {
             // Handle death animation
             this.updateFrame(deltaTime);
+            // Check if death animation is complete
+            if (this.frame >= this.maxFrame) {
+                this.animationComplete = true;
+            }
             return;
         }
-        
-        this.updateMovement(level, deltaTime);
-        this.updateFrame(deltaTime);
+
+        if (this.isAlive) {
+            this.updateMovement(level, deltaTime);
+            this.updateFrame(deltaTime);
+        }
     }
-    
+
     updateMovement(level, deltaTime) {
         // To be implemented by subclasses
     }
-    
+
+    startMovement(direction) {
+        const dirData = this.movement[direction];
+        dirData.status = true;
+        this.isFacingRight = direction === "right";
+        this.updateMovementState();
+    }
+
+    stopMovement(direction) {
+        const dirData = this.movement[direction];
+        dirData.status = false;
+        this.updateMovementState();
+    }
+
+    updateMovementState() {
+        // Calculate velocity based on movement status
+        let velocity = 0;
+        if (this.movement.right.status) {
+            velocity += this.walkSpeed;
+        }
+        if (this.movement.left.status) {
+            velocity -= this.walkSpeed; 
+        }
+        this.velocity.x = velocity;
+    }
+
     hitPlayer(player) {
-        // Push the player
+        // Push player away from enemy
         const pushDirection = player.position.x < this.position.x ? -1 : 1;
         player.velocity.x = this.playerPushForce.x * pushDirection;
         player.velocity.y = this.playerPushForce.y;
@@ -54,138 +97,473 @@ class BaseEnemy extends AnimatedObject {
         // Set cooldown
         this.hitTimer = this.hitCooldown;
     }
-    
+
     takeDamage() {
         this.health--;
         if (this.health <= 0) {
             this.die();
         }
     }
-    
+
     die() {
-        this.isAlive = false;
-        this.isDying = true;
-        // Set death animation
-        this.setAnimation(this.deathAnimationFrames[0], this.deathAnimationFrames[1], false, 100);
-    }
-    
-    setIdleAnimation() {
-        const idleFrame = this.idleAnimationFrames[this.isFacingRight ? 0 : 1];
-        this.setAnimation(idleFrame[0], idleFrame[1], true, 150);
-    }
-    
-    setMoveAnimation() {
-        const moveFrame = this.moveAnimationFrames[this.isFacingRight ? 0 : 1];
-        this.setAnimation(moveFrame[0], moveFrame[1], true, 100);
-    }
-    
-    setAttackAnimation() {
-        const attackFrame = this.attackAnimationFrames[this.isFacingRight ? 0 : 1];
-        this.setAnimation(attackFrame[0], attackFrame[1], false, 80);
-    }
-    
-    // Method to change direction when hitting a wall or edge
-    changeDirection() {
-        this.isFacingRight = !this.isFacingRight;
-        this.velocity.x = -this.velocity.x;
-        
-        if (this.animationState === "move") {
-            this.setMoveAnimation();
+        if (!this.deathAnimationStarted) {
+            this.isAlive = false;
+            this.isDying = true;
+            this.deathAnimationStarted = true;
+            this.velocity = new Vec(0, 0); // Stop movement
+            this.hitTimer = 0; // Disable hit interactions
+
+            const deathFrames = this.isFacingRight ? 
+            this.movement.death.right : 
+            this.movement.death.left;
+
+            // Set animation without callback
+            this.setAnimation(deathFrames[0], deathFrames[1], false, 150);
         }
+    }
+
+    setIdleAnimation() {
+        const idleFrames = this.isFacingRight ? 
+            this.movement.idle.right : 
+            this.movement.idle.left;
+        this.setAnimation(idleFrames[0], idleFrames[1], true, 150);
     }
 }
 
 class EnemySkeleton extends BaseEnemy {
-    constructor(color, width, height, x, y, physics) {
-        super(color, width, height, x, y, "skeleton", physics);
+    constructor(color, width, height, x, y, type ,physics) {
+        super(color, width, height, x, y, "skeleton");
         this.walkSpeed = 0.006;
-        this.velocity.x = this.walkSpeed;
+        this.physics = physics;
         this.attackRange = 2; // Distance at which skeleton will attack
         this.attackTimer = 0;
-        this.attackDuration = 500; // Duration of attack animation
+        this.attackDuration = 400; // Duration of attack animation
         this.attackCooldown = 1000; // Time between attacks
-        
-        // Configure animations
-        this.sheetCols = 18;
-        
-        // Animation frames [start, end] for right and left facing
-        this.idleAnimationFrames = [[0, 0], [18, 18]]; // [right, left]
-        this.moveAnimationFrames = [[1, 12], [19, 30]]; // [right, left]
-        this.attackAnimationFrames = [[53, 70], [35, 52]]; // [right, left]
-        this.deathAnimationFrames = [[71, 85],[86, 99]]; // [right, left]
-        
+        this.state = "moving";
+        this.velocity = new Vec(this.walkSpeed, 0);
+        this.idleTimer = 0; // Time spent idle
+        this.idleDuration = 1000; // Duration to stay idle before moving
+
+        // Get sprite configurations from levelChars
+        const spriteConfigs = levelChars["S"].sprites;
+
+        // Load all spritesheets
+        this.sprites = {
+            move: {
+                image: new Image(),
+                rect: new Rect(0, 0, 22, 33),
+                sheetCols: 13,
+                path: '../assets/Skeleton/Skeleton_Walk_Assets.png',
+                scale: { width: 2, height: 2.5 } // Scale for the move sprite
+            },
+            attack: {
+                image: new Image(),
+                rect: new Rect(0, 0, 43, 37),
+                sheetCols: 18,
+                path: '../assets/Skeleton/Skeleton_Attack_Assets.png',
+                scale: { width: 3.5, height: 2.8 } // Scale for the attack sprite
+            },
+            death: {
+                image: new Image(),
+                rect: new Rect(0, 0, 33, 32),
+                sheetCols: 15,
+                path: '../assets/Skeleton/Skeleton_Dead_Assets.png',
+                scale: { width: 2.5, height: 2.4 } // Scale for the death sprite
+            }
+        };
+
+        // loading state tracking
+        this.spritesLoaded = {
+            move: false,
+            attack: false,
+            death: false
+        };
+
+        // Load all images with proper loading state tracking
+        Object.entries(this.sprites).forEach(([key, sprite]) => {
+            sprite.image.onload = () => {
+                console.log(`Loaded sprite: ${sprite.path}`);
+                this.spritesLoaded[key] = true;
+                
+                // Initialize sprite properties when move sprite is loaded
+                if (key === 'move') {
+                    this.currentSprite = 'move';
+                    this.sprite = sprite.image;
+                    this.spriteRect = sprite.rect;
+                    this.sheetCols = sprite.sheetCols;
+                    this.setMoveAnimation();
+                }
+            };
+            sprite.image.onerror = (err) => {
+                console.error(`Failed to load sprite: ${sprite.path}`, err);
+            };
+            sprite.image.src = sprite.path;
+        });
+
+        // Set initial sprite
+        this.currentSprite = 'move';
+        this.sprite = this.sprites.move.image;
+        this.spriteRect = this.sprites.move.rect;
+        this.sheetCols = this.sprites.move.sheetCols;
+
+
+         // Define base size for consistent rendering
+         this.baseSize = {
+            width: 2,    // Base width in game units
+            height: 2.5  // Base height in game units
+        };
+
+        // Define sprite offsets for each state to center the animations
+        this.spriteOffsets = {
+            move: { x: 0, y: 0 },
+            attack: { x: -0.15, y: -0.15 },  // Adjust these values to center the attack animation
+            death: { x: -0.1, y: -0.1 }       // Adjust these values to center the death animation
+        };
+
+        // Define movement animations with updated frame numbers
+        this.movement = {
+            right: { 
+                status: false,
+                axis: "x",
+                sign: 1,
+                repeat: true,
+                duration: 80,
+                moveFrames: [1, 12],
+                idleFrames: [0]
+            },
+            left: {
+                status: false,
+                axis: "x",
+                sign: -1,
+                repeat: true,
+                duration: 80,
+                moveFrames: [13, 24],
+                idleFrames: [13]
+            },
+            attack: {
+                status: false,
+                repeat: false,
+                duration: 80,
+                right: [0, 17],
+                left: [18, 36]
+            },
+            death: {
+                right: [0, 14],
+                left: [15, 30]
+            },
+            idle: {
+                right: [0, 0],
+                left: [13, 13]
+            }
+        };
         this.setMoveAnimation();
-        this.animationState = "move";
     }
+
+    changeSprite(state) {
+        if (this.currentSprite !== state && this.spritesLoaded[state]) {
+            this.currentSprite = state;
+            this.sprite = this.sprites[state].image;
+            this.spriteRect = this.sprites[state].rect;
+            this.sheetCols = this.sprites[state].sheetCols;
+        }
+    }
+
+    draw(ctx, scale) {
+        if (!this.spritesLoaded[this.currentSprite]) {
+            return; // Don't draw if current sprite isn't loaded
+        }
+
+        ctx.save();
+        const spriteWidth = this.spriteRect.width;
+        const spriteHeight = this.spriteRect.height;
+        
+        // Calculate sprite position based on current frame
+        const sx = (this.frame % this.sheetCols) * spriteWidth;
+        const sy = Math.floor(this.frame / this.sheetCols) * spriteHeight;
+        
+        // Get offset and scale for current state
+        const offset = this.spriteOffsets[this.currentSprite] || { x: 0, y: 0 };
+        const spriteScale = this.sprites[this.currentSprite].scale;
+        
+        // Calculate drawing position with offset
+        const drawX = (this.position.x + offset.x) * scale;
+        const drawY = (this.position.y + offset.y) * scale;
+        
+        // Draw the sprite using the state-specific scale
+        ctx.drawImage(this.sprite,
+            sx, sy, spriteWidth, spriteHeight,
+            drawX, drawY,
+            spriteScale.width * scale,
+            spriteScale.height * scale);
+        
+        ctx.restore();
+    }
+
+    update(level, deltaTime) {
+        if (!this.spritesLoaded[this.currentSprite]) {
+            return;
+        }
+
+        if (this.isDying) {
+            // Handle death animation
+            this.updateFrame(deltaTime);
+            // Check if death animation is complete
+            if (this.isFacingRight) {
+                if (this.frame >= this.maxFrame) {
+                    this.animationComplete = true;
+                }
+            } else {
+                if (this.frame <= this.maxFrame) {
+                    this.animationComplete = true;
+                }
+            }
+            // Still apply gravity during death animation
+            this.updateMovement(level, deltaTime);
+            return;
+        }
     
+        if (this.hitTimer > 0) {
+            this.hitTimer -= deltaTime;
+        }
+    
+        if (this.isAlive) {
+            this.updateMovement(level, deltaTime);
+            this.updateFrame(deltaTime);
+        }
+    }
+
+    updateFrame(deltaTime) {
+        // Add safety check before updating frame
+        if (!this.spritesLoaded[this.currentSprite]) {
+            return;
+        }
+        
+        // Call parent's updateFrame method
+        super.updateFrame(deltaTime);
+    }
+
     updateMovement(level, deltaTime) {
         // Apply gravity
         this.velocity.y += this.physics.gravity * deltaTime;
-        
-        // Move horizontally
-        let newXPosition = this.position.plus(new Vec(this.velocity.x * deltaTime, 0));
-        
-        // Check if about to hit a wall
-        if (level.contact(newXPosition, this.size, 'wall')) {
-            this.changeDirection();
-            return; // Skip the rest of the update for this frame
-        }
-        
-        // Check if about to walk off an edge
-        // Look ahead in the direction the skeleton is moving
-        const edgeCheckX = newXPosition.x + (this.isFacingRight ? this.size.x : 0);
-        const edgeCheckY = newXPosition.y + this.size.y + 0.1; // Check just below feet
-        
-        const hasFloorAhead = level.contact(
-            new Vec(edgeCheckX, edgeCheckY),
-            new Vec(0.1, 0.1),
-            'wall'
-        );
-        
-        if (!hasFloorAhead) {
-            this.changeDirection();
-            return; // Skip the rest of the update for this frame
-        }
-        
-        // If we passed both checks, move to the new position
-        this.position = newXPosition;
-        
-        // Move vertically (gravity)
-        let newYPosition = this.position.plus(new Vec(0, this.velocity.y * deltaTime));
-        if (!level.contact(newYPosition, this.size, 'wall')) {
-            this.position = newYPosition;
-        } else {
-            // Stop falling
-            this.velocity.y = 0;
-            this.position.y = Math.ceil(this.position.y);
-        }
-        
-        // Check for player proximity to attack
-        const player = level.player;
-        const distance = Math.abs(player.position.x - this.position.x);
-        
-        // If player is within attack range and cooldown is over
-        if (distance < this.attackRange && this.attackTimer <= 0 && 
-            Math.abs(player.position.y - this.position.y) < 1) {
-            this.isFacingRight = player.position.x > this.position.x;
-            this.attack();
-        }
-        
-        if (this.attackTimer > 0) {
+
+        if (this.isDying) {
+            // Check vertical collision
+            let newYPosition = this.position.plus(new Vec(0, this.velocity.y * deltaTime));
+            if (!level.contact(newYPosition, this.size, 'wall')) {
+                this.position = newYPosition;
+            } else {
+                this.velocity.y = 0;
+                this.position.y = Math.ceil(this.position.y);
+            }
+            return;
+        }    
+    
+        // Check state transitions and execute state actions
+        if (this.state === "moving") {
+            if (this.canAttack(level)) {
+                this.changeState("attacking");
+            } else {
+                // Moving state actions
+                let newXPosition = this.position.plus(new Vec(this.velocity.x * deltaTime, 0));
+                const wallCollision = level.contact(
+                    new Vec(
+                        newXPosition.x + (this.isFacingRight ? this.size.x : 0), 
+                        this.position.y + (this.size.y * 0.2)
+                    ),
+                    new Vec(0.2, this.size.y * 0.6),
+                    'wall'
+                );
+    
+                const groundAhead = this.hasGroundAhead(level, this.position);
+                
+                /* console.log({
+                    currentX: this.position.x,
+                    attemptedX: newXPosition.x,
+                    wallCollision: wallCollision,
+                    hasGround: groundAhead,
+                    size: this.size,
+                    deltaTime: deltaTime
+                }); */
+
+                if (wallCollision || !groundAhead) {
+                    this.position = this.position.plus(new Vec(this.isFacingRight ? 1 : -1, 0));
+                    this.changeDirection();
+                } else {
+                    this.position = newXPosition;
+                }
+            }
+        } 
+        else if (this.state === "attacking") {
             this.attackTimer -= deltaTime;
-            if (this.attackTimer <= 0 && this.animationState === "attack") {
+            this.dealAttackDamage(level);
+            if (this.attackTimer <= 0) {
+                this.changeState("idle");
+            }
+        } 
+        else if (this.state === "idle") {
+            if (this.canAttack(level)) {
+                this.changeState("attacking");
+            } else {
+                this.idleTimer += deltaTime;
+                if (this.idleTimer >= this.idleDuration) {
+                    this.changeState("moving");
+                }
+            }
+        }
+        else if (this.state === "death") {
+            if (!this.animationComplete) {
+                this.updateFrame(deltaTime);
+            }
+        }
+        //console.log("Skeleton state:", this.state);
+        //console.log("Velocity:", this.velocity);
+    }
+    
+    changeState(newState) {
+        this.state = newState;
+    
+        switch (newState) {
+            case "moving":
+                this.changeSprite('move');
+                this.velocity.x = this.isFacingRight ? this.walkSpeed : -this.walkSpeed;
                 this.setMoveAnimation();
-                this.animationState = "move";
-                this.velocity.x = this.walkSpeed * (this.isFacingRight ? 1 : -1);
+                break;
+            case "attacking":
+                this.changeSprite('attack');
+                this.velocity.x = 0;
+                const attackFrames = this.isFacingRight ? 
+                    this.movement.attack.right : 
+                    this.movement.attack.left;
+                this.setAnimation(attackFrames[0], attackFrames[1], false, 80);
+                this.attackTimer = this.attackDuration + this.attackCooldown;
+                break;
+            case "idle":
+                this.changeSprite('move');
+                this.velocity.x = 0;
+                this.idleTimer = 0;
+                const idleFrames = this.isFacingRight ? 
+                    this.movement.idle.right : 
+                    this.movement.idle.left;
+                this.setAnimation(idleFrames[0], idleFrames[1], true, 150);
+                break;
+                case "death":
+                this.changeSprite('death');
+                this.velocity = new Vec(0, 0);
+                const deathFrames = this.isFacingRight ? 
+                    this.movement.death.right : 
+                    this.movement.death.left;
+                this.setAnimation(deathFrames[0], deathFrames[1], false, 150);
+                break;
+        }
+    }
+
+    // attack damage method
+    dealAttackDamage(level) {
+        if (this.state === "attacking" && level.player) {
+            const distance = Math.abs(level.player.position.x - this.position.x);
+            const attackProgress = (this.attackDuration - this.attackTimer) / this.attackDuration;
+            if (distance < this.attackRange && attackProgress > 0.7) {
+                this.hitPlayer(level.player);
             }
         }
     }
-    
-    attack() {
-        this.velocity.x = 0; // Stop while attacking
-        this.setAttackAnimation();
-        this.animationState = "attack";
-        this.attackTimer = this.attackDuration + this.attackCooldown;
+
+    canAttack(level) {
+        if (!level.player) return false;
+        
+        const distance = Math.abs(level.player.position.x - this.position.x);
+        const verticalDistance = Math.abs(level.player.position.y - this.position.y);
+
+        /* console.log("Attack Check:", {
+            distance,
+            verticalDistance,
+            attackRange: this.attackRange,
+            attackTimer: this.attackTimer,
+            willAttack: distance < this.attackRange && 
+                this.attackTimer <= 0 && 
+                verticalDistance < 3
+        }); */
+
+        return distance < this.attackRange && 
+               this.attackTimer <= 0 && 
+               verticalDistance < 2;
+    }
+
+    hasGroundAhead(level, position) {
+        // Check further ahead in the direction of movement
+        const lookAhead = this.isFacingRight ? 1 : -0.5;
+        const edgeCheckX = position.x + (this.size.x * 2 * lookAhead); 
+        const groundCheckWidth = 0.8; 
+
+        // Check for ground below the next position with multiple points
+        const groundCheckPoints = [
+            // Check near the edge
+            level.contact(
+                new Vec(edgeCheckX, position.y + this.size.y + 0.1),
+                new Vec(groundCheckWidth, 0.2),
+                'wall'
+            ),
+            // Check a bit before the edge for more reliable detection
+            level.contact(
+                new Vec(edgeCheckX - (lookAhead * this.size.x/2), position.y + this.size.y + 0.1),
+                new Vec(groundCheckWidth, 0.2),
+                'wall'
+            )
+        ];
+
+        // Return true if there's ground at any check point
+        return groundCheckPoints.some(hasGround => hasGround);
+    }
+
+    changeDirection() {
+        this.isFacingRight = !this.isFacingRight;
+        this.velocity.x = this.isFacingRight ? this.walkSpeed : -this.walkSpeed;
+        const moveData = this.isFacingRight ? 
+                    this.movement.right : 
+                    this.movement.left;
+        this.setAnimation(moveData.moveFrames[0], moveData.moveFrames[1], true, moveData.duration);
+    }
+
+    setMoveAnimation() {
+        const moveData = this.isFacingRight ? 
+            this.movement.right : 
+            this.movement.left;
+        this.setAnimation(moveData.moveFrames[0], moveData.moveFrames[1], true, moveData.duration);
+    }
+
+    die() {
+        if (!this.deathAnimationStarted) {
+            this.isAlive = false;
+            this.isDying = true;
+            this.deathAnimationStarted = true;
+            this.velocity = new Vec(0, 0);
+            this.hitTimer = 0;
+
+            this.changeSprite('death');
+            
+            // Get death animation frames based on direction
+            if (this.isFacingRight) {
+                // Normal death animation for right-facing
+                this.frame = this.movement.death.right[0];  // Start from frame 0
+                this.maxFrame = this.movement.death.right[1];  // End at frame 14
+                this.frameDuration = 100;
+            } else {
+                // Reversed death animation for left-facing
+                this.frame = this.movement.death.left[1];  // Start from frame 30
+                this.maxFrame = this.movement.death.left[0];  // End at frame 15
+                this.frameDuration = 100;
+                // Create custom update function for reversed animation
+                this.updateFrame = (deltaTime) => {
+                    this.totalTime += deltaTime;
+                    if (this.totalTime > this.frameDuration) {
+                        this.frame--;  // Decrement frame number
+                        this.spriteRect.x = this.frame % this.sheetCols;
+                        this.spriteRect.y = Math.floor(this.frame / this.sheetCols);
+                        this.totalTime = 0;
+                    }
+                };
+            }
+        }
     }
 }
 
@@ -199,123 +577,210 @@ class EnemyDemon extends BaseEnemy {
         this.startY = y; // Initial Y position to oscillate around
         this.time = 0; // Time counter for oscillation
         
-        // Higher push force because it's a stronger enemy
+        // Push force when player hits demon
         this.playerPushForce = new Vec(0.02, -0.015);
-        
         // Configure animations
         this.sheetCols = 7;
-        
-        // Animation frames [start, end] for right and left facing
-        this.idleAnimationFrames = [[0, 3], [7, 10]]; // [right, left]
-        this.moveAnimationFrames = [[0, 3], [7, 10]]; // Same as idle for flying
-        this.deathAnimationFrames = [[27, 33],[34, 40]]; // [right, left]
-        
+
+        // Define movement animations 
+        this.movement = {
+            right: { status: false,
+                    axis: "x",
+                    sign: 1,
+                    repeat: true,
+                    duration: 100,
+                    moveFrames: [0, 3],
+                    idleFrames: [0, 3] },
+            left:  { status: false,
+                    axis: "x",
+                    sign: -1,
+                    repeat: true,
+                    duration: 100,
+                    moveFrames: [7, 10],
+                    idleFrames: [7, 10] },
+            death: { right: [27, 33],
+                    left: [34, 40],
+                    duration: 50 },
+            idle:  { right: [0, 3],
+                    left: [7, 10] }
+        };
+
         this.setMoveAnimation();
-        this.animationState = "move";
     }
     
-    updateMovement(level, deltaTime) {
-        this.time += deltaTime;
-        
-        // Horizontal movement
-        let newXPosition = this.position.plus(new Vec(this.velocity.x * deltaTime, 0));
-        
-        // Check if about to hit a wall
-        if (level.contact(newXPosition, this.size, 'wall')) {
-            this.changeDirection();
-        } else {
-            this.position = newXPosition;
+    update(level, deltaTime) {
+        if (!this.isAlive) {
+            if (this.isDying) {
+                // Handle death animation
+                this.updateFrame(deltaTime);
+                //console.log("Current frame during death:", this.currentFrame);
+                // Check if death animation is complete
+                if (this.currentFrame >= this.maxFrame) {
+                    //console.log("Death animation complete");
+                    this.animationComplete = true;
+                    this.isDying = false;
+                }
+            }
+            return;
         }
-        
-        // Sinusoidal vertical movement
-        this.position.y = this.startY + Math.sin(this.time * this.frequency) * this.amplitude;
+    
+        if (this.hitTimer > 0) {
+            this.hitTimer -= deltaTime;
+        }
+    
+        this.updateMovement(level, deltaTime);
+        this.updateFrame(deltaTime);
+    }
+
+    updateMovement(level, deltaTime) {
+        if (!this.isDying) {
+            this.time += deltaTime;
+            // Horizontal movement
+            let newXPosition = this.position.plus(new Vec(this.velocity.x * deltaTime, 0));
+            // Check if about to hit a wall
+            if (level.contact(newXPosition, this.size, 'wall')) {
+                this.changeDirection();
+            } else {
+                this.position = newXPosition;
+            }
+            
+            // Sinusoidal vertical movement
+            this.position.y = this.startY + Math.sin(this.time * this.frequency) * this.amplitude;
+        }
+    }
+
+    changeDirection() {
+        // Method to change direction when hitting a wall or edge
+        this.isFacingRight = !this.isFacingRight;
+        this.velocity.x = -this.velocity.x;
+        this.setMoveAnimation();
+    }
+
+    setMoveAnimation() {
+        const moveData = this.isFacingRight ? 
+            this.movement.right : 
+            this.movement.left;
+        this.setAnimation(moveData.moveFrames[0], moveData.moveFrames[1], true, moveData.duration);
+    }
+
+    // In EnemyDemon's takeDamage method (add this if it's missing)
+    takeDamage() {
+        //console.log("Demon taking damage");
+        this.health--;
+        if (this.health <= 0) {
+            //console.log("Demon dying");
+            this.die();
+        }
+    }
+
+    die() {
+        if (!this.deathAnimationStarted) {
+            //console.log("Starting demon death animation");
+            this.isAlive = false;
+            this.isDying = true;
+            this.deathAnimationStarted = true;
+            this.velocity = new Vec(0, 0);
+            this.hitTimer = 0;
+    
+            // Get the correct death animation frames based on direction
+            const deathFrames = this.isFacingRight ? 
+                this.movement.death.right : 
+                this.movement.death.left;
+                
+            //console.log("Death frames:", deathFrames);
+            
+            // Set the death animation with proper frame tracking
+            this.frame = deathFrames[0];
+            this.maxFrame = deathFrames[1];
+            this.setAnimation(deathFrames[0], deathFrames[1], false, 150);
+            
+            //console.log("Death animation initialized. Current frame:", this.frame, "Max frame:", this.maxFrame);
+        }
+    }
+
+    hitPlayer(player) {
+        // Only hit the player if the demon is alive and not dying
+        if (!this.isDying && !this.deathAnimationStarted && this.hitTimer <= 0) {
+            const pushDirection = player.position.x < this.position.x ? -1 : 1;
+            player.velocity.x = this.playerPushForce.x * pushDirection;
+            player.velocity.y = this.playerPushForce.y;
+            this.hitTimer = this.hitCooldown;
+        }
     }
 }
 
 class EnemyJumper extends BaseEnemy {
-    constructor(color, width, height, x, y, physics) {
-        super(color, width, height, x, y, "jumper", physics);
-        this.jumpSpeed = 0.03;
-        this.jumpCooldown = 500; // Minimum time between jumps
+    constructor(_color, width, height, x, y, _type, physics) {
+        super("red", width, height, x, y, "jumper");
+        this.physics = physics;
+        this.velocity = new Vec(0, 0);
         this.jumpTimer = 0;
-        this.playerJumpDetectionRange = 5; // Range to detect player jump
+        this.jumpInterval = 2000; // Backup timer in case player doesn't jump
+        this.isAlive = true;
+        this.isDying = false;
+        this.health = 1;
+        this.lastPlayerVelocityY = 0; // Track player's previous vertical velocity
 
-        // Configure animations
-        this.sheetCols = 15;
-
-        // Animation frames [start, end] for right and left facing
-        this.idleAnimationFrames = [[0, 5], [15, 20]]; // [right, left]
-        this.jumpAnimationFrames = [[30, 35], [45, 50]]; // [right, left]
-        this.deathAnimationFrames = [[90, 104], [105, 119]]; // [right, left]
-
-        this.setIdleAnimation();
+        this.movement = {
+            death: { 
+                right: [90, 104], 
+                left: [105, 120]   
+            },
+            idle: {
+                right: [0, 5],
+                left: [6, 11]
+            }
+        };
     }
 
-    updateMovement(level, deltaTime) {
-        // check if level and player exist
-        if (!level || !level.player) {
-            console.warn('Level or player not properly initialized');
-            return;
-        }
-
-        // Apply gravity
-        this.velocity.y += this.physics.gravity * deltaTime;
-
-        // Update jump timer
-        if (this.jumpTimer > 0) {
-            this.jumpTimer -= deltaTime;
-        }
-
-        // Move vertically (gravity or jump)
-        let newYPosition = this.position.plus(new Vec(0, this.velocity.y * deltaTime));
-        if (!level.contact(newYPosition, this.size, 'wall')) {
-            this.position = newYPosition;
-
-            // If we're moving upward, we're jumping
-            if (this.velocity.y < 0 && this.animationState !== "jump") {
-                this.setJumpAnimation();
-                this.animationState = "jump";
+    update(level, deltaTime) {
+        if (!this.isDying) {
+            // Check if player exists and has just started jumping
+            if (level.player) {
+                const playerJustJumped = this.lastPlayerVelocityY >= 0 && level.player.velocity.y < 0;
+                if (playerJustJumped) {
+                    this.velocity.y = -0.02; // Jump when player jumps
+                    this.jumpTimer = 0;
+                }
+                this.lastPlayerVelocityY = level.player.velocity.y;
             }
-        } else {
-            // We've hit ground
-            this.velocity.y = 0;
-            this.position.y = Math.floor(this.position.y);
 
-            // If we were jumping, now we're idle
-            if (this.animationState === "jump") {
-                this.setIdleAnimation();
-                this.animationState = "idle";
+            // Backup jumping behavior if player hasn't jumped in a while 
+            this.jumpTimer += deltaTime;
+            if (this.jumpTimer >= this.jumpInterval) {
+                this.velocity.y = -0.02; // Jump strength
+                this.jumpTimer = 0;
+            }
+
+            // Apply gravity
+            this.velocity.y += this.physics.gravity * deltaTime;
+            
+            // Vertical movement
+            let newPos = this.position.plus(new Vec(0, this.velocity.y * deltaTime));
+            if (!level.contact(newPos, this.size, 'wall')) {
+                this.position = newPos;
+            } else {
+                this.velocity.y = 0;
             }
         }
 
-        // Check if player jumped recently and we're in range
-        const player = level.player;
-        // Safe check for player properties
-        if (player && player.isJumping) {
-            const distance = Math.abs(player.position.x - this.position.x);
+        this.updateFrame(deltaTime);
+    }
 
-            if (distance < this.playerJumpDetectionRange &&
-                this.jumpTimer <= 0 &&
-                this.animationState === "idle") {
-                this.jump(level);
+    takeDamage() {
+        if (!this.isDying) {
+            this.health--;
+            if (this.health <= 0) {
+                this.die();
             }
         }
     }
 
-    jump(level) {
-        if (!level || !level.player) return;
-
-        this.velocity.y = -this.jumpSpeed;
-        this.jumpTimer = this.jumpCooldown;
-        this.setJumpAnimation();
-        this.animationState = "jump";
-
-        // Face towards the player
-        this.isFacingRight = level.player.position.x > this.position.x;
-    }
-
-    setJumpAnimation() {
-        const jumpFrame = this.jumpAnimationFrames[this.isFacingRight ? 0 : 1];
-        this.setAnimation(jumpFrame[0], jumpFrame[1], false, 200);
+    hitPlayer(player) {
+        if (!this.isDying) {
+            const pushDirection = player.position.x < this.position.x ? -1 : 1;
+            player.velocity.x = 0.02 * pushDirection; // Stronger horizontal push
+            player.velocity.y = -0.015; // Consistent vertical push
+        }
     }
 }
