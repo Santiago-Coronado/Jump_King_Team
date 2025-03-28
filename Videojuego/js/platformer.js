@@ -1,8 +1,8 @@
 /*
- * Simple top down adventure game
- *
- * Gilberto Echeverria
- * 2025-02-05
+ * Knight's Fall
+ * Enrique Antonio Pires A01424547
+ * Santiago Coronado A01785558
+ * Juan de Dios Gastelum A01784523
  */
 
 "use strict";
@@ -82,9 +82,9 @@ class Player extends AnimatedObject {
                       idleFrames: [17] },
             jump:   { status: false,
                       repeat: false,
-                      duration: 100,
+                      duration: 80,
                       right: [5, 6],
-                      left: [11, 11] },
+                      left: [10, 11] },
             crouch: { status: false,
                       repeat: false,
                       duration: 300,
@@ -212,69 +212,6 @@ class Player extends AnimatedObject {
         this.updateFrame(deltaTime);
     }
 
-    /*
-    startMovement(direction) {
-        const dirData = this.movement[direction];
-        this.isFacingRight = direction === "right";
-
-        // Get opposite direction
-        const oppositeDirection = direction === "right" ? "left" : "right";
-        const oppositeData = this.movement[oppositeDirection];
-        
-        // Set the current direction status to true
-        dirData.status = true;
-        
-        // Set the velocity based on active directions
-        this.updateMovementVelocity();
-        
-        // Only update animation if not crouching
-        if (!this.isCrouching) {
-            // Extract min and max frames from the moveFrames array
-            const minFrame = Math.min(...dirData.moveFrames);
-            const maxFrame = Math.max(...dirData.moveFrames);
-            
-            this.frame = minFrame; // Reset to first frame
-            this.setAnimation(minFrame, maxFrame, dirData.repeat, dirData.duration);
-
-            // Force update to the sprite
-            this.spriteRect.x = this.frame % this.sheetCols;
-            this.spriteRect.y = Math.floor(this.frame / this.sheetCols);
-        }
-    }
-    */
-
-    
-
-    /*
-    stopMovement(direction) {
-        const dirData = this.movement[direction];
-        dirData.status = false;
-        
-        // Update velocity based on remaining active directions
-        this.updateMovementVelocity();
-
-        // Only update to idle animation if no movement keys are pressed
-        const leftData = this.movement["left"];
-        const rightData = this.movement["right"];
-        
-        if (!leftData.status && !rightData.status && !this.isJumping) {
-            // Set idle animation based on facing direction
-            if (this.isFacingRight) {
-                const idleFrame = rightData.idleFrames[0];
-                this.setAnimation(idleFrame, idleFrame, false, 100);
-            } else {
-                const idleFrame = leftData.idleFrames[0];
-                this.setAnimation(idleFrame, idleFrame, false, 100);
-            }
-
-            // Force update of sprite
-            this.spriteRect.x = this.frame % this.sheetCols;
-            this.spriteRect.y = Math.floor(this.frame / this.sheetCols);
-        }
-    }
-        */
-
-
     // Method that calculates velocity based on active movement directions (this is made so that the character doesn't get stuck when pressing
     // many keys in quick succession)
     updateMovementVelocity() {
@@ -317,12 +254,11 @@ class Player extends AnimatedObject {
                 this.canDoubleJump = true;
             }
             const jumpData = this.movement.jump;
-             // Get frames for the scurrent direction
+
+            // Get frames for the scurrent direction
             const jumpFrames = this.isFacingRight ? jumpData.right : jumpData.left;
             const minFrame = Math.min(...jumpFrames);
             const maxFrame = Math.max(...jumpFrames);
-        
-            // Set animation with those frames
             this.setAnimation(minFrame, maxFrame, jumpData.repeat, jumpData.duration);
         }
         else if (this.canDoubleJump){
@@ -580,6 +516,7 @@ class BaseLevel {
         this.height = rows.length;
         this.width = rows[0].length;
         this.actors = [];
+        this.enemies = [];	// An array to store the enemies
 
         // Fill the rows array with a label for the type of element in the cell
         // Most cells are 'empty', except for the 'wall'
@@ -651,6 +588,37 @@ class BaseLevel {
                     cellType = "wall";
                 } else if (actor.type == "floor") {
                     cellType = "floor";
+                } else if (actor.type == "skeleton") {
+                    this.addBackgroundFloor(x, y);
+                    actor.size = new Vec(2, 2.5);
+                    actor.position = actor.position.plus(new Vec(0, -1));
+                    actor.setSprite(item.sprite, item.rect);
+                    actor.sheetCols = item.sheetCols;
+                    actor.velocity = new Vec(actor.walkSpeed, 0);
+                    actor.setMoveAnimation();
+                    this.enemies.push(actor);
+                    cellType = "empty";
+                } else if (actor.type == "demon") {
+                    this.addBackgroundFloor(x, y);
+                    actor.size = new Vec(3.25, 3.25);
+                    actor.setSprite(item.sprite, item.rect);
+                    actor.sheetCols = item.sheetCols;
+                    actor.flySpeed = 0.008;
+                    actor.velocity = new Vec(actor.flySpeed, 0);
+                    actor.startY = y;
+                    actor.setMoveAnimation();
+                    this.enemies.push(actor);
+                    cellType = "empty";
+                } else if (actor.type == "jumper") {
+                    this.addBackgroundFloor(x, y);
+                    actor.size = new Vec(4.5, 3);
+                    actor.position = actor.position.plus(new Vec(0, -2));
+                    actor.setSprite(item.sprite, item.rect);
+                    actor.sheetCols = item.sheetCols;
+                    actor.velocity = new Vec(0, 0);
+                    actor.setIdleAnimation();
+                    this.enemies.push(actor);
+                    cellType = "empty";
                 }
                 return cellType;
             });
@@ -663,8 +631,6 @@ class BaseLevel {
         floorActor.setSprite(floor.sprite, floor.rect);
         this.actors.push(floorActor);
     }
-
-
 
     // Detect when the player touches a wall
     contact(playerPos, playerSize, type) {
@@ -705,6 +671,7 @@ class Game {
 
         this.player = this.level.player;
         this.actors = this.level.actors;
+        this.enemies = this.level.enemies;
 
         this.background = new Background('../assets/Castle1.png', canvasWidth, canvasHeight);
         this.powerUpBar = new PowerUpBar();
@@ -718,6 +685,10 @@ class Game {
 
         for (let actor of this.actors) {
             actor.update(this.level, deltaTime);
+        }
+
+        for (let enemy of this.enemies) {
+            enemy.update(this.level, deltaTime);
         }
 
         this.powerUpBar.updateFrame(
@@ -746,6 +717,36 @@ class Game {
                 }
             }
         }
+
+        // Check collisions with enemies
+        for (let enemy of this.enemies) {
+            if (overlapRectangles(this.player, enemy)) {
+                if (enemy.isDying || enemy.deathAnimationStarted) continue;
+
+                const playerBottom = this.player.position.y + this.player.size.y;
+                const enemyTop = enemy.position.y;
+                
+                if (this.player.velocity.y > 0 && playerBottom < enemyTop + 0.3) {
+                    // Player is stomping the enemy
+                    if (enemy.takeDamage) {
+                        enemy.takeDamage();
+                        this.player.velocity.y = -0.03;
+                    }
+                } else if (enemy.hitTimer <= 0) {
+                    // Player is hit by enemy
+                    if (enemy.hitPlayer) {
+                        enemy.hitPlayer(this.player);
+                    }
+                }
+            }
+        }
+        // Remove enemies that have finished their death animation
+        this.enemies = this.enemies.filter(enemy => {
+            if (enemy.isDying && enemy.animationComplete) {
+                return false;
+            }
+            return true;
+        });
     }
 
     changeLevel(levelIndex) {
@@ -756,11 +757,10 @@ class Game {
         // Crear nuevo nivel
         this.level = new BaseLevel(this.availableLevels[levelIndex], this.physics);
         this.player = this.level.player;
-        this.actors = this.level.actors;
-        this.currentLevelIndex = levelIndex;
-    
-        // Restaurar power-ups
+        this.actors=this.level.actors;
+        this.enemies = this.level.enemies;
         this.player.powerUps = powerUps;
+        this.currentLevelIndex=levelIndex;
     }
 
     draw(ctx, scale) {
@@ -772,6 +772,11 @@ class Game {
                 actor.draw(ctx, scale);
             }
         }
+
+        for (let enemy of this.enemies) {
+            enemy.draw(ctx, scale);
+        }
+
         this.player.draw(ctx, scale);
         
         // Dibujar HUD
@@ -804,8 +809,8 @@ const levelChars = {
     // Rect defined as offset from the first tile, and size of the tiles
     ".": {objClass: GameObject,
           label: "floor",
-          sprite: 'none',
-          rect: new Rect(12, 17, 32, 32)},
+          sprite: null,
+          rect: null},
     "#": {objClass: GameObject,
           label: "wall",
           sprite: '../assets/BlueWalls.png',
@@ -834,6 +839,38 @@ const levelChars = {
           rect: new Rect(0, 0, 32, 32),
           sheetCols: 3,
           startFrame: [0, 1]},
+    "S": {objClass: EnemySkeleton,
+          label: "skeleton",
+          sprites: {
+            move: {
+                path: '../assets/Skeleton/Skeleton_Walk_Assets.png',
+                rect: new Rect(0, 0, 22, 33),
+                sheetCols: 18
+            },
+            attack: {
+                path: '../assets/Skeleton/Skeleton_Attack_Assets.png',
+                rect: new Rect(0, 0, 43, 37),  
+                sheetCols: 18
+            },
+            death: {
+                path: '../assets/Skeleton/Skeleton_Dead_Assets.png',
+                rect: new Rect(0, 0, 33, 32),  
+                sheetCols: 15
+            }
+        },
+          startFrame: [0, 0]},
+    "D": {objClass: EnemyDemon,
+          label: "demon",
+          sprite: '../assets/Demon/Demon_Assets.png',
+          rect: new Rect(0, 0, 81, 71),
+          sheetCols: 7,
+          startFrame: [0, 0]},
+    "J": {objClass: EnemyJumper,
+          label: "jumper",
+          sprite: '../assets/Jumper/Jumper_Assets.png',
+          rect: new Rect(0, 0, 64, 32),
+          sheetCols: 15,
+          startFrame: [0, 0]},
 };
 
 
