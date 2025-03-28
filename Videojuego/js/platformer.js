@@ -361,6 +361,11 @@ class Player extends AnimatedObject {
         
                 // Set animation with those frames
                 this.setAnimation(minFrame, maxFrame, crouchData.repeat, crouchData.duration);
+
+                this.frame = minFrame;
+                this.spriteRect.x = this.frame % this.sheetCols;
+                this.spriteRect.y = Math.floor(this.frame / this.sheetCols);
+
                 this.velocity.x = 0;
             }
     }
