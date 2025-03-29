@@ -1,0 +1,21 @@
+*{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+  }
+
+table {
+    border: solid 10px #4A555B;
+    background-color: #1E2329;
+    color: white;
+}
+
+th {
+    border: solid 2px #4A555B;
+    background-color: #1E2329;
+    color: white;
+}
+
+td {
+    border: solid 2px #4A555B;
+    background-color: #1E2329;
+    color: white;
+}
