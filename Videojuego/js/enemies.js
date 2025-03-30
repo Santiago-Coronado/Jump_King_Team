@@ -93,11 +93,15 @@ class BaseEnemy extends AnimatedObject {
         const pushDirection = player.position.x < this.position.x ? -1 : 1;
         player.velocity.x = this.playerPushForce.x * pushDirection;
         player.velocity.y = this.playerPushForce.y;
+        if (player.damageSound) {
+            player.damageSound.currentTime = 0;
+            player.damageSound.play();
+        }
 
         // Set high friction and timer
         player.friction = player.hitFriction;
         player.frictionResetTimer = 500; // Reset friction after 500ms
-        
+
         // Set cooldown
         this.hitTimer = this.hitCooldown;
     }
@@ -137,6 +141,12 @@ class BaseEnemy extends AnimatedObject {
 class EnemySkeleton extends BaseEnemy {
     constructor(color, width, height, x, y, type ,physics) {
         super(color, width, height, x, y, "skeleton");
+        this.attackSound = new Audio("../Assets/Skeleton/EfectoDeSonido_AtaqueEsqueleto.wav");
+        this.attackSound.volume = 0.4;
+
+        this.deathSound = new Audio("../Assets/Skeleton/EfectoDeSonido_MuerteEsqueleto.wav");
+        this.deathSound.volume = 0.4;
+        
         this.walkSpeed = 0.006;
         this.physics = physics;
         this.attackRange = 2; // Distance at which skeleton will attack
@@ -467,6 +477,10 @@ class EnemySkeleton extends BaseEnemy {
             const distance = Math.abs(level.player.position.x - this.position.x);
             const attackProgress = (this.attackDuration - this.attackTimer) / this.attackDuration;
             if (distance < this.attackRange && attackProgress > 0.7) {
+                if (this.attackSound) {
+                    this.attackSound.currentTime = 0;
+                    this.attackSound.play();
+                }
                 this.hitPlayer(level.player);
             }
         }
@@ -539,6 +553,10 @@ class EnemySkeleton extends BaseEnemy {
         if (!this.deathAnimationStarted) {
             this.isAlive = false;
             this.isDying = true;
+            if (this.deathSound) {
+                this.deathSound.currentTime = 0;
+                this.deathSound.play();
+            }
             this.deathAnimationStarted = true;
             this.velocity = new Vec(0, 0);
             this.hitTimer = 0;
@@ -574,6 +592,8 @@ class EnemySkeleton extends BaseEnemy {
 class EnemyDemon extends BaseEnemy {
     constructor(color, width, height, x, y, physics) {
         super(color, width, height, x, y, "demon", physics);
+        this.deathSound = new Audio("../Assets/Demon/EfectoDeSonido_MuerteDemonio.wav");
+        this.deathSound.volume = 0.6;
         this.flySpeed = 0.008;
         this.velocity.x = this.flySpeed;
         this.amplitude = 1; // Vertical movement amplitude
@@ -685,6 +705,11 @@ class EnemyDemon extends BaseEnemy {
             this.deathAnimationStarted = true;
             this.velocity = new Vec(0, 0);
             this.hitTimer = 0;
+
+            if (this.deathSound) {
+                this.deathSound.currentTime = 0; // Reinicia si ya estaba sonando
+                this.deathSound.play();
+            }
     
             // Get the correct death animation frames based on direction
             const deathFrames = this.isFacingRight ? 
@@ -719,6 +744,13 @@ class EnemyDemon extends BaseEnemy {
 class EnemyJumper extends BaseEnemy {
     constructor(_color, width, height, x, y, _type, physics) {
         super("red", width, height, x, y, "jumper");
+
+        this.jumpSound = new Audio("../Assets/Jumper/EfectoDeSonido_SaltoJumper.wav");
+        this.jumpSound.volume = 0.2;
+
+        this.deathSound = new Audio("../Assets/Jumper/EfectoDeSonido_MuerteJumper.wav");
+        this.deathSound.volume = 0.5;
+
         this.physics = physics;
         this.velocity = new Vec(0, 0);
         this.jumpTimer = 0;
@@ -748,17 +780,27 @@ class EnemyJumper extends BaseEnemy {
                 if (playerJustJumped) {
                     this.velocity.y = -0.02; // Jump when player jumps
                     this.jumpTimer = 0;
+
+                    if (this.jumpSound) {
+                        this.jumpSound.currentTime = 0;
+                        this.jumpSound.play();
+                    }
                 }
                 this.lastPlayerVelocityY = level.player.velocity.y;
             }
-
+    
             // Backup jumping behavior if player hasn't jumped in a while 
             this.jumpTimer += deltaTime;
             if (this.jumpTimer >= this.jumpInterval) {
                 this.velocity.y = -0.02; // Jump strength
                 this.jumpTimer = 0;
+    
+                if (this.jumpSound) {
+                    this.jumpSound.currentTime = 0;
+                    this.jumpSound.play();
+                }
             }
-
+    
             // Apply gravity
             this.velocity.y += this.physics.gravity * deltaTime;
             
@@ -770,7 +812,7 @@ class EnemyJumper extends BaseEnemy {
                 this.velocity.y = 0;
             }
         }
-
+    
         this.updateFrame(deltaTime);
     }
 
@@ -778,6 +820,10 @@ class EnemyJumper extends BaseEnemy {
         if (!this.isDying) {
             this.health--;
             if (this.health <= 0) {
+                if (this.deathSound) {
+                    this.deathSound.currentTime = 0;
+                    this.deathSound.play();
+                }
                 this.die();
             }
         }

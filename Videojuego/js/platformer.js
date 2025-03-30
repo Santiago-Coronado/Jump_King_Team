@@ -46,6 +46,15 @@ class Player extends AnimatedObject {
         this.hitFriction = 0.9; // Higher friction value when hit (more sliding)
         this.frictionResetTimer = 0; // Timer to reset friction
 
+        this.jumpSound = new Audio("../Assets/Knight/EfectoDeSonido_SaltoCaballero.wav");
+        this.jumpSound.volume = 0.5;
+
+        this.damageSound = new Audio("../Assets/Knight/EfectoDeSonido_DanoCaballero.wav");
+        this.damageSound.volume = 0.5;
+
+        this.deathSound = new Audio("../Assets/Knight/EfectoDeSonido_MuerteCaballero.wav");
+        this.deathSound.volume = 0.5;
+
         this.isFacingRight = true;
         this.isJumping = false;
         this.isCrouching = false;
@@ -56,10 +65,7 @@ class Player extends AnimatedObject {
         this.heightThreshold = 1; 
         this.inHigherLevel = false;
 
-
         this.hasAirDashed = false;
-
-
 
         this.powerUps = {
             charged: false,
@@ -67,6 +73,9 @@ class Player extends AnimatedObject {
             dash: false
         };
 
+        this.powerUpCooldown = false;
+        this.cooldownTime = 0;
+        this.cooldownDuration = 3000;
 
         // Movement variables to define directions and animations
         this.movement = {
@@ -182,6 +191,15 @@ class Player extends AnimatedObject {
     }
 
     update(level, deltaTime) {
+
+        if (this.powerUpCooldown) {
+            this.cooldownTime -= deltaTime;
+            if (this.cooldownTime <= 0) {
+                this.powerUpCooldown = false;
+                this.cooldownTime = 0;
+            }
+        }
+
         // Make the character fall constantly because of gravity
         if (!this.isDashing){
         this.velocity.y = this.velocity.y + this.physics.gravity * deltaTime;
@@ -264,6 +282,12 @@ class Player extends AnimatedObject {
         if (!this.isJumping) {
             // Give a velocity so that the player starts moving up
             this.velocity.y = this.physics.initialJumpSpeed;
+
+            if (this.jumpSound) {
+                this.jumpSound.currentTime = 0;
+                this.jumpSound.play();
+            }
+
             this.isJumping = true;
 
             if (this.powerUps.double){
@@ -319,6 +343,7 @@ class Player extends AnimatedObject {
     }
 
     dash() {
+        if (this.powerUpCooldown) return;
         if (this.powerUps.dash && !this.isDashing) { 
             if (this.isJumping && this.hasAirDashed) {
                 return; 
@@ -347,12 +372,19 @@ class Player extends AnimatedObject {
                 this.updateMovementState();
                 this.color = originalColor;
             }, dashTime);
+            this.startPowerUpCooldown();
         }
     }
     doubleJump() {
+        if (this.powerUpCooldown) return;
         this.canDoubleJump = false;
         
         this.velocity.y = this.physics.initialJumpSpeed * 0.8; 
+
+        if (this.jumpSound) {
+            this.jumpSound.currentTime = 0;
+            this.jumpSound.play();
+        }
         
         const originalColor = this.color;
         this.color = "lime";
@@ -363,7 +395,14 @@ class Player extends AnimatedObject {
         setTimeout(() => {
             this.color = originalColor;
         }, effectDuration);
+        this.startPowerUpCooldown();
     }
+
+    startPowerUpCooldown() {
+        this.powerUpCooldown = true;
+        this.cooldownTime = this.cooldownDuration;
+    }
+
     crouch(){
         if (this.powerUps.charged){
             if (!this.isJumping) {
@@ -388,6 +427,7 @@ class Player extends AnimatedObject {
     }
     standUp(){
         if (this.isCrouching) {
+            if (this.powerUpCooldown) return;
 
             this.isCrouching = false;
 
@@ -416,7 +456,7 @@ class Player extends AnimatedObject {
         
             // Set animation with those frames
             this.setAnimation(minFrame, maxFrame, jumpData.repeat, jumpData.duration);
-            
+            this.startPowerUpCooldown();
         }
     }
     
@@ -806,6 +846,35 @@ class Game {
         
         // Dibujar barra de power-ups
         this.powerUpBar.draw(ctx);
+        if (this.player.powerUpCooldown) {
+            const barWidth = 100;
+            const barHeight = 10;
+            const cooldownRatio = this.player.cooldownTime / this.player.cooldownDuration;
+        
+            // Posición
+            const barX = 625;
+            const barY = 360 - 8; 
+
+            // Estilo
+            ctx.fillStyle = 'black';
+            ctx.fillRect(barX, barY, barWidth, barHeight);
+            ctx.fillStyle = 'red';
+            ctx.fillRect(barX, barY, barWidth * cooldownRatio, barHeight);
+            ctx.strokeStyle = 'white';
+            ctx.strokeRect(barX, barY, barWidth, barHeight);
+        
+            // Temporizador númerico
+            ctx.fillStyle = 'white';
+            ctx.font = '14px monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText(
+                `${Math.ceil(this.player.cooldownTime / 1000)}s`,
+                barX + barWidth + 8,
+                barY + barHeight - 1 
+            );
+        
+            ctx.textAlign = 'start'; 
+        }
     }
 }
 
