@@ -93,12 +93,15 @@ class BaseEnemy extends AnimatedObject {
         const pushDirection = player.position.x < this.position.x ? -1 : 1;
         player.velocity.x = this.playerPushForce.x * pushDirection;
         player.velocity.y = this.playerPushForce.y;
-
         if (player.damageSound) {
             player.damageSound.currentTime = 0;
             player.damageSound.play();
         }
-        
+
+        // Set high friction and timer
+        player.friction = player.hitFriction;
+        player.frictionResetTimer = 500; // Reset friction after 500ms
+
         // Set cooldown
         this.hitTimer = this.hitCooldown;
     }
@@ -730,6 +733,9 @@ class EnemyDemon extends BaseEnemy {
             const pushDirection = player.position.x < this.position.x ? -1 : 1;
             player.velocity.x = this.playerPushForce.x * pushDirection;
             player.velocity.y = this.playerPushForce.y;
+            // Set high friction and timer
+            player.friction = player.hitFriction;
+            player.frictionResetTimer = 500; // Reset friction after 500ms
             this.hitTimer = this.hitCooldown;
         }
     }
@@ -828,6 +834,10 @@ class EnemyJumper extends BaseEnemy {
             const pushDirection = player.position.x < this.position.x ? -1 : 1;
             player.velocity.x = 0.02 * pushDirection; // Stronger horizontal push
             player.velocity.y = -0.015; // Consistent vertical push
+
+            // Set high friction and timer
+            player.friction = player.hitFriction;
+            player.frictionResetTimer = 500; // Reset friction after 500ms
         }
     }
 }
