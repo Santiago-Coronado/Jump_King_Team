@@ -41,6 +41,10 @@ class Player extends AnimatedObject {
         super("green", width, height, x, y, "player");
         this.physics = physics;  // Store physics so that they can be used
         this.velocity = new Vec(0.0, 0.0);
+        this.friction = 0.3; // Friction value to slow down the player when idle
+        this.defaultFriction = 0.3; // Store default friction
+        this.hitFriction = 0.9; // Higher friction value when hit (more sliding)
+        this.frictionResetTimer = 0; // Timer to reset friction
 
         this.isFacingRight = true;
         this.isJumping = false;
@@ -154,7 +158,11 @@ class Player extends AnimatedObject {
         }
         
         // No keys pressed - idle animation
-        this.velocity.x = 0;
+        //this.velocity.x = 0;
+        this.velocity.x = this.velocity.x * this.friction; // Apply friction when idle
+        if (Math.abs(this.velocity.x) < 0.0001) { // If velocity is very small, stop completely
+            this.velocity.x = 0;
+        }
         this.setIdleAnimation();
     }
 
@@ -186,6 +194,14 @@ class Player extends AnimatedObject {
 
         let velX = this.velocity.x;
         let velY = this.velocity.y;
+
+        // Update friction reset timer
+        if (this.frictionResetTimer > 0) {
+            this.frictionResetTimer -= deltaTime;
+            if (this.frictionResetTimer <= 0) {
+                this.friction = this.defaultFriction;
+            }
+        }
 
         // Find out where the player should end if it moves
         let newXPosition = this.position.plus(new Vec(velX * deltaTime, 0));
