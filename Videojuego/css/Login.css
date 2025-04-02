@@ -1,0 +1,112 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Verdana', sans-serif;
+  }
+  
+  /* Estructura general */
+  html, body {
+    height: 100%;
+    width: 100%;
+  }
+  
+  body {
+    display: flex;
+  }
+  
+  /* Contenedor principal que cubre todo */
+  .login-container {
+    display: flex;
+    flex: 1;
+    height: 100vh;
+    width: 100%;
+  }
+  
+  /* Panel izquierdo */
+  .left-panel {
+    background-color: #151319;
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .logo {
+    max-width: 70%;
+    height: auto;
+  }
+  
+  /* Panel derecho */
+  .right-panel {
+    background-color: #f5f1e6;
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 60px;
+  }
+  
+  /* Imagen del texto del logo */
+  .logo-text {
+    width: 60%; 
+    max-width: 500px;
+    margin-bottom: 30px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  /* Formulario */
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  label {
+    font-size: 14px;
+    color: #555;
+  }
+  
+  input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+  }
+  
+  /* Botón */
+  .login-btn {
+    background-color: #a12323;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .login-btn:hover {
+    background-color: #7c1a1a;
+  }
+  
+  /* Enlace de registro */
+  .register-link {
+    margin-top: 25px;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .link {
+    color: #a12323; 
+  }
+  
+  .link:hover {
+    text-decoration: underline;
+    color: #7c1a1a; 
+  }
+
+.form-container {
+  margin-top: -120px; 
+}
