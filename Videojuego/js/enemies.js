@@ -20,6 +20,8 @@ class BaseEnemy extends AnimatedObject {
         this.hitTimer = 0; //Cooldown for attacks
         this.hitCooldown = 500; //Milliseconds between attacks
         this.playerPushForce = new Vec(0.02, -0.01); // Default push force when hitting player
+        this.scoreValue = 300; // Score value when defeated
+
 
         // Movement state tracking
         this.movement = {
@@ -109,6 +111,9 @@ class BaseEnemy extends AnimatedObject {
     takeDamage() {
         this.health--;
         if (this.health <= 0) {
+            if (game && game.player) {
+                game.player.score += this.scoreValue;
+            }
             this.die();
         }
     }
@@ -606,6 +611,9 @@ class EnemyDemon extends BaseEnemy {
         // Configure animations
         this.sheetCols = 7;
 
+        this.scoreValue = 500; // Score value when defeated
+
+
         // Define movement animations 
         this.movement = {
             right: { status: false,
@@ -692,6 +700,9 @@ class EnemyDemon extends BaseEnemy {
         //console.log("Demon taking damage");
         this.health--;
         if (this.health <= 0) {
+            if (game && game.player) {
+                game.player.score += this.scoreValue;
+            }
             //console.log("Demon dying");
             this.die();
         }
@@ -759,6 +770,8 @@ class EnemyJumper extends BaseEnemy {
         this.isDying = false;
         this.health = 1;
         this.lastPlayerVelocityY = 0; // Track player's previous vertical velocity
+        this.scoreValue = 200; // Score value when defeated
+
 
         this.movement = {
             death: { 
@@ -820,6 +833,9 @@ class EnemyJumper extends BaseEnemy {
         if (!this.isDying) {
             this.health--;
             if (this.health <= 0) {
+                if (game && game.player) {
+                    game.player.score += this.scoreValue;
+                }
                 if (this.deathSound) {
                     this.deathSound.currentTime = 0;
                     this.deathSound.play();

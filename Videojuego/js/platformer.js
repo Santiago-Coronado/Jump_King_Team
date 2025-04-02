@@ -77,6 +77,15 @@ class Player extends AnimatedObject {
         this.cooldownTime = 0;
         this.cooldownDuration = 3000;
 
+        this.isDead = false;
+        this.deathTimer = 0;
+        this.deathDuration = 1500; 
+        this.respawnPoint = new Vec(x, y);
+        
+        this.fatalFallVelocity = 0.04; 
+
+        this.score = 0;
+
         // Movement variables to define directions and animations
         this.movement = {
             right:  { status: false,
@@ -105,6 +114,13 @@ class Player extends AnimatedObject {
                       left: [4,4],
                       upRight: [0, 0],
                       upLeft: [17, 17] },
+            death:  { status: false,
+                      repeat: false,
+                      duration: 1000,
+                      right: [7,7],
+                      left: [10,10],
+                      upRight: [0,0],
+                      upLeft: [17,17]}
         };
     }
 
@@ -192,6 +208,11 @@ class Player extends AnimatedObject {
 
     update(level, deltaTime) {
 
+        if (this.isDead) {
+            this.updateFrame(deltaTime);
+            return; 
+        }
+
         if (this.powerUpCooldown) {
             this.cooldownTime -= deltaTime;
             if (this.cooldownTime <= 0) {
@@ -208,6 +229,11 @@ class Player extends AnimatedObject {
         // Check movement state and update it if needed
         if (!this.isDashing) {
             this.updateMovementState();
+        }
+
+        if (this.position.y > level.height + 5) {
+            this.death();
+            return;
         }
 
         let velX = this.velocity.x;
@@ -242,6 +268,7 @@ class Player extends AnimatedObject {
         } else {
             this.land();
         }
+        
 
         this.updateFrame(deltaTime);
     }
@@ -307,6 +334,11 @@ class Player extends AnimatedObject {
     }
 
     land() {
+        const previousYVelocity = this.velocity.y;
+        if (previousYVelocity > this.fatalFallVelocity) {
+            this.death();
+            return;
+        }
         // If the character is touching the ground,
         // there is no vertical velocity
         this.velocity.y = 0;
@@ -405,6 +437,7 @@ class Player extends AnimatedObject {
 
     crouch(){
         if (this.powerUps.charged){
+            if (this.powerUpCooldown) return;
             if (!this.isJumping) {
                 this.isCrouching = true;
                 
@@ -461,8 +494,7 @@ class Player extends AnimatedObject {
     }
     
     checkLevelChange(game){
-        if(this.position.y <this.heightThreshold && !this.inHigherLevel){
-            this.inHigherLevel=true;
+        if(this.position.y <this.heightThreshold ){
             if (game.currentLevelIndex < game.availableLevels.length - 1){
 
                 const currentXPosition = this.position.x;
@@ -470,6 +502,11 @@ class Player extends AnimatedObject {
                 const velocity = new Vec(this.velocity.x, this.velocity.y);
                 const isJumping = this.isJumping;
                 const isCrouching = this.isCrouching;
+
+                const powerUps = { ...this.powerUps };
+
+                const scoreKeep = this.score
+
 
                 const movementState = {
                     right: this.movement.right.status,
@@ -483,9 +520,17 @@ class Player extends AnimatedObject {
                 game.player.position = new Vec(currentXPosition,bottomPosition);
                 game.player.isFacingRight = facingRight;
                 game.player.velocity = velocity;
-                game.player.inHigherLevel = true;
                 game.player.isJumping = isJumping;
                 game.player.isCrouching = isCrouching;
+
+                game.player.powerUps = powerUps;
+
+                game.player.inHigherLevel = true;
+                game.player.respawnPoint = new Vec(currentXPosition, bottomPosition);
+                game.player.initialPosition = new Vec(currentXPosition, bottomPosition);
+                game.player.score = scoreKeep;
+
+
 
                 if (movementState.right) {
                     game.player.movement.right.status = true;
@@ -502,13 +547,17 @@ class Player extends AnimatedObject {
     
     fallToLowerLevel(game){
         if(game.currentLevelIndex > 0){
-            this.inHigherLevel = false;
 
             const currentXPosition = this.position.x;
             const facingRight = this.isFacingRight;
-            const velocityX = this.velocity.x;
+            const velocity = new Vec(this.velocity.x, this.velocity.y); 
             const isJumping = this.isJumping;
             const isCrouching = this.isCrouching;
+
+            const powerUps = { ...this.powerUps };
+
+            const scoreKeep = this.score
+
 
             const movementState = {
                 right: this.movement.right.status,
@@ -521,11 +570,19 @@ class Player extends AnimatedObject {
 
             game.player.position = new Vec(currentXPosition, topPosition);
             game.player.isFacingRight = facingRight;
-            game.player.velocity = new Vec (velocityX, 0.01);
-            game.player.inHigherLevel = false;
-
+            game.player.velocity = velocity;
             game.player.isJumping = isJumping;
             game.player.isCrouching = isCrouching;
+            game.player.powerUps = powerUps;
+            game.player.score = scoreKeep;
+
+
+            game.player.inHigherLevel = false;
+
+            game.player.respawnPoint = new Vec(currentXPosition, topPosition);
+            game.player.initialPosition = new Vec(currentXPosition, topPosition);
+            game.player.respawnLevelIndex = game.currentLevelIndex;
+
 
             if (movementState.right) {
                 game.player.movement.right.status = true;
@@ -537,6 +594,95 @@ class Player extends AnimatedObject {
             game.player.updateMovementState();
         }
     }
+    death(){
+        if(this.isDead) return;
+        if (this.deathSound) {
+            this.deathSound.currentTime = 0;
+            this.deathSound.play();
+        }
+
+        if (!this.initialPosition) {
+            this.initialPosition = new Vec(this.position.x, this.position.y);
+        }
+
+        this.respawnLevelIndex = 0;
+    
+        const startingPos = findPlayerStartPosition(game.level);
+        
+        if (startingPos) {
+            this.respawnPoint = new Vec(startingPos.x, startingPos.y - 3); 
+        } else {
+            this.respawnPoint = new Vec(3, 3); // Safe default near top-left
+        }
+
+        this.isDead = true;
+        this.velocity = new Vec(0, 0);
+        this.stopMovement("right");
+        this.stopMovement("left");
+
+        if (this.deathSound) {
+            this.deathSound.currentTime = 0;
+            this.deathSound.play();
+        }
+
+        const deathData = this.movement.death;
+
+        const deathFrames = this.isFacingRight ? deathData.right : deathData.left;
+
+        if (deathFrames && deathFrames.length > 0) {
+            const minFrame = deathFrames[0];
+            const maxFrame = deathFrames.length > 1 ? deathFrames[1] : deathFrames[0];
+            
+            this.setAnimation(minFrame, maxFrame, false, deathData.duration);
+            this.frame = minFrame; // Force the frame to be set immediately
+            this.spriteRect.x = this.frame % this.sheetCols;
+            this.spriteRect.y = Math.floor(this.frame / this.sheetCols);        
+        }      
+        this.deathTimer = this.deathDuration;;
+    }
+    respawn(level) {
+        if (level.contact(this.respawnPoint, this.size, 'wall')) {
+            for (let y = this.respawnPoint.y; y > 0; y--) {
+                const testPos = new Vec(this.respawnPoint.x, y);
+                if (!level.contact(testPos, this.size, 'wall')) {
+                    this.respawnPoint = testPos;
+                    break;
+                }
+            }
+        }
+        this.position = new Vec(this.respawnPoint.x, this.respawnPoint.y);
+        this.velocity = new Vec(0, 0);
+        this.isDead = false;
+        
+        // Reset movement states
+        this.isJumping = false;
+        this.isCrouching = false;
+        this.hasAirDashed = false;
+
+        this.movement.right.status = false;
+        this.movement.left.status = false;
+        this.movement.jump.status = false;
+        this.movement.crouch.status = false;
+
+        
+        
+        // Reset animation
+        this.isFacingRight = true;
+        this.setIdleAnimation();
+    }
+}
+
+function findPlayerStartPosition(level) {
+    for (let y = 0; y < level.rows.length; y++) {
+        for (let x = 0; x < level.rows[y].length; x++) {
+            // Check if this position has the player character in the level data
+            if (level.rows[y][x] === "empty" && 
+                GAME_LEVELS[game.currentLevelIndex].trim().split('\n')[y][x] === "@") {
+                return { x: x, y: y };
+            }
+        }
+    }
+    return null;
 }
 
 
@@ -571,7 +717,7 @@ class Double extends AnimatedObject {
 
 
 class BaseLevel {
-    constructor(plan, physics) {
+    constructor(plan, physics, collectedPowerUps = { dash: [], charged: [], double: [] }) {
         // Split the plan string into a matrix of strings
         let rows = plan.trim().split('\n').map(l => [...l]);
         this.height = rows.length;
@@ -586,6 +732,14 @@ class BaseLevel {
                 let item = levelChars[ch];
                 let objClass = item.objClass;
                 let cellType = item.label;
+
+                if ((ch === '$' && isPowerUpCollected(collectedPowerUps.dash, x, y)) ||
+                (ch === '%' && isPowerUpCollected(collectedPowerUps.charged, x, y)) ||
+                (ch === '&' && isPowerUpCollected(collectedPowerUps.double, x, y))) {
+                // Solo agregar un suelo de fondo donde estaría el power-up
+                this.addBackgroundFloor(x, y);
+                return "empty";
+            }
                 // Create a new instance of the type specified
                 let actor = new objClass("skyblue", 1, 1, x, y, item.label, physics);  // Pass physics to the constructor
                 // Configurations for each type of cell
@@ -719,6 +873,25 @@ class BaseLevel {
     }
 }
 
+function isPowerUpCollected(collectedPowerUpsArray, x, y) {
+    if (!collectedPowerUpsArray || !Array.isArray(collectedPowerUpsArray)) {
+        return false;
+    }
+    
+    for (let powerUp of collectedPowerUpsArray) {
+        // Comparación aproximada de posición para tener en cuenta los desplazamientos
+        const baseX = Math.floor(x);
+        const baseY = Math.floor(y);
+        const collectedX = Math.floor(powerUp.x);
+        const collectedY = Math.floor(powerUp.y);
+        
+        // Verificar si están aproximadamente en la misma posición
+        if (Math.abs(collectedX - baseX) <= 3 && Math.abs(collectedY - baseY) <= 3) {
+            return true;
+        }
+    }
+    return false;
+}
 
 class Game {
     constructor(state, levelIndex) {
@@ -728,7 +901,13 @@ class Game {
         
         this.availableLevels = GAME_LEVELS;
 
-        this.level = new BaseLevel (this.availableLevels[levelIndex], this.physics)
+        this.collectedPowerUps = {
+            dash: [],
+            charged: [],
+            double: []
+        };
+
+        this.level = new BaseLevel (this.availableLevels[levelIndex], this.physics, this.collectedPowerUps)
 
         this.player = this.level.player;
         this.actors = this.level.actors;
@@ -736,9 +915,43 @@ class Game {
 
         this.background = new Background('../assets/Castle1.png', canvasWidth, canvasHeight);
         this.powerUpBar = new PowerUpBar();
+        this.gameOver = new Image();
+        this.gameOver.src = '../assets/Game_Over.png'
+
+        this.gameOverActive = false;
+        this.gameOverAlpha = 0; 
+        this.fadeInSpeed = 0.005;
+
+        this.textScore = new TextLabel(70, canvasHeight - 40, "30px 'Press Start 2P', sans-serif", "white");
+
+        this.playerPowerUps = {
+            charged: false,
+            double: false,
+            dash: false
+        };
+        this.statePlayer= 'playing';
     }
 
     update(deltaTime) {
+        if (this.state === 'playing') {
+        if (this.player.isDead) {
+            this.player.deathTimer -= deltaTime;
+            this.player.updateFrame(deltaTime);
+   
+            if (this.player.deathTimer <= 0 && !this.gameOverActive) {
+                this.gameOverActive = true;
+                this.gameOverAlpha = 0;
+            }
+            if (this.gameOverActive && this.gameOverAlpha<0.7) {
+                this.gameOverAlpha += this.fadeInSpeed * deltaTime;
+                if(this.gameOverAlpha > 0.7) {
+                    this.gameOverAlpha = 0.7;
+                }
+            }
+            return; 
+        }
+
+        this.playerPowerUps = { ...this.player.powerUps };
 
         this.player.update(this.level, deltaTime);
 
@@ -758,22 +971,40 @@ class Game {
             this.player.powerUps.dash
         );
 
+        this.playerPowerUps = { ...this.player.powerUps };
+
         // A copy of the full list to iterate over all of them
         // DOES THIS WORK?
         let currentActors = this.actors;
-        let actorsToRemove = [];
         // Detect collisions
         for (let actor of currentActors) {
             if (actor.type != 'floor' && overlapRectangles(this.player, actor)) {
                 if (actor.type == 'powerup1') {
                     this.player.powerUps.dash = true;
+                    this.collectedPowerUps.dash.push({
+                        levelIndex: this.currentLevelIndex,
+                        x: actor.position.x,
+                        y: actor.position.y
+                    });
+                    this.player.score += 1000; // Increase score by 1000 when collecting a charged power-up
                     this.actors = this.actors.filter(item => item !== actor);
-                    actorsToRemove.push(actor);
                 } else if (actor.type == 'powerup2') {
                     this.player.powerUps.charged = true;
+                    this.collectedPowerUps.charged.push({
+                        levelIndex: this.currentLevelIndex, 
+                        x: actor.position.x,
+                        y: actor.position.y
+                    });
+                    this.player.score += 1000; // Increase score by 1000 when collecting a charged power-up
                     this.actors = this.actors.filter(item => item !== actor);
                 } else if (actor.type == 'powerup3') {
                     this.player.powerUps.double = true;
+                    this.collectedPowerUps.double.push({
+                        levelIndex: this.currentLevelIndex, 
+                        x: actor.position.x,
+                        y: actor.position.y
+                    });
+                    this.player.score += 1000; // Increase score by 1000 when collecting a charged power-up
                     this.actors = this.actors.filter(item => item !== actor);
                 }
             }
@@ -809,19 +1040,41 @@ class Game {
             return true;
         });
     }
+    else if (this.state === 'paused') {
+        if (this.pauseAlpha < 0.7) {
+            this.pauseAlpha += this.pauseFadeSpeed * deltaTime;
+            if (this.pauseAlpha > 0.7) {
+                this.pauseAlpha = 0.7;
+            }
+        }
+    }
+    }
 
     changeLevel(levelIndex) {
-        // Guardar estado del jugador actual
         const oldPlayer = this.player;
         const powerUps = { ...oldPlayer.powerUps };
+        const oldRespawnPoint = oldPlayer.respawnPoint;
+        const oldInitialPosition = oldPlayer.initialPosition || new Vec(oldPlayer.position.x, oldPlayer.position.y);
+        const isPowerUpColdown = oldPlayer.powerUpCooldown;
+        const remainingCoolDownTime= oldPlayer.cooldownTime;
     
-        // Crear nuevo nivel
-        this.level = new BaseLevel(this.availableLevels[levelIndex], this.physics);
+        this.level = new BaseLevel(this.availableLevels[levelIndex], this.physics, this.collectedPowerUps);
         this.player = this.level.player;
         this.actors=this.level.actors;
         this.enemies = this.level.enemies;
+
         this.player.powerUps = powerUps;
+        this.player.respawnPoint = oldRespawnPoint;
+        this.player.initialPosition = oldInitialPosition;
+        this.player.respawnLevelIndex = levelIndex;
+        this.player.powerUpCooldown=isPowerUpColdown;
+        this.player.cooldownTime=remainingCoolDownTime;
+
         this.currentLevelIndex=levelIndex;
+
+        this.player.initialPosition = new Vec(this.player.position.x, this.player.position.y);
+
+        this.playerPowerUps = { ...powerUps };
     }
 
     draw(ctx, scale) {
@@ -843,6 +1096,8 @@ class Game {
         // Dibujar HUD
         ctx.fillStyle = '#5a2c0f';
         ctx.fillRect(0, canvasHeight - 100, canvasWidth, 100);
+
+        this.textScore.draw(ctx, `Score: ${this.player.score}`);
         
         // Dibujar barra de power-ups
         this.powerUpBar.draw(ctx);
@@ -875,7 +1130,72 @@ class Game {
         
             ctx.textAlign = 'start'; 
         }
+        if (this.gameOverActive) {
+            this.drawGameOver(ctx);
+        }
     }
+    drawGameOver(ctx) {
+        ctx.fillStyle = `rgba(0, 0, 0, ${this.gameOverAlpha})`;
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+        if(this.gameOver.complete){
+            const imgWidth = 300;
+            const imgHeight = 200;
+            const x = (canvasWidth - imgWidth) / 2;
+            const y = (canvasHeight - imgHeight) / 2;
+
+            ctx.save();
+            ctx.globalAlpha = this.gameOverAlpha * 1.4;
+            ctx.drawImage(this.gameOver, x, y, imgWidth, imgHeight);
+
+            ctx.font = '20px Arial';
+            ctx.fillStyle = 'white';
+            ctx
+            ctx.fillText('Press R to restart', canvasWidth/2 - 80, y + imgHeight + 40);
+            ctx.restore();
+        }
+
+    }
+    respawnPlayer() {
+        if (this.gameOverActive) {
+            const powerUpsToKeep = { ...this.playerPowerUps };
+            const scoreToKeep = this.player.score;
+
+            this.collectedPowerUps = {
+                dash: [],
+                charged: [],
+                double: []
+            };
+            if (this.currentLevelIndex !== this.player.respawnLevelIndex) {
+                this.changeLevel(this.player.respawnLevelIndex);
+            } else {
+                this.level = new BaseLevel(this.availableLevels[this.currentLevelIndex], this.physics, this.collectedPowerUps);
+                this.player = this.level.player;
+                this.actors = this.level.actors;
+                this.enemies = this.level.enemies;
+            }
+            this.player.respawn(this.level);
+            this.player.powerUps = powerUpsToKeep;
+            this.player.score = scoreToKeep;
+
+            this.powerUpBar.updateFrame(
+                this.player.powerUps.charged,
+                this.player.powerUps.double,
+                this.player.powerUps.dash
+            );
+
+            this.gameOverActive = false;
+            this.gameOverAlpha = 0;
+        }
+    }
+    togglepause(){
+        if(this.state == 'playing'){
+            this.state = 'paused';
+        } else if(this.state == 'paused'){
+            this.state = 'playing';
+            frameStart=document.timeline.currentTime;
+        }
+}
 }
 
 class Background {
@@ -995,6 +1315,20 @@ function gameStart() {
 
 function setEventListeners() {
     window.addEventListener("keydown", event => {
+
+        if(event.key == 'Escape'){
+            game.togglepause();
+            return;
+        }
+        
+        if (event.key.toLowerCase() === 'r' && game.gameOverActive) {
+            game.respawnPlayer();
+        }
+    
+        if (game.player.isDead) {
+            return;
+        }
+
         if (event.code == 'Space') {
             game.player.jump();
         }
@@ -1013,6 +1347,8 @@ function setEventListeners() {
     });
 
     window.addEventListener("keyup", event => {
+        if(game.statePlayer !== 'playing') return;
+
         if (event.key == 'a') {
             game.player.stopMovement("left");
         }
@@ -1032,6 +1368,11 @@ function updateCanvas(frameTime) {
     }
     let deltaTime = frameTime - frameStart;
     //console.log(`Delta Time: ${deltaTime}`);
+
+    const MAX_DELTA = 100;
+    if (deltaTime > MAX_DELTA) {
+        deltaTime = MAX_DELTA;
+    }
 
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     game.update(deltaTime);
