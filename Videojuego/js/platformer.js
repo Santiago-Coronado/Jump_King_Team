@@ -882,25 +882,31 @@ class Game {
     applyTemplateToLevel(rows, startY, startX, invertHorizontally) {
         let miniLevel;
         let availableTemplates = [];
-        let powerUpType = "normal";
-    
-        // Get appropriate list of templates based on player's powerups
+        let availablePowerupTypes = [];
+        let powerUpType;
+
         if (this.player.powerUps.double && this.player.availableMiniLevels.double.length > 0) {
-            availableTemplates = this.player.availableMiniLevels.double;
-            powerUpType = "double";
-        } 
-        else if (this.player.powerUps.charged && this.player.availableMiniLevels.charged.length > 0) {
-            availableTemplates = this.player.availableMiniLevels.charged;
-            powerUpType = "charged";
+            availablePowerupTypes.push("double");
         }
-        else if (this.player.powerUps.dash && this.player.availableMiniLevels.dash.length > 0) {
-            availableTemplates = this.player.availableMiniLevels.dash;
-            powerUpType = "dash";
+        if (this.player.powerUps.charged && this.player.availableMiniLevels.charged.length > 0) {
+            availablePowerupTypes.push("charged");
         }
-        else {
-            // Default to normal mini-level if no special powerups
-            availableTemplates = this.player.availableMiniLevels.normal;
+        if (this.player.powerUps.dash && this.player.availableMiniLevels.dash.length > 0) {
+            availablePowerupTypes.push("dash");
+        }
+
+        // If no powerups available, use normal templates
+        if (availablePowerupTypes.length === 0) {
             powerUpType = "normal";
+            availableTemplates = this.player.availableMiniLevels.normal;
+        } else {
+            // Randomly choose one of the available powerup types
+        powerUpType = availablePowerupTypes[Math.floor(Math.random() * availablePowerupTypes.length)];
+        
+        // Set templates based on the selected type
+        if (powerUpType === "double") availableTemplates = this.player.availableMiniLevels.double;
+        else if (powerUpType === "charged") availableTemplates = this.player.availableMiniLevels.charged;
+        else if (powerUpType === "dash") availableTemplates = this.player.availableMiniLevels.dash;
         }
 
         // Ensure we have templates
