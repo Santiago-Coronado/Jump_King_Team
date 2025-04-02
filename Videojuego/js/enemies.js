@@ -196,7 +196,6 @@ class EnemySkeleton extends BaseEnemy {
         // Load all images with proper loading state tracking
         Object.entries(this.sprites).forEach(([key, sprite]) => {
             sprite.image.onload = () => {
-                console.log(`Loaded sprite: ${sprite.path}`);
                 this.spritesLoaded[key] = true;
                 
                 // Initialize sprite properties when move sprite is loaded
@@ -207,9 +206,6 @@ class EnemySkeleton extends BaseEnemy {
                     this.sheetCols = sprite.sheetCols;
                     this.setMoveAnimation();
                 }
-            };
-            sprite.image.onerror = (err) => {
-                console.error(`Failed to load sprite: ${sprite.path}`, err);
             };
             sprite.image.src = sprite.path;
         });
