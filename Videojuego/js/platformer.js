@@ -45,6 +45,7 @@ class Player extends AnimatedObject {
         this.defaultFriction = 0.3; // Store default friction
         this.hitFriction = 0.9; // Higher friction value when hit (more sliding)
         this.frictionResetTimer = 0; // Timer to reset friction
+        this.disableControls = false; // Flag to disable controls when the game is finished
 
         this.jumpSound = new Audio("../Assets/Knight/EfectoDeSonido_SaltoCaballero.wav");
         this.jumpSound.volume = 0.5;
@@ -71,6 +72,14 @@ class Player extends AnimatedObject {
             charged: false,
             double: false,
             dash: false
+        };
+
+        // Track available mini-level templates for each powerup
+        this.availableMiniLevels = {
+            normal: ['a','b','c','d','e'],  // Start with normal templates
+            dash: [],
+            charged: [],
+            double: []
         };
 
         this.powerUpCooldown = false;
@@ -109,6 +118,7 @@ class Player extends AnimatedObject {
     }
 
     startMovement(direction) {
+        if (this.disableControls) return;
         const dirData = this.movement[direction];
         this.isFacingRight = direction === "right";
     
@@ -120,6 +130,7 @@ class Player extends AnimatedObject {
     }
 
     stopMovement(direction) {
+        if (this.disableControls) return;
         const dirData = this.movement[direction];
         dirData.status = false;
         
@@ -240,7 +251,13 @@ class Player extends AnimatedObject {
         if (!level.contact(newYPosition, this.size, 'wall')) {
             this.position = newYPosition;
         } else {
+            // Check if we're actually landing on top of a platform
+        if (this.isLandingOnPlatform(level, newYPosition)) {
             this.land();
+        } else {
+            // Just stop vertical movement if hitting from below
+            this.velocity.y = 0;
+        }
         }
 
         this.updateFrame(deltaTime);
@@ -304,6 +321,11 @@ class Player extends AnimatedObject {
         else if (this.canDoubleJump){
             this.doubleJump()
         }
+    }
+
+    isLandingOnPlatform(level, newPosition) {
+        // Check if there's a wall/platform below and we're moving downward
+        return level.contact(newPosition, this.size, 'wall') && this.velocity.y > 0;
     }
 
     land() {
@@ -461,6 +483,11 @@ class Player extends AnimatedObject {
     }
     
     checkLevelChange(game){
+        //console.log(game.currentLevelIndex);
+        //console.log(this.position.y);
+        //console.log("Available levels",game.availableLevels.length);
+        //console.log(this.inHigherLevel);
+
         if(this.position.y <this.heightThreshold && !this.inHigherLevel){
             this.inHigherLevel=true;
             if (game.currentLevelIndex < game.availableLevels.length - 1){
@@ -483,7 +510,7 @@ class Player extends AnimatedObject {
                 game.player.position = new Vec(currentXPosition,bottomPosition);
                 game.player.isFacingRight = facingRight;
                 game.player.velocity = velocity;
-                game.player.inHigherLevel = true;
+                game.player.inHigherLevel = false;
                 game.player.isJumping = isJumping;
                 game.player.isCrouching = isCrouching;
 
@@ -495,6 +522,10 @@ class Player extends AnimatedObject {
                 }
                 
                 game.player.updateMovementState();   
+            } else {
+                // Optional: Handle reaching the final level
+                console.log("Reached final level!");
+                this.inHigherLevel = false;
             }
         }
     }
@@ -602,6 +633,16 @@ class BaseLevel {
                     actor.sheetCols = item.sheetCols;
                     actor.setAnimation(...item.startFrame, false, 100);
                     this.player = actor;
+                    cellType = "empty";
+                } else if (actor.type == "princess") {
+                    this.addBackgroundFloor(x, y);
+                    console.log("Princess created at position:", actor.position);
+                    actor.position = actor.position.plus(new Vec(0, 0));
+                    actor.size = new Vec(3, 3);
+                    actor.setSprite(item.sprite, item.rect);
+                    actor.sheetCols = item.sheetCols;
+                    actor.setAnimation(...item.startFrame, false, 100);
+                    this.princess = actor;
                     cellType = "empty";
                 } else if (actor.type == "powerup1") {
                     // Also instantiate a floor tile below the player
@@ -731,6 +772,7 @@ class Game {
         this.level = new BaseLevel (this.availableLevels[levelIndex], this.physics)
 
         this.player = this.level.player;
+        this.princess = this.level.princess;
         this.actors = this.level.actors;
         this.enemies = this.level.enemies;
 
@@ -752,6 +794,10 @@ class Game {
             enemy.update(this.level, deltaTime);
         }
 
+        if (this.princess) {
+            this.princess.update(deltaTime, this.player, this);
+        }
+
         this.powerUpBar.updateFrame(
             this.player.powerUps.charged,
             this.player.powerUps.double,
@@ -767,13 +813,16 @@ class Game {
             if (actor.type != 'floor' && overlapRectangles(this.player, actor)) {
                 if (actor.type == 'powerup1') {
                     this.player.powerUps.dash = true;
+                    this.player.availableMiniLevels.dash = Object.keys(MINI_LEVELS.dash);
                     this.actors = this.actors.filter(item => item !== actor);
                     actorsToRemove.push(actor);
                 } else if (actor.type == 'powerup2') {
                     this.player.powerUps.charged = true;
+                    this.player.availableMiniLevels.charged = Object.keys(MINI_LEVELS.charged);
                     this.actors = this.actors.filter(item => item !== actor);
                 } else if (actor.type == 'powerup3') {
                     this.player.powerUps.double = true;
+                    this.player.availableMiniLevels.double = Object.keys(MINI_LEVELS.double);
                     this.actors = this.actors.filter(item => item !== actor);
                 }
             }
@@ -810,17 +859,173 @@ class Game {
         });
     }
 
+    fillUndefinedAreas(levelPlan) {
+        let rows = levelPlan.split('\n');
+        
+        // Iterate through each row and check for sequences of 'x' or 'y'
+        for(let y = 0; y < rows.length; y++) {
+            // First check for 'x' sequences (standard templates)
+            let xSequence = rows[y].match(/x+/);
+            if(xSequence) {
+                this.applyTemplateToLevel(rows, y, rows[y].indexOf('x'), false);
+            }
+            
+            // Then check for 'i' sequences (inverted templates)
+            let iSequence = rows[y].match(/i+/);
+            if(iSequence) {
+                this.applyTemplateToLevel(rows, y, rows[y].indexOf('i'), true);
+            }
+        }
+        return rows.join('\n');
+    }
+
+    applyTemplateToLevel(rows, startY, startX, invertHorizontally) {
+        let miniLevel;
+        let availableTemplates = [];
+        let powerUpType = "normal";
+    
+        // Get appropriate list of templates based on player's powerups
+        if (this.player.powerUps.double && this.player.availableMiniLevels.double.length > 0) {
+            availableTemplates = this.player.availableMiniLevels.double;
+            powerUpType = "double";
+        } 
+        else if (this.player.powerUps.charged && this.player.availableMiniLevels.charged.length > 0) {
+            availableTemplates = this.player.availableMiniLevels.charged;
+            powerUpType = "charged";
+        }
+        else if (this.player.powerUps.dash && this.player.availableMiniLevels.dash.length > 0) {
+            availableTemplates = this.player.availableMiniLevels.dash;
+            powerUpType = "dash";
+        }
+        else {
+            // Default to normal mini-level if no special powerups
+            availableTemplates = this.player.availableMiniLevels.normal;
+            powerUpType = "normal";
+        }
+
+        // Ensure we have templates
+        if (!availableTemplates || availableTemplates.length === 0) {
+            console.warn(`No available templates for ${powerUpType}, falling back to normal templates`);
+            availableTemplates = ['a', 'b', 'c', 'd', 'e'];
+            powerUpType = "normal";
+        }
+
+        // Make sure the templates actually exist in MINI_LEVELS
+        availableTemplates = availableTemplates.filter(key => {
+            if (powerUpType === "double") return MINI_LEVELS.double[key];
+            if (powerUpType === "charged") return MINI_LEVELS.charged[key];
+            if (powerUpType === "dash") return MINI_LEVELS.dash[key];
+            return MINI_LEVELS.normal[key];
+        });
+
+        if (availableTemplates.length === 0) {
+            console.warn(`No valid templates found for ${powerUpType}, using normal templates`);
+            availableTemplates = ['a', 'b', 'c', 'd', 'e'];
+            powerUpType = "normal";
+        }
+    
+        // Randomly select one of the available templates
+        const randomIndex = Math.floor(Math.random() * availableTemplates.length);
+        const templateKey = availableTemplates[randomIndex];
+        
+        // Get the mini-level based on the powerup type and template key
+        if (powerUpType === "double" && this.player.powerUps.double) {
+            miniLevel = MINI_LEVELS.double[templateKey];
+        } 
+        else if (powerUpType === "charged" && this.player.powerUps.charged) {
+            miniLevel = MINI_LEVELS.charged[templateKey];
+        }
+        else if (powerUpType === "dash" && this.player.powerUps.dash) {
+            miniLevel = MINI_LEVELS.dash[templateKey];
+        }
+        else {
+            // Default to normal mini-level
+            miniLevel = MINI_LEVELS.normal[templateKey];
+        }
+
+        // Split the mini-level into rows
+        let miniLevelRows = miniLevel.split('\n');
+        
+        // If we need to invert the template horizontally
+        if (invertHorizontally) {
+            miniLevelRows = miniLevelRows.map(row => {
+                // Trim and reverse each row for horizontal inversion
+                const trimmedRow = row.trim();
+                return [...trimmedRow].reverse().join('');
+            });
+        }
+
+        for(let i = 0; i < miniLevelRows.length && startY + i < rows.length; i++) {
+            const replacementText = miniLevelRows[i].trim();
+            const originalRow = rows[startY + i];
+            
+            // Ensure we don't exceed the row length
+            if (startX + replacementText.length <= originalRow.length) {
+                rows[startY + i] = originalRow.substring(0, startX) + 
+                            replacementText + 
+                            originalRow.substring(startX + replacementText.length);
+            } else {
+                console.warn(`Row ${startY+i} too short for replacement, truncating`);
+                // Still do our best to replace what we can
+                rows[startY + i] = originalRow.substring(0, startX) + 
+                            replacementText.substring(0, originalRow.length - startX);
+            }
+        }
+    }
+
+   
+
     changeLevel(levelIndex) {
+        if (levelIndex < 0 || levelIndex >= this.availableLevels.length) {
+            console.warn(`Attempted to change to invalid level index: ${levelIndex}`);
+            return;
+        }
+
+        // Validate that the level exists
+        const nextLevel = this.availableLevels[levelIndex];
+        if (!nextLevel) {
+            console.error(`Level ${levelIndex} is undefined`);
+            return;
+        }
+        
         // Guardar estado del jugador actual
         const oldPlayer = this.player;
         const powerUps = { ...oldPlayer.powerUps };
-    
+
+        // Guarda la disponibilidad de mini-niveles
+        const availableMiniLevels = {
+            normal: [...oldPlayer.availableMiniLevels.normal],
+            dash: [...oldPlayer.availableMiniLevels.dash],
+            charged: [...oldPlayer.availableMiniLevels.charged],
+            double: [...oldPlayer.availableMiniLevels.double]
+        };
+
+        // Genera niveles con las areas randomizadas
+        let levelPlan = this.fillUndefinedAreas(this.availableLevels[levelIndex]);
+
         // Crear nuevo nivel
-        this.level = new BaseLevel(this.availableLevels[levelIndex], this.physics);
+        this.level = new BaseLevel(levelPlan, this.physics);
+        if (levelIndex === this.availableLevels.length - 1) {
+            let princessChar = levelChars['P'];
+            let princessX = this.level.width - 4;
+            let princessY = this.level.height - 4;
+            let princess = new princessChar.objClass("yellow", 1, 1, princessX, princessY, princessChar.label, this.physics);
+            princess.position = new Vec(princessX, princessY);
+            princess.size = new Vec(3, 3);
+            princess.setSprite(princessChar.sprite, princessChar.rect);
+            princess.sheetCols = princessChar.sheetCols;
+            princess.setAnimation(...princessChar.startFrame, false, 100);
+            this.level.princess = princess;
+            this.princess = princess;
+
+            this.level.princess = princess;
+            this.princess = princess;
+        }
         this.player = this.level.player;
         this.actors=this.level.actors;
         this.enemies = this.level.enemies;
         this.player.powerUps = powerUps;
+        this.player.availableMiniLevels = availableMiniLevels;
         this.currentLevelIndex=levelIndex;
     }
 
@@ -839,6 +1044,10 @@ class Game {
         }
 
         this.player.draw(ctx, scale);
+
+        if (this.princess) {
+            this.princess.draw(ctx, scale);
+        }
         
         // Dibujar HUD
         ctx.fillStyle = '#5a2c0f';
@@ -961,6 +1170,20 @@ const levelChars = {
           rect: new Rect(0, 0, 64, 32),
           sheetCols: 15,
           startFrame: [0, 0]},
+    "P": {objClass: Princess,
+          label: "princess",
+          sprite: '../assets/Princess_Assets.png',
+          rect: new Rect(0, 0, 32, 32),
+          sheetCols: 8,
+          startFrame: [0, 0]},
+    "x": {objClass: GameObject,
+          label: "undefined",
+          sprite: null,
+          rect: null},
+    "i": {objClass: GameObject,
+          label: "undefined",
+          sprite: null,
+          rect: null},
 };
 
 
