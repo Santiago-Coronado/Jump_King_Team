@@ -1,90 +1,77 @@
-*{
+* {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
+  box-sizing: border-box;
 }
 
 body {
-    background-color: White;
-    width: 100vw;
-    height: 100vh;
-    box-sizing: border-box;
-    margin: 0;
-    overflow: hidden;
-    display:grid;
-    grid-template-rows: 10vh 1fr;
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "header"
-      "main";
-    justify-content: center;
-    align-items: center;
-    justify-items: center;
-}
-
-#headerContainer{
-  grid-area: header;
-  background-color: darkred;
-  width: 100%;
-  height: 100%;
+  background-color: #1a1a1a;
+  width: 100vw;
+  height: 100vh;
   margin: 0;
-  display: flex;
-  flex-direction: row;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "header"
+    "main";
   justify-content: center;
   align-items: center;
+  justify-items: center;
 }
 
-h1{
+#headerContainer {
+  grid-area: header;
+  background-color: #222;
+  width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+#logoHeader {
+  max-height: 150px;
+  object-fit: contain;
+}
+
+#navButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+#navButtons a {
+  background-color: white;
+  color: #005fcb;
+  padding: 8px 16px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+#navButtons a:hover {
+  background-color: #e0e0e0;
+}
+
+h1 {
   margin: 0px;
 }
 
 canvas {
-    /* width: 75vw; */
-    /* height: 75vh; */
-    border: 2px solid black;
-    background-color: #87ceeb;
-    /* width: 600px; */
-    /* height: 600px; */
+  border: 2px solid black;
+  background-color: #87ceeb;
 }
 
 #canvas {
   background-color: #883311;
   grid-area: main;
-}
-
-.lil-gui.autoPlace{
-  top: 15vh;
-  right: 5vw;
-}
-
-#backButton {
-    margin: 10px;
-}
-
-#uiContainer {
-  position: absolute;
-  top: 15vh;
-  right: 5vw;
-  z-index: 3;
-  font-family: monospace;
-  pointer-events: none;
-  padding: 1em;
-  background-color: rgba(0, 0, 0, 0.8);
-  border-radius: 1em;
-  border: 1px solid turquoise;
-
-  text-shadow:
-   -1px -1px 0 #FFF,
-    1px -1px 0 #FFF,
-    -1px 1px 0 #FFF,
-     1px 1px 0 #FFF;
-}
-#ui {
-  opacity: 0.8;
-}
-#ui>div {
-  pointer-events: none;
-}
-#ui input, #ui select, #ui option, #ui canvas {
-  pointer-events: auto;
+  position: relative;
 }
 
 #gameContainer {
@@ -102,10 +89,42 @@ canvas {
   bottom: 10px;
   left: 10px;
   z-index: 10;
+  margin: 10px;
 }
 
-#canvas {
-  position: relative;
+.lil-gui.autoPlace {
+  top: 15vh;
+  right: 5vw;
+}
+
+#uiContainer {
+  position: absolute;
+  top: 15vh;
+  right: 5vw;
+  z-index: 3;
+  font-family: monospace;
+  pointer-events: none;
+  padding: 1em;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 1em;
+  border: 1px solid turquoise;
+  text-shadow:
+    -1px -1px 0 #FFF,
+     1px -1px 0 #FFF,
+    -1px 1px 0 #FFF,
+     1px 1px 0 #FFF;
+}
+
+#ui {
+  opacity: 0.8;
+}
+
+#ui > div {
+  pointer-events: none;
+}
+
+#ui input, #ui select, #ui option, #ui canvas {
+  pointer-events: auto;
 }
 
 .hud-area {
@@ -115,4 +134,25 @@ canvas {
   height: 100px;
   background-color: #5a2c0f;
   pointer-events: none;
+}
+
+.menu-button {
+  background-color: #a9a9a9; /* Gris medio claro */
+  color: black;
+  font-family: 'Georgia', serif;
+  font-weight: bold;
+  padding: 20px 40px;
+  border: 2px solid #333;
+  box-shadow: 4px 4px 0px #000000aa;
+  font-size: 1.2rem;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  display: inline-block;
+}
+
+.menu-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 0px #000000aa;
 }

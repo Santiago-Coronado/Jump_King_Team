@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  font-family: 'Cinzel', serif;
+  overflow: hidden;
+}
+
+#bg-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+.main-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 1rem;
+  text-align: center;
+  color: #fff;
+  text-shadow: 2px 2px 2px black;
+}
+
+.logo {
+  max-width: 500px;
+  height: auto;
+  margin-bottom: 2rem;
+}
+
+/* Botones grandes */
+.button-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  width: 300px;
+}
+
+.big-button {
+  background-color: #999;
+  color: black;
+  font-size: 1.2rem;
+  padding: 0.75rem 2rem;
+  border: 2px solid #444;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: 'Cinzel', serif;
+  box-shadow: 2px 2px 0px #000;
+  width: 100%;
+}
+
+.big-button:hover {
+  background-color: #bbb;
+}
+
+/* Botones pequeños debajo */
+.sub-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  width: 300px;
+}
+
+/* Botón con solo ícono */
+.icon-button {
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  background-color: #999;
+  border: 2px solid #444;
+  box-shadow: 2px 2px 0px #000;
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  background-color: #bbb;
+}
+
+/* Botones pequeños de texto */
+.small-button {
+  flex: 1;
+  padding: 0.5rem;
+  background-color: #999;
+  color: black;
+  border: 2px solid #444;
+  box-shadow: 2px 2px 0px #000;
+  cursor: pointer;
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+}
+
+.small-button:hover {
+  background-color: #bbb;
+}
+
+/* Derechos reservados */
+.copyright {
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+  font-size: 0.85rem;
+  color: #ccc;
+}
+
+#volume-control {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 10;
+  color: #fff;
+  text-shadow: 2px 2px 2px black;
+  transition: transform 0.2s ease;
+}
+
+#volume-control:hover {
+  transform: scale(1.2);
+}
