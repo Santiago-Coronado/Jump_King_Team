@@ -223,6 +223,9 @@ class Player extends AnimatedObject {
             this.updateFrame(deltaTime);
             return; 
         }
+        if (this.inHigherLevel && this.position.y > this.heightThreshold + 1) {
+            this.inHigherLevel = false;
+        }
 
         if (this.powerUpCooldown) {
             this.cooldownTime -= deltaTime;
@@ -265,7 +268,7 @@ class Player extends AnimatedObject {
             this.position = newXPosition;
         }
 
-        if (this.inHigherLevel && this.position.y >= level.height - 3.5) {
+        if (this.position.y >= level.height - 3.5 && game.currentLevelIndex > 0) {
             this.fallToLowerLevel(game);
             return; 
         }
@@ -1263,7 +1266,7 @@ class Game {
         let levelPlan = this.fillUndefinedAreas(this.availableLevels[levelIndex]);
 
         // Crear nuevo nivel
-        this.level = new BaseLevel(this.availableLevels[levelIndex], this.physics, this.collectedPowerUps);
+        this.level = new BaseLevel(levelPlan, this.physics, this.collectedPowerUps);
         if (levelIndex === this.availableLevels.length - 1) {
             let princessChar = levelChars['P'];
             let princessX = this.level.width - 4;
