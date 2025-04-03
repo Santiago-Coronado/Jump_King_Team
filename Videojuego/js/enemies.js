@@ -9,7 +9,7 @@ class BaseEnemy extends AnimatedObject {
         super(color || "red", width, height, x, y, type || "enemy");
         this.physics = physics;
         this.velocity = new Vec(0.0, 0.0);
-        this.health = 1; // Most enemies die in one hit
+        this.health = 1; // All enemies die in one hit
         this.isAlive = true;
         this.isDying = false;
         this.isFacingRight = true;
@@ -332,8 +332,20 @@ class EnemySkeleton extends BaseEnemy {
                     this.animationComplete = true;
                 }
             }
-            // Still apply gravity during death animation
             this.updateMovement(level, deltaTime);
+            this.updateFrame(deltaTime);
+
+            if (this.state === "attacking") {
+                if (this.isFacingRight) {
+                    if (this.frame >= this.maxFrame) {
+                        this.changeState("idle");
+                    }
+                } else {
+                    if (this.frame <= this.maxFrame) {
+                        this.changeState("idle");
+                    }
+                }
+            }
             return;
         }
     
@@ -446,16 +458,36 @@ class EnemySkeleton extends BaseEnemy {
             case "attacking":
                 this.changeSprite('attack');
                 this.velocity.x = 0;
-                const attackFrames = this.isFacingRight ? 
-                    this.movement.attack.right : 
-                    this.movement.attack.left;
-                this.setAnimation(attackFrames[0], attackFrames[1], false, 80);
+                if (this.isFacingRight) {
+                    // Standard forward animation for right-facing attack
+                    this.frame = this.movement.attack.right[0];
+                    this.maxFrame = this.movement.attack.right[1];
+                    this.setAnimation(this.movement.attack.right[0], this.movement.attack.right[1], false, 80);
+                } else {
+                    // Reversed animation for left-facing attack
+                    this.frame = this.movement.attack.left[1];
+                    this.maxFrame = this.movement.attack.left[0];
+                    this.frameDuration = 80;
+                    
+                    // update function for reversed animation
+                    this.updateFrame = (deltaTime) => {
+                        this.totalTime += deltaTime;
+                        if (this.totalTime > this.frameDuration) {
+                            this.frame--;  // Decrement frame number
+                            this.spriteRect.x = this.frame % this.sheetCols;
+                            this.spriteRect.y = Math.floor(this.frame / this.sheetCols);
+                            this.totalTime = 0;
+                        }
+                    };
+                }
                 this.attackTimer = this.attackDuration + this.attackCooldown;
                 break;
             case "idle":
                 this.changeSprite('move');
                 this.velocity.x = 0;
                 this.idleTimer = 0;
+                // Reset the updateFrame function to the default behavior
+                this.updateFrame = AnimatedObject.prototype.updateFrame;
                 const idleFrames = this.isFacingRight ? 
                     this.movement.idle.right : 
                     this.movement.idle.left;
@@ -476,7 +508,18 @@ class EnemySkeleton extends BaseEnemy {
     dealAttackDamage(level) {
         if (this.state === "attacking" && level.player) {
             const distance = Math.abs(level.player.position.x - this.position.x);
-            const attackProgress = (this.attackDuration - this.attackTimer) / this.attackDuration;
+            // Calculate attack progress based on direction
+            let attackProgress;
+            if (this.isFacingRight) {
+                const totalFrames = this.movement.attack.right[1] - this.movement.attack.right[0];
+                const currentFrame = this.frame - this.movement.attack.right[0];
+                attackProgress = currentFrame / totalFrames;
+            } else {
+                const totalFrames = this.movement.attack.left[1] - this.movement.attack.left[0];
+                const currentFrame = this.movement.attack.left[1] - this.frame;
+                attackProgress = currentFrame / Math.abs(totalFrames);
+            }
+            
             if (distance < this.attackRange && attackProgress > 0.7) {
                 if (this.attackSound) {
                     this.attackSound.currentTime = 0;
@@ -569,12 +612,14 @@ class EnemySkeleton extends BaseEnemy {
                 // Normal death animation for right-facing
                 this.frame = this.movement.death.right[0];  // Start from frame 0
                 this.maxFrame = this.movement.death.right[1];  // End at frame 14
-                this.frameDuration = 100;
+                this.frameDuration = 150;
+                // Reset to default update function if it was modified
+                this.updateFrame = AnimatedObject.prototype.updateFrame;
             } else {
                 // Reversed death animation for left-facing
                 this.frame = this.movement.death.left[1];  // Start from frame 30
                 this.maxFrame = this.movement.death.left[0];  // End at frame 15
-                this.frameDuration = 100;
+                this.frameDuration = 150;
                 // Create custom update function for reversed animation
                 this.updateFrame = (deltaTime) => {
                     this.totalTime += deltaTime;
@@ -781,52 +826,59 @@ class EnemyJumper extends BaseEnemy {
         };
     }
 
-    update(level, deltaTime) {
-        if (!this.isDying) {
-            // Check if player exists and has just started jumping
-            if (level.player) {
-                const playerJustJumped = this.lastPlayerVelocityY >= 0 && level.player.velocity.y < 0;
-                if (playerJustJumped) {
-                    this.velocity.y = -0.02; // Jump when player jumps
-                    this.jumpTimer = 0;
 
-                    if (this.jumpSound) {
-                        this.jumpSound.currentTime = 0;
-                        this.jumpSound.play();
-                    }
-                }
-                this.lastPlayerVelocityY = level.player.velocity.y;
+    update(level, deltaTime) {
+        if (this.isDying) {
+            // Handle death animation
+            this.updateFrame(deltaTime);
+            // Check if death animation is complete
+            if (this.frame >= this.maxFrame) {
+                this.animationComplete = true;
             }
-    
-            // Backup jumping behavior if player hasn't jumped in a while 
-            this.jumpTimer += deltaTime;
-            if (this.jumpTimer >= this.jumpInterval) {
-                this.velocity.y = -0.02; // Jump strength
+            return;
+        }
+
+        if (level.player) {
+            const playerJustJumped = this.lastPlayerVelocityY >= 0 && level.player.velocity.y < 0;
+            if (playerJustJumped) {
+                this.velocity.y = -0.02; // Jump when player jumps
                 this.jumpTimer = 0;
-    
+
                 if (this.jumpSound) {
                     this.jumpSound.currentTime = 0;
                     this.jumpSound.play();
                 }
             }
-    
-            // Apply gravity
-            this.velocity.y += this.physics.gravity * deltaTime;
-            
-            // Vertical movement
-            let newPos = this.position.plus(new Vec(0, this.velocity.y * deltaTime));
-            if (!level.contact(newPos, this.size, 'wall')) {
-                this.position = newPos;
-            } else {
-                this.velocity.y = 0;
+            this.lastPlayerVelocityY = level.player.velocity.y;
+        }
+        // Backup jumping behavior if player hasn't jumped in a while 
+        this.jumpTimer += deltaTime;
+        if (this.jumpTimer >= this.jumpInterval) {
+            this.velocity.y = -0.02; // Jump strength
+            this.jumpTimer = 0;
+
+            if (this.jumpSound) {
+                this.jumpSound.currentTime = 0;
+                this.jumpSound.play();
             }
         }
-    
+
+        // Apply gravity
+        this.velocity.y += this.physics.gravity * deltaTime;
+        
+        // Vertical movement
+        let newPos = this.position.plus(new Vec(0, this.velocity.y * deltaTime));
+        if (!level.contact(newPos, this.size, 'wall')) {
+            this.position = newPos;
+        } else {
+            this.velocity.y = 0;
+        }
+        
         this.updateFrame(deltaTime);
     }
 
     takeDamage() {
-        if (!this.isDying) {
+        if (!this.isDying && this.isAlive) {
             this.health--;
             if (this.health <= 0) {
                 if (game && game.player) {
@@ -850,6 +902,29 @@ class EnemyJumper extends BaseEnemy {
             // Set high friction and timer
             player.friction = player.hitFriction;
             player.frictionResetTimer = 500; // Reset friction after 500ms
+        }
+    }
+
+    die() {
+        if (!this.deathAnimationStarted) {
+            this.isAlive = false;
+            this.isDying = true;
+            this.deathAnimationStarted = true;
+            this.velocity = new Vec(0, 0);
+            this.hitTimer = 0;
+
+            if (this.deathSound) {
+                this.deathSound.currentTime = 0;
+                this.deathSound.play();
+            }
+    
+            // Get death animation frames based on direction
+            const deathFrames = this.isFacingRight ? 
+                this.movement.death.right : 
+                this.movement.death.left;
+            
+            // Set the animation
+            this.setAnimation(deathFrames[0], deathFrames[1], false, 150);
         }
     }
 }
