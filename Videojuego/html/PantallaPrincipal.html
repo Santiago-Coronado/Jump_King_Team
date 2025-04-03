@@ -14,7 +14,7 @@
 
     <!-- Botón de control de música -->
     <div id="volume-control">
-    🔊
+        🔊
     </div>
 
     <!-- Menú -->
@@ -23,37 +23,37 @@
 
         <!-- Botones -->
         <div class="button-list">
-            <button class="big-button">Jugar</button>
-            <button class="big-button">Iniciar Sesión / Registrarse</button>
+            <button class="big-button" onclick="location.href='index.html'">Jugar</button>
+            <button class="big-button" onclick="location.href='Login.html'">Iniciar Sesión / Registrarse</button>
         </div>
 
         <!-- Botones inferiores -->
         <div class="sub-buttons">
-            <button class="icon-button">🎮</button>
+            <button class="icon-button" onclick="location.href='DescYControl.html'">🎮</button>
             <button class="small-button">Clasificaciones</button>
             <button class="small-button">Créditos</button>
         </div>
 
         <p class="copyright">© Middle Earth Studios 2025. All rights reserved.</p>
     </div>
+
     <audio id="bg-music" src="../Assets/Music/Pantalla_Principal.mp3" loop></audio>
 
     <script>
-      const bgMusic = document.getElementById('bg-music');
-    
-      // Reproduce música tras cualquier interacción del usuario
-      const startMusic = () => {
+    const bgMusic = document.getElementById('bg-music');
+
+    // Reproduce música tras cualquier interacción del usuario
+    const startMusic = () => {
         bgMusic.volume = 0.5; // ajusta volumen
         bgMusic.play();
         document.removeEventListener('click', startMusic);
         document.removeEventListener('keydown', startMusic);
-      };
-    
-      document.addEventListener('click', startMusic);
-      document.addEventListener('keydown', startMusic);
+    };
 
-      const volumeControl = document.getElementById('volume-control');
+    document.addEventListener('click', startMusic);
+    document.addEventListener('keydown', startMusic);
 
+    const volumeControl = document.getElementById('volume-control');
     let isMuted = false;
 
     volumeControl.addEventListener('click', () => {
