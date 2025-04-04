@@ -728,6 +728,7 @@ class Player extends AnimatedObject {
                 }
             }
         }
+        
         this.position = new Vec(this.respawnPoint.x, this.respawnPoint.y);
         this.velocity = new Vec(0, 0);
         this.isDead = false;
@@ -1024,6 +1025,36 @@ class Game {
             dash: false
         };
         this.statePlayer= 'playing';
+
+        // Pause menu properties
+        this.pauseMenuActive = false;
+        this.pauseAlpha = 0;
+        this.pauseFadeSpeed = 0.005;
+
+        // Sound control
+        this.soundEnabled = true;
+        this.effectsEnabled = true;
+
+        this.soundImg = new Image();
+        this.soundImg.src = '../Assets/Sound.png';
+        this.homeImg = new Image(); 
+        this.homeImg.src='../Assets/Home.png';
+        this.effectImg = new Image();
+        this.effectImg.src='../Assets/Effects.png';
+
+        // Button states for interaction
+        this.buttonStates = {
+            home: { pressed: false },
+            sound: { pressed: false },
+            effects: { pressed: false }
+        };
+
+        // Button dimensions and positions
+        this.pauseButtons = {
+            home: { x: canvasWidth/2 - 150, y: canvasHeight/2, width: 80, height: 80 },
+            sound: { x: canvasWidth/2 - 40, y: canvasHeight/2, width: 80, height: 80 },
+            effects: { x: canvasWidth/2 + 70, y: canvasHeight/2, width: 80, height: 80 }
+        };
     }
 
     update(deltaTime) {
@@ -1354,6 +1385,7 @@ class Game {
     }
 
     draw(ctx, scale) {
+        ctx.save()
         this.background.draw(ctx);
         
         // Dibujar juego
@@ -1377,6 +1409,7 @@ class Game {
         ctx.fillStyle = '#5a2c0f';
         ctx.fillRect(0, canvasHeight - 100, canvasWidth, 100);
 
+        ctx.textAlign = 'left'; // Forzar alineación izquierda
         this.textScore.draw(ctx, `Score: ${this.player.score}`);
 
         // Display speed boost tier
@@ -1423,6 +1456,7 @@ class Game {
         if (this.gameOverActive) {
             this.drawGameOver(ctx);
         }
+        ctx.restore(); 
     }
     drawGameOver(ctx) {
         ctx.fillStyle = `rgba(0, 0, 0, ${this.gameOverAlpha})`;
@@ -1446,6 +1480,63 @@ class Game {
         }
 
     }
+
+    drawpause(ctx) {
+        ctx.save();
+        if (this.state !== 'paused') return;
+    
+        ctx.fillStyle = `rgba(0, 0, 0, ${this.pauseAlpha})`;
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        
+        ctx.font = 'bold 36px "Press Start 2P", sans-serif';
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.fillText('PAUSA', canvasWidth/2, canvasHeight/2 - 80);
+        
+        if (this.homeImg.complete && this.soundImg.complete && this.effectImg.complete) {
+            this.drawPauseButton(ctx, 'home', this.homeImg, this.pauseButtons.home, this.buttonStates.home.pressed);
+            this.drawPauseButton(ctx, 'sound', this.soundImg, this.pauseButtons.sound, this.buttonStates.sound.pressed, this.soundEnabled);
+            this.drawPauseButton(ctx, 'effects', this.effectImg, this.pauseButtons.effects, this.buttonStates.effects.pressed, this.effectsEnabled);
+            
+            ctx.font = '14px "Press Start 2P", sans-serif';
+            ctx.fillStyle = 'white';
+            ctx.fillText('Inicio', this.pauseButtons.home.x + 40, this.pauseButtons.home.y + 100);
+            ctx.fillText('Música', this.pauseButtons.sound.x + 40, this.pauseButtons.sound.y + 100);
+            ctx.fillText('Efectos', this.pauseButtons.effects.x + 40, this.pauseButtons.effects.y + 100);
+        } else {
+            ctx.font = '14px "Press Start 2P", sans-serif';
+            ctx.fillStyle = 'white';
+            ctx.fillText('Loading buttons...', canvasWidth/2, canvasHeight/2 + 20);
+        }
+        
+        ctx.font = '14px "Press Start 2P", sans-serif';
+        ctx.fillText('Presiona ESC para renaudar', canvasWidth/2, canvasHeight/2 + 150);
+        ctx.textAlign = 'left';
+        ctx.restore();
+    }
+    
+    drawPauseButton(ctx, type, img, buttonPos, isPressed, isEnabled = true) {
+        if (!img.complete) return; // Wait until image is loaded
+        
+        const spriteWidth = img.width / 3; // Each sprite sheet has 3 states
+        let spriteIndex = 0; // Default: enabled
+        
+        if (isPressed) {
+            spriteIndex = 1; // Pressed state
+        } else if (!isEnabled) {
+            spriteIndex = 2; // Disabled state
+        }
+        
+        ctx.drawImage(
+            img,
+            spriteIndex * spriteWidth, 0, // Source x, y
+            spriteWidth, img.height, // Source width, height
+            buttonPos.x, buttonPos.y, // Destination x, y
+            buttonPos.width, buttonPos.height // Destination width, height
+        );
+    }
+    
+
     respawnPlayer() {
         if (this.gameOverActive) {
             const powerUpsToKeep = { ...this.playerPowerUps };
@@ -1485,11 +1576,49 @@ class Game {
     togglepause(){
         if(this.state == 'playing'){
             this.state = 'paused';
+            this.pauseAlpha = 0; // Reset fade-in effect
+            this.statePlayer = 'paused'; 
+            this.pauseAlpha = 0;
         } else if(this.state == 'paused'){
             this.state = 'playing';
+            this.statePlayer = 'playing'; 
             frameStart=document.timeline.currentTime;
         }
 }
+}
+
+function toggleBackgroundMusic(enabled) {
+    // Find all background music elements and adjust volume
+    const musicElements = document.querySelectorAll('audio');
+    musicElements.forEach(audio => {
+        if (!audio.id || !audio.id.includes('effect')) {
+            audio.volume = enabled ? 0.5 : 0; // Set to desired volume or mute
+        }
+    });
+}
+
+function updateSoundEffectsVolume(enabled) {
+    if (!game.player) return;
+    
+    // Update player sound effects volume
+    if (game.player.jumpSound) game.player.jumpSound.volume = enabled ? 0.5 : 0;
+    if (game.player.damageSound) game.player.damageSound.volume = enabled ? 0.5 : 0;
+    if (game.player.deathSound) game.player.deathSound.volume = enabled ? 0.5 : 0;
+    
+}
+
+function isPointInRect(x, y, rect) {
+    return x >= rect.x && 
+           x <= rect.x + rect.width && 
+           y >= rect.y && 
+           y <= rect.y + rect.height;
+}
+
+// Helper function to handle button press detection
+function checkButtonPress(mouseX, mouseY, buttonRect, buttonName) {
+    if (isPointInRect(mouseX, mouseY, buttonRect)) {
+        game.buttonStates[buttonName].pressed = true;
+    }
 }
 
 class Background {
@@ -1655,7 +1784,6 @@ function setEventListeners() {
     });
 
     window.addEventListener("keyup", event => {
-        if(game.statePlayer !== 'playing') return;
 
         if (event.key == 'a') {
             game.player.stopMovement("left");
@@ -1667,6 +1795,63 @@ function setEventListeners() {
             game.player.standUp();
         }
     });
+
+       const canvas = document.getElementById('canvas');
+    
+       canvas.addEventListener('mousedown', event => {
+           if (game.state !== 'paused') return;
+           
+           const rect = canvas.getBoundingClientRect();
+           const mouseX = event.clientX - rect.left;
+           const mouseY = event.clientY - rect.top;
+           
+           // Check each button
+           checkButtonPress(mouseX, mouseY, game.pauseButtons.home, 'home');
+           checkButtonPress(mouseX, mouseY, game.pauseButtons.sound, 'sound');
+           checkButtonPress(mouseX, mouseY, game.pauseButtons.effects, 'effects');
+       });
+       
+       canvas.addEventListener('mouseup', event => {
+           if (game.state !== 'paused') return;
+           
+           const rect = canvas.getBoundingClientRect();
+           const mouseX = event.clientX - rect.left;
+           const mouseY = event.clientY - rect.top;
+           
+           // Handle button release actions
+           if (game.buttonStates.home.pressed) {
+               if (isPointInRect(mouseX, mouseY, game.pauseButtons.home)) {
+                   // Navigate to home page
+                   window.location.href = '../html/PantallaPrincipal.html';
+               }
+               game.buttonStates.home.pressed = false;
+           }
+           
+           if (game.buttonStates.sound.pressed) {
+               if (isPointInRect(mouseX, mouseY, game.pauseButtons.sound)) {
+                   // Toggle sound
+                   game.soundEnabled = !game.soundEnabled;
+                   toggleBackgroundMusic(game.soundEnabled);
+               }
+               game.buttonStates.sound.pressed = false;
+           }
+           
+           if (game.buttonStates.effects.pressed) {
+               if (isPointInRect(mouseX, mouseY, game.pauseButtons.effects)) {
+                   // Toggle effects
+                   game.effectsEnabled = !game.effectsEnabled;
+                   updateSoundEffectsVolume(game.effectsEnabled);
+               }
+               game.buttonStates.effects.pressed = false;
+           }
+       });
+       
+       // Cancel button press when mouse leaves the canvas
+       canvas.addEventListener('mouseleave', () => {
+           game.buttonStates.home.pressed = false;
+           game.buttonStates.sound.pressed = false;
+           game.buttonStates.effects.pressed = false;
+       });
 }
 
 // Function that will be called for the game loop
@@ -1683,8 +1868,23 @@ function updateCanvas(frameTime) {
     }
 
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-    game.update(deltaTime);
+    if (game.state === 'playing') {
+        game.update(deltaTime);
+    } else if (game.state === 'paused') {
+        // Update pause menu fade-in effect
+        if (game.pauseAlpha < 0.7) {
+            game.pauseAlpha += game.pauseFadeSpeed * deltaTime;
+            if (game.pauseAlpha > 0.7) {
+                game.pauseAlpha = 0.7;
+            }
+        }
+    }
     game.draw(ctx, scale);
+    
+    // Draw pause menu if the game is paused
+    if (game.state === 'paused') {
+        game.drawpause(ctx);
+    }
 
     // Update time for the next frame
     frameStart = frameTime;

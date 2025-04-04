@@ -8,24 +8,17 @@
         <link rel="stylesheet" href="../css/styles_Knight_Fall.css">
         <link rel="icon" type="png" href="../GDD_Images/Logo_web.png">
         <link rel="stylesheet" href="../css/DescyControl.css">
-
     </head>
 
     <body>
-        <div>
-            <a href="../html/DescyControl.html">Controles y descripción</a>
-            <a href="#">Clasificaciones</a>
-            <div style="display: none;">
-                <a href="#">Estadísticas</a>
-            </div>
-            <a href="../html/index.html">Juego</a>
-            <a href="../html/PantallaPrincipal.html">Pantalla principal</a>
-            <a href="#">Registrar/iniciar sesión</a>
-        </div>
         <div id="headerContainer">
-            <h1>Knight's Fall</h1>
+            <div id="navButtons">
+                <a href="../html/PantallaPrincipal.html" class="menu-button">Inicio</a>
+                <a href="#" class="menu-button">Clasificaciones</a>
+                <a href="../html/DescyControl.html" class="menu-button">Controles y Descripción</a>
+            </div>
         </div>
-        <div id="DescJuego">
+        <div id="descJuego">
             <p>
                 Imagina el desafío divertido de juegos como Jump King pero con la jugabilidad adictiva de un roguelite. 
                 Bienvenido a Knight's Fall, donde cada salto es una apuesta y cada caída es una lección.
@@ -35,49 +28,56 @@
                 ¿Puedes romper el ciclo y llegar a la cima?
             </p>
         </div>
-        <div id="Controles">
+        <div id="descJuego">
             <p>
                 Controles del Juego:
                 Utiliza las teclas indicadas para controlar al caballero y superar los desafíos de la torre.
             </p>
-            <table>
-                <tr>
-                    <th>Tecla</th>
-                    <th>Acción</th>
-                </tr>
-                <tr>
-                    <td><img src="../html_Images/A.png" alt="A"></td>
-                    <td>Moverse a la Izquierda</td>
-                </tr>
-                <tr>
-                    <td><img src="../html_Images/D.png" alt="D"></td>
-                    <td>Moverse a la Derecha</td>
-                </tr>
-                <tr>
-                    <td><img src="../html_Images/space_press.png" alt="Salto"></td>
-                    <td>Salto</td>
-                </tr>
-                <tr>
-                    <td><img src="../html_Images/double_space.png" alt="Doble Salto"></td>
-                    <td>Doble Salto</td>
-                </tr>
-                <tr>
-                    <td><img src="../html_Images/S.png" alt="Cargado"></td>
-                    <td>Salto Cargado</td>
-                </tr>
-                <tr>
-                    <td><img src="../html_Images/Q.png" alt="Html"></td>
-                    <td>Dash</td>
-                </tr>
-                <tr>
-                    <td><img src="../html_Images/Keyboard Extras (1).png" alt="Html"></td>
-                    <td>Pausa</td>
-                </tr>
-            </table>
+            <div class="container">
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>Tecla</th>
+                            <th>Acción</th>
+                        </tr>
+                        <tr>
+                            <td><img src="../html_Images/A.png" alt="A"></td>
+                            <td>Moverse a la Izquierda</td>
+                        </tr>
+                        <tr>
+                            <td><img src="../html_Images/D.png" alt="D"></td>
+                            <td>Moverse a la Derecha</td>
+                        </tr>
+                        <tr>
+                            <td><img src="../html_Images/space_press.png" alt="Salto"></td>
+                            <td>Salto</td>
+                        </tr>
+                        <tr>
+                            <td><img src="../html_Images/double_space.png" alt="Doble Salto"></td>
+                            <td>Doble Salto</td>
+                        </tr>
+                        <tr>
+                            <td><img src="../html_Images/S.png" alt="Cargado"></td>
+                            <td>Salto Cargado</td>
+                        </tr>
+                        <tr>
+                            <td><img src="../html_Images/Q.png" alt="Html"></td>
+                            <td>Dash</td>
+                        </tr>
+                        <tr>
+                            <td><img src="../html_Images/Keyboard Extras (1).png" alt="Html"></td>
+                            <td>Pausa</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="gif-container">
+                    <img src="../html_Images/Walk_1.gif" alt="Caminar">
+                    <img src="../html_Images/Jump_1.gif" alt="Salto">
+                    <img src="../html_Images/Double.gif" alt="Double">
+                    <img src="../html_Images/Charged.gif" alt="Salto Cargado">
+                    <img src="../html_Images/Dash.gif" alt="Dash">
+                </div>
+            </div>
         </div>
-        <nav>
-            <a href="Principal.html">Pagina Principal</a>
-            <a href="index.html" target="_blank">Knight's Fall</a>
-        </nav>
     </body>
 </html>

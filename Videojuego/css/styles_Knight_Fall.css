@@ -153,3 +153,57 @@ canvas {
   background-color: #5a2c0f;
   pointer-events: none;
 }
+
+.menu-button {
+  background-color: #a9a9a9; /* Gris medio claro */
+  color: black;
+  font-family: 'Georgia', serif;
+  font-weight: bold;
+  padding: 20px 40px;
+  border: 2px solid #333;
+  box-shadow: 4px 4px 0px #000000aa;
+  font-size: 1.2rem;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  display: inline-block;
+}
+
+.menu-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 0px #000000aa;
+}
+
+#descJuego{
+  color: white;
+}
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  gap: 0; 
+  margin-left: 0;
+  max-width: 90%;
+}
+
+.table-container {
+  flex: 0 0 auto; /* No crecer, no encoger, tamaño automático */
+  max-width: 500px; /* Limitado el ancho de la tabla */
+}
+
+.gif-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Exactamente 3 columnas */
+  grid-template-rows: repeat(2, auto); /* 2 filas */
+  gap: 10px;
+  width: 240px;
+  margin-left: 50px; /* Margen negativo mucho mayor para colocar los GIFs sobre la tabla */
+}
+
+.gif-container img {
+  width: 200px;
+  height: 120px;
+}
+
+
