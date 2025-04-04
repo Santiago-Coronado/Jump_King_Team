@@ -47,6 +47,15 @@ class Player extends AnimatedObject {
         this.frictionResetTimer = 0; // Timer to reset friction
         this.disableControls = false; // Flag to disable controls when the game is finished
 
+        
+        this.speedMultiplier = 1.0; // Initial multiplier (no boost)
+        this.speedBoostLevel = 0; // Initial speed boost level 
+        this.speedBoostApplied = {
+            level1: false, // 2000 points - 2.5% boost
+            level2: false, // 3000 points - 5% boost
+            level3: false, // 4500 points - 7.5% boost
+        };
+
         this.jumpSound = new Audio("../Assets/Knight/EfectoDeSonido_SaltoCaballero.wav");
         this.jumpSound.volume = 0.5;
 
@@ -91,7 +100,7 @@ class Player extends AnimatedObject {
         this.deathDuration = 1500; 
         this.respawnPoint = new Vec(x, y);
         
-        this.fatalFallVelocity = 0.04; 
+        this.fatalFallVelocity = 0.045; 
 
         this.score = 0;
 
@@ -169,7 +178,7 @@ class Player extends AnimatedObject {
         
         // Only right key pressed
         if (rightData.status) {
-            this.velocity.x = rightData.sign * this.physics.walkSpeed;
+            this.velocity.x = rightData.sign * this.physics.walkSpeed * this.speedMultiplier;
             // Only set the animation if we're not already in this animation
             // or we're changing from idle to walking
             if (this.frame < rightData.moveFrames[0] || this.frame > rightData.moveFrames[rightData.moveFrames.length-1]) {
@@ -182,7 +191,7 @@ class Player extends AnimatedObject {
         
         // Only left key pressed
         if (leftData.status) {
-            this.velocity.x = leftData.sign * this.physics.walkSpeed;
+            this.velocity.x = leftData.sign * this.physics.walkSpeed * this.speedMultiplier;
             // Only set the animation if we're not already in this animation
             // or we're changing from idle to walking
             if (this.frame < leftData.moveFrames[0] || this.frame > leftData.moveFrames[leftData.moveFrames.length-1]) {
@@ -200,6 +209,30 @@ class Player extends AnimatedObject {
             this.velocity.x = 0;
         }
         this.setIdleAnimation();
+    }
+
+    checkSpeedBoosts() {
+        // Check for level 1 boost (2000 points)
+        if (!this.speedBoostApplied.level1 && this.score >= 2000) {
+            this.speedMultiplier = 1.1; // 10% boost
+            this.fatalFallVelocity = 0.0475; // Increase fall velocity threshold
+            this.speedBoostApplied.level1 = true;
+            this.speedBoostLevel = 1;
+        }
+        // Check for level 2 boost (3000 points)
+        else if (!this.speedBoostApplied.level2 && this.score >= 3000) {
+            this.speedMultiplier = 1.2; // 20% boost
+            this.fatalFallVelocity = 0.05; // Increase fall velocity threshold
+            this.speedBoostApplied.level2 = true;
+            this.speedBoostLevel = 2;
+        }
+        // Check for level 3 boost (4500 points)
+        else if (!this.speedBoostApplied.level3 && this.score >= 4500) {
+            this.speedMultiplier = 1.3; // 30% boost
+            this.fatalFallVelocity = 0.055; // Increase fall velocity threshold
+            this.speedBoostApplied.level3 = true;
+            this.speedBoostLevel = 3;
+        }
     }
 
     setIdleAnimation() {
@@ -223,6 +256,9 @@ class Player extends AnimatedObject {
             this.updateFrame(deltaTime);
             return; 
         }
+
+        this.checkSpeedBoosts();
+
         if (this.inHigherLevel && this.position.y > this.heightThreshold + 1) {
             this.inHigherLevel = false;
         }
@@ -317,11 +353,11 @@ class Player extends AnimatedObject {
         this.velocity.x = 0;
         
         if (rightData.status) {
-            this.velocity.x = rightData.sign * this.physics.walkSpeed;
+            this.velocity.x = rightData.sign * this.physics.walkSpeed * this.speedMultiplier;
         }
         
         if (leftData.status) {
-            this.velocity.x = leftData.sign * this.physics.walkSpeed;
+            this.velocity.x = leftData.sign * this.physics.walkSpeed * this.speedMultiplier;
         }
     }
 
@@ -432,6 +468,7 @@ class Player extends AnimatedObject {
             this.startPowerUpCooldown();
         }
     }
+
     doubleJump() {
         if (this.powerUpCooldown) return;
         this.canDoubleJump = false;
@@ -481,8 +518,9 @@ class Player extends AnimatedObject {
 
                 this.velocity.x = 0;
             }
+        }
     }
-    }
+
     standUp(){
         if (this.isCrouching) {
             if (this.powerUpCooldown) return;
@@ -574,8 +612,6 @@ class Player extends AnimatedObject {
                 
                 game.player.updateMovementState();   
             } else {
-                // Optional: Handle reaching the final level
-                console.log("Reached final level!");
                 this.inHigherLevel = false;
             }
         }
@@ -631,6 +667,7 @@ class Player extends AnimatedObject {
             game.player.updateMovementState();
         }
     }
+
     death(){
         if(this.isDead) return;
         if (this.deathSound) {
@@ -643,7 +680,10 @@ class Player extends AnimatedObject {
         }
 
         this.respawnLevelIndex = 0;
-    
+        this.score = 0;
+        this.speedMultiplier = 1; // Reset speed multiplier
+        this.fatalFallVelocity = 0.045; // Reset fall velocity threshold
+
         const startingPos = findPlayerStartPosition(game.level);
         
         if (startingPos) {
@@ -675,7 +715,8 @@ class Player extends AnimatedObject {
             this.spriteRect.x = this.frame % this.sheetCols;
             this.spriteRect.y = Math.floor(this.frame / this.sheetCols);        
         }      
-        this.deathTimer = this.deathDuration;;
+        this.deathTimer = this.deathDuration;
+
     }
     respawn(level) {
         if (level.contact(this.respawnPoint, this.size, 'wall')) {
@@ -774,10 +815,10 @@ class BaseLevel {
                 if ((ch === '$' && isPowerUpCollected(collectedPowerUps.dash, x, y)) ||
                 (ch === '%' && isPowerUpCollected(collectedPowerUps.charged, x, y)) ||
                 (ch === '&' && isPowerUpCollected(collectedPowerUps.double, x, y))) {
-                // Solo agregar un suelo de fondo donde estaría el power-up
-                this.addBackgroundFloor(x, y);
-                return "empty";
-            }
+                    // Solo agregar un suelo de fondo donde estaría el power-up
+                    this.addBackgroundFloor(x, y);
+                    return "empty";
+                }
                 // Create a new instance of the type specified
                 let actor = new objClass("skyblue", 1, 1, x, y, item.label, physics);  // Pass physics to the constructor
                 // Configurations for each type of cell
@@ -797,7 +838,6 @@ class BaseLevel {
                     cellType = "empty";
                 } else if (actor.type == "princess") {
                     this.addBackgroundFloor(x, y);
-                    console.log("Princess created at position:", actor.position);
                     actor.position = actor.position.plus(new Vec(0, 0));
                     actor.size = new Vec(3, 3);
                     actor.setSprite(item.sprite, item.rect);
@@ -948,6 +988,7 @@ class Game {
         this.physics = new BasePhysics();  // Create an instance of BasePhysics
         
         this.availableLevels = GAME_LEVELS;
+        this.loadedlevelPlans = []; // store the generated levels
 
         this.collectedPowerUps = {
             dash: [],
@@ -956,6 +997,8 @@ class Game {
         };
 
         this.level = new BaseLevel (this.availableLevels[levelIndex], this.physics, this.collectedPowerUps)
+        // store level on loaded levels
+        this.loadedlevelPlans[levelIndex] = this.availableLevels[levelIndex];
 
         this.player = this.level.player;
         this.princess = this.level.princess;
@@ -971,7 +1014,10 @@ class Game {
         this.gameOverAlpha = 0; 
         this.fadeInSpeed = 0.005;
 
-        this.textScore = new TextLabel(70, canvasHeight - 40, "30px 'Press Start 2P', sans-serif", "white");
+        this.textScore = new TextLabel(70, canvasHeight - 60, "20px 'Press Start 2P', sans-serif", "white");
+        this.textSpeedBoost = new TextLabel(70, canvasHeight - 30, "20px 'Press Start 2P', sans-serif", "white");
+        this.textLevel = new TextLabel(70, canvasHeight, "20px 'Press Start 2P', sans-serif", "white");
+        
 
         this.playerPowerUps = {
             charged: false,
@@ -1071,11 +1117,12 @@ class Game {
                         x: actor.position.x,
                         y: actor.position.y
                     });
-                    this.player.score += 1000; // Increase score by 1000 when collecting a charged power-up
+                    this.player.score += 1000; // Increase score by 1000 when collecting a dash power-up
                     this.actors = this.actors.filter(item => item !== actor);
                 } else if (actor.type == 'powerup2') {
                     this.player.powerUps.charged = true;
                     this.player.availableMiniLevels.charged = Object.keys(MINI_LEVELS.charged);
+                    this.player.score += 1000; // Increase score by 1000 when collecting a charged power-up
                     this.actors = this.actors.filter(item => item !== actor);
                 } else if (actor.type == 'powerup3') {
                     this.player.powerUps.double = true;
@@ -1086,18 +1133,9 @@ class Game {
                         x: actor.position.x,
                         y: actor.position.y
                     });
-                    this.player.score += 1000; // Increase score by 1000 when collecting a charged power-up
+                    this.player.score += 1000; // Increase score by 1000 when collecting a double power-up
                     this.actors = this.actors.filter(item => item !== actor);
-                } else if (actor.type == 'powerup3') {
-                    this.player.powerUps.double = true;
-                    this.collectedPowerUps.double.push({
-                        levelIndex: this.currentLevelIndex, 
-                        x: actor.position.x,
-                        y: actor.position.y
-                    });
-                    this.player.score += 1000; // Increase score by 1000 when collecting a charged power-up
-                    this.actors = this.actors.filter(item => item !== actor);
-                }
+                } 
             }
         }
 
@@ -1110,10 +1148,13 @@ class Game {
                 const enemyTop = enemy.position.y;
                 
                 if (this.player.velocity.y > 0 && playerBottom < enemyTop + 0.3) {
+                    //console.log("enemy:",enemy);
                     // Player is stomping the enemy
                     if (enemy.takeDamage) {
+                        //console.log("enemy  before takeDamage",enemy.isDying);
                         enemy.takeDamage();
                         this.player.velocity.y = -0.03;
+                        //console.log("enemy after takeDamage",enemy.isDying);
                     }
                 } else if (enemy.hitTimer <= 0) {
                     // Player is hit by enemy
@@ -1294,7 +1335,16 @@ class Game {
         };
 
         // Genera niveles con las areas randomizadas
-        let levelPlan = this.fillUndefinedAreas(this.availableLevels[levelIndex]);
+        let levelPlan;
+        // Check if we already have a generated version of this level
+        if (this.loadedlevelPlans[levelIndex]) {
+            levelPlan = this.loadedlevelPlans[levelIndex];
+        } else {
+            // Generate new level with randomized areas
+            levelPlan = this.fillUndefinedAreas(nextLevel);
+            // Store the generated level for future use
+            this.loadedlevelPlans[levelIndex] = levelPlan;
+        }
 
         // Crear nuevo nivel
         this.level = new BaseLevel(levelPlan, this.physics, this.collectedPowerUps);
@@ -1361,6 +1411,16 @@ class Game {
 
         ctx.textAlign = 'left'; // Forzar alineación izquierda
         this.textScore.draw(ctx, `Score: ${this.player.score}`);
+
+        // Display speed boost tier
+        let boostText = "Speed Boost Tier: 0";
+        if (this.player.speedBoostLevel > 0) {
+            boostText = `Speed Boost Tier: ${this.player.speedBoostLevel}`;
+        }
+        this.textSpeedBoost.draw(ctx, boostText);
+
+        // Display current level
+        this.textLevel.draw(ctx, `Level: ${this.currentLevelIndex + 1}`);
         
         // Dibujar barra de power-ups
         this.powerUpBar.draw(ctx);
@@ -1487,6 +1547,10 @@ class Game {
                 charged: [],
                 double: []
             };
+
+            // Clear loaded levels
+            this.loadedlevelPlans = [];
+
             if (this.currentLevelIndex !== this.player.respawnLevelIndex) {
                 this.changeLevel(this.player.respawnLevelIndex);
             } else {
