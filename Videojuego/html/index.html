@@ -2,8 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"
-    content= "width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" content="width=device-width, initial-scale=1.0">
     <title>Platformer</title>
     <link rel="stylesheet" href="../css/styles_Knight_Fall.css" />
     <script src="../js/game_classes.js"></script>
@@ -12,19 +11,11 @@
     <script src="../js/princess.js"></script>
     <script src="../js/platformer.js"></script>
     <link rel="icon" type="png" href="../GDD_Images/Logo_web.png" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
   </head>
-
   <body>
     <div id="headerContainer">
-      <img
-        src="../GDD_Images/LogoFinal_NoBG.png"
-        alt="Knight's Fall Logo"
-        id="logoHeader"
-      />
+      <img src="../GDD_Images/LogoFinal_NoBG.png" alt="Knight's Fall Logo" id="logoHeader" />
       <div id="navButtons">
         <a href="../html/PantallaPrincipal.html" class="menu-button">Inicio</a>
         <a href="#" class="menu-button">Clasificaciones</a>
@@ -32,9 +23,14 @@
         <a href="../html/Creditos.html" class="menu-button">Créditos</a>
       </div>
     </div>
-
     <div id="gameContainer">
       <canvas id="canvas"></canvas>
+      <div id="gameCompleteOverlay" style="display: none;">
+        <h1>¡Juego Completado!</h1>
+        <p id="finalScore">Puntaje: 0</p>
+        <button id="mainMenuButton" class="styled-button">Pantalla Principal</button>
+        <button id="restartButton" class="styled-button">Volver a jugar</button>
+      </div>
       <script> main(); </script>
     </div>
     
@@ -43,14 +39,11 @@
     <script>
       const bgMusic = document.getElementById("bgMusic");
       let musicStarted = false;
-
       document.addEventListener(
         "click",
         () => {
           if (!musicStarted) {
-            bgMusic.play().catch((err) =>
-              console.warn("Autoplay bloqueado:", err)
-            );
+            bgMusic.play().catch((err) => console.warn("Autoplay bloqueado:", err));
             musicStarted = true;
           }
         },

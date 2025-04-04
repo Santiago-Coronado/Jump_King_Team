@@ -8,28 +8,30 @@ class Princess extends AnimatedObject {
     constructor(color, width, height, x, y, physics) {
         super(color || "yellow", width, height, x, y);
         this.physics = physics;
-        this.detectionRange = 20; // Range for detecting the player
+        this.detectionRange = 20; // Rango para detectar al jugador
         this.victorySequenceActive = false;
         this.sequenceStage = 'inactive';
         this.sequenceTimer = 0;
         this.animationTimer = 0;
         this.currentFrame = 0;
         this.isIdling = true;
+        this.victoryMusicStarted = false; // Bandera para evitar múltiples instancias del audio
 
         this.movement = {
             celebration:{ 
-                    status: false,
-                    axis: "x",
-                    sign: 1,
-                    repeat: false,
-                    duration: 100,
-                    moveFrames: [0,1,2],
-                    idleFrames: [3,4,5,6,7] },
+                status: false,
+                axis: "x",
+                sign: 1,
+                repeat: false,
+                duration: 100,
+                moveFrames: [0, 1, 2],
+                idleFrames: [3, 4, 5, 6, 7]
+            },
             idle: { 
                 status: true,
                 repeat: true,
                 duration: 200,
-                frames: [0,1,2]
+                frames: [0, 1, 2]
             }
         };
         this.startIdleAnimation();
@@ -49,7 +51,7 @@ class Princess extends AnimatedObject {
     update(deltaTime, player, game) {
         this.updateFrame(deltaTime);
 
-        // Manual animation cycling for idle state
+        // Ciclo manual de animación en estado idle
         if (this.isIdling && !this.victorySequenceActive) {
             this.animationTimer += deltaTime;
             
@@ -58,22 +60,22 @@ class Princess extends AnimatedObject {
                 this.currentFrame = (this.currentFrame + 1) % this.movement.idle.frames.length;
                 const frame = this.movement.idle.frames[this.currentFrame];
                 
-                // Update sprite display properties
+                // Actualiza las propiedades de la imagen del sprite
                 this.frame = frame;
                 this.spriteRect.x = frame % this.sheetCols;
                 this.spriteRect.y = Math.floor(frame / this.sheetCols);
             }
         }
         
-        // Victory sequence logic
+        // Lógica de la secuencia de victoria
         if (!this.victorySequenceActive) {
-            // Check if player is nearby to start victory sequence
+            // Verifica si el jugador está cerca para iniciar la secuencia
             if (this.isPlayerNearby(player)) {
                 this.isIdling = false;
                 this.startVictorySequence(player, game);
             }
         } else {
-            // Handle the victory sequence
+            // Maneja la secuencia de victoria
             this.sequenceTimer += deltaTime;
             this.updateVictorySequence(player, game);
         }
@@ -89,10 +91,10 @@ class Princess extends AnimatedObject {
         this.sequenceStage = 'approaching';
         this.sequenceTimer = 0;
         
-        // Disable player controls
+        // Deshabilita el control del jugador
         player.disableControls = true;
         
-        // Store player's direction and make them face the princess
+        // Define la dirección del jugador para que mire a la princesa
         player.isFacingRight = this.position.x > player.position.x;
         
         console.log("Victory sequence activated!");
@@ -116,14 +118,14 @@ class Princess extends AnimatedObject {
     }
 
     handleApproachingStage(player) {
-        // Move player toward princess
+        // Mueve al jugador hacia la princesa
         const targetX = this.position.x - (player.isFacingRight ? 1.5 : -1.5);
         const moveDirection = targetX > player.position.x ? 1 : -1;
         
-        // Move player at a controlled pace
+        // Mueve al jugador a un ritmo controlado
         player.velocity.x = moveDirection * this.physics.walkSpeed * 0.8;
         
-        // Update player animation if needed - using player's existing movement structure
+        // Actualiza la animación del jugador según su dirección
         if (player.isFacingRight) {
             player.movement.right.status = true;
             player.movement.left.status = false;
@@ -132,28 +134,28 @@ class Princess extends AnimatedObject {
             player.movement.left.status = true;
         }
         
-        // If player is close enough to the target position
+        // Cuando el jugador esté lo suficientemente cerca de la posición objetivo
         if (Math.abs(player.position.x - targetX) < 0.2) {
-            player.velocity.x = 0; // Stop player movement
+            player.velocity.x = 0; // Detiene al jugador
             
-            // Reset player movement status
+            // Resetea el estado de movimiento del jugador
             player.movement.right.status = false;
             player.movement.left.status = false;
             
-            // Move to celebration stage
+            // Pasa a la etapa de celebración
             this.sequenceStage = 'celebrate';
             this.sequenceTimer = 0;
 
-            // Start celebration
+            // Inicia la celebración
             this.movement.celebration.status = true;
             
-            // Set animation frames using the moveFrames from celebration
+            // Configura la animación usando los moveFrames de celebración
             const celebrationFrames = this.movement.celebration.moveFrames;
             const minFrame = Math.min(...celebrationFrames);
             const maxFrame = Math.max(...celebrationFrames);
             this.setAnimation(minFrame, maxFrame, true, this.movement.celebration.duration);
             
-            // Play celebration sound if available
+            // Reproduce el sonido de celebración si está disponible
             if (this.celebrateSound) {
                 this.celebrateSound.currentTime = 0;
                 this.celebrateSound.play().catch(error => console.log("Error playing celebrate sound:", error));
@@ -162,19 +164,19 @@ class Princess extends AnimatedObject {
     }
 
     handleCelebrateStage() {
-        // Celebrate for 2 seconds
+        // Celebra durante 2 segundos
         if (this.sequenceTimer >= 2000) {
-            // Move to kiss stage
+            // Pasa a la etapa del beso
             this.sequenceStage = 'kiss';
             this.sequenceTimer = 0;
             
-            // Set kiss animation using idle frames (representing the kiss)
+            // Configura la animación del beso usando idleFrames (representa el beso)
             const kissFrames = this.movement.celebration.idleFrames;
             const minFrame = Math.min(...kissFrames);
             const maxFrame = Math.max(...kissFrames);
             this.setAnimation(minFrame, maxFrame, false, 300);
             
-            // Play kiss sound if available
+            // Reproduce el sonido del beso si está disponible
             if (this.kissSound) {
                 this.kissSound.currentTime = 0;
                 this.kissSound.play().catch(error => console.log("Error playing kiss sound:", error));
@@ -183,14 +185,14 @@ class Princess extends AnimatedObject {
     }
 
     handleKissStage(player) {
-        // First half of kiss duration - just show the kiss animation, no jump yet
+        // Primera mitad de la duración del beso: se muestra la animación sin salto
         if (this.sequenceTimer >= 500 && !player.isJumping) {
-            // After 500ms of kiss, make player jump in joy
+            // Tras 500ms del beso, se hace que el jugador salte de alegría
             console.log("Kiss complete, player jumping in joy!");
             player.velocity.y = player.physics.initialJumpSpeed * 1.2;
             player.isJumping = true;
             
-            // Set jump animation using player's own jump animation frames
+            // Configura la animación de salto usando los frames correspondientes del jugador
             if (player.isFacingRight) {
                 const jumpFrames = player.movement.jump.right;
                 player.setAnimation(
@@ -210,26 +212,64 @@ class Princess extends AnimatedObject {
             }
         }
         
-        // Kiss for 1 second, then move to victory stage
+        // Tras 1 segundo de beso, pasa a la etapa de victoria
         if (this.sequenceTimer >= 1000) {
-            // Move to victory stage
             this.sequenceStage = 'victory';
             this.sequenceTimer = 0;
         }
     }
     
-
     handleVictoryStage(game) {
-        // Display victory for 2 seconds then end game
-        if (this.sequenceTimer >= 2000) {
-            console.log("Game complete! Victory!");
-            
-            // Show victory screen
-            this.showVictoryScreen();
+        if (this.sequenceTimer >= 2000 && !this.victoryMusicStarted) {
+            this.victoryMusicStarted = true;
+    
+            if (!gameElapsedTime) {
+                const now = Date.now();
+                gameElapsedTime = now - gameStartTime;
+            }
+        
+            const overlay = document.getElementById("gameCompleteOverlay");
+            const scoreDisplay = document.getElementById("finalScore");
+        
+            const seconds = Math.floor((gameElapsedTime / 1000) % 60);
+            const minutes = Math.floor((gameElapsedTime / 1000) / 60);
+            const timeFormatted = `${minutes}m ${seconds < 10 ? "0" : ""}${seconds}s`;
+        
+            scoreDisplay.textContent = `Puntaje: ${game.player.score} | Tiempo: ${timeFormatted}`;
+            overlay.style.display = "flex";
+        
+            requestAnimationFrame(() => {
+                overlay.style.opacity = "1";
+            });
+        
+            const mainMusic = document.getElementById("bgMusic");
+            if (mainMusic) {
+                mainMusic.pause();
+                mainMusic.currentTime = 0;
+            }
+        
+            const victoryMusic = new Audio("../Assets/Music/EndingSong.mp3");
+            victoryMusic.volume = 0.5;
+        
+            victoryMusic.addEventListener('canplaythrough', () => {
+                victoryMusic.play();
+            });
+        
+            victoryMusic.load();
+        
+            const restartButton = document.getElementById("restartButton");
+            restartButton.onclick = () => {
+                overlay.style.display = "flex";
+                requestAnimationFrame(() => {
+                    overlay.style.opacity = "1";
+                });
+                location.reload();
+            };
+        
+            const mainMenuButton = document.getElementById("mainMenuButton");
+            mainMenuButton.onclick = () => {
+                window.location.href = "PantallaPrincipal.html";
+            };
         }
-    }
-
-    showVictoryScreen(){
-
     }
 }
