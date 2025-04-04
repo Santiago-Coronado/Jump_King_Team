@@ -11,6 +11,7 @@
 const canvasWidth = 800;
 const canvasHeight = 450;
 
+
 // Context for the display canvas
 let ctx;
 
@@ -26,6 +27,9 @@ let level;
 const scale = 14.3;
 
 let debugJump = false;
+
+let gameStartTime = Date.now();
+let gameElapsedTime = 0;
 
 class BasePhysics {
     constructor() {
