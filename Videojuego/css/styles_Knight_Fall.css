@@ -157,3 +157,34 @@ canvas {
   box-shadow: 6px 6px 0px #000000aa;
 }
 
+#descJuego{
+  color: white;
+}
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  gap: 0; 
+  margin-left: 0;
+  max-width: 90%;
+}
+
+.table-container {
+  flex: 0 0 auto; /* No crecer, no encoger, tamaño automático */
+  max-width: 500px; /* Limitado el ancho de la tabla */
+}
+
+.gif-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Exactamente 3 columnas */
+  grid-template-rows: repeat(2, auto); /* 2 filas */
+  gap: 10px;
+  width: 240px;
+  margin-left: 50px; /* Margen negativo mucho mayor para colocar los GIFs sobre la tabla */
+}
+
+.gif-container img {
+  width: 200px;
+  height: 120px;
+}
+
