@@ -1,9 +1,10 @@
 /*
  * String variables with the layout of the levels
  * https://eloquentjavascript.net/16_game.html
- *
- * Gilberto Echeverria
- * 2025-01-22
+ * Levels for the game
+ * Enrique Antonio Pires A01424547
+ * Santiago Coronado A01785558
+ * Juan de Dios Gastelum A01784523
  */
 
 "use strict";
@@ -238,7 +239,7 @@ const MINI_LEVELS = {
       .............................
       .............................
       .............................
-      #######.............#########
+      ###########.........#########
       `,
     j:
       `.............................

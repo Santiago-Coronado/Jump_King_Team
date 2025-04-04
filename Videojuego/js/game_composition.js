@@ -1,5 +1,8 @@
 /*
  * Game Class
+ * Enrique Antonio Pires A01424547
+ * Santiago Coronado A01785558
+ * Juan de Dios Gastelum A01784523
  */
 
 "use strict";
@@ -54,12 +57,14 @@ class Game {
         this.textSpeedBoost = new TextLabel(70, canvasHeight - 30, "20px 'Press Start 2P', sans-serif", "white");
         this.textLevel = new TextLabel(70, canvasHeight, "20px 'Press Start 2P', sans-serif", "white");
         
-
+        // Set the initial player power-ups
         this.playerPowerUps = {
             charged: false,
             double: false,
             dash: false
         };
+
+        // Set the initial state for the player
         this.statePlayer= 'playing';
 
         // Pause menu properties
@@ -98,11 +103,13 @@ class Game {
         if (this.player.isDead) {
             this.player.deathTimer -= deltaTime;
             this.player.updateFrame(deltaTime);
-   
+            
+            // Check if the player is dead and the death animation is complete
             if (this.player.deathTimer <= 0 && !this.gameOverActive) {
                 this.gameOverActive = true;
                 this.gameOverAlpha = 0;
             }
+            // Check if the game over coloration is active
             if (this.gameOverActive && this.gameOverAlpha<0.7) {
                 this.gameOverAlpha += this.fadeInSpeed * deltaTime;
                 if(this.gameOverAlpha > 0.7) {
@@ -400,6 +407,7 @@ class Game {
             this.level.princess = princess;
             this.princess = princess;
         }
+
         this.player = this.level.player;
         this.actors=this.level.actors;
         this.enemies = this.level.enemies;
@@ -424,7 +432,7 @@ class Game {
         ctx.save()
         this.background.draw(ctx);
         
-        // Dibujar juego
+        // Draw game
         for (let actor of this.actors) {
             if (actor.type !== 'floor') {
                 actor.draw(ctx, scale);
@@ -441,11 +449,11 @@ class Game {
             this.princess.draw(ctx, scale);
         }
         
-        // Dibujar HUD
+        // Draw HUD
         ctx.fillStyle = '#5a2c0f';
         ctx.fillRect(0, canvasHeight - 100, canvasWidth, 100);
 
-        ctx.textAlign = 'left'; // Forzar alineación izquierda
+        ctx.textAlign = 'left'; // Force left alignment
         this.textScore.draw(ctx, `Score: ${this.player.score}`);
 
         // Display speed boost tier
@@ -458,18 +466,18 @@ class Game {
         // Display current level
         this.textLevel.draw(ctx, `Level: ${this.currentLevelIndex + 1}`);
         
-        // Dibujar barra de power-ups
+        // Draw powerup bar
         this.powerUpBar.draw(ctx);
         if (this.player.powerUpCooldown) {
             const barWidth = 100;
             const barHeight = 10;
             const cooldownRatio = this.player.cooldownTime / this.player.cooldownDuration;
         
-            // Posición
+            // Position of bar
             const barX = 625;
             const barY = 360 - 8; 
 
-            // Estilo
+            // Style of bar
             ctx.fillStyle = 'black';
             ctx.fillRect(barX, barY, barWidth, barHeight);
             ctx.fillStyle = 'red';
@@ -477,7 +485,7 @@ class Game {
             ctx.strokeStyle = 'white';
             ctx.strokeRect(barX, barY, barWidth, barHeight);
         
-            // Temporizador númerico
+            // Numeric timer
             ctx.fillStyle = 'white';
             ctx.font = '14px monospace';
             ctx.textAlign = 'left';
@@ -494,6 +502,7 @@ class Game {
         }
         ctx.restore(); 
     }
+
     drawGameOver(ctx) {
         ctx.fillStyle = `rgba(0, 0, 0, ${this.gameOverAlpha})`;
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
@@ -609,6 +618,7 @@ class Game {
             this.gameOverAlpha = 0;
         }
     }
+    
     togglepause(){
         if(this.state == 'playing'){
             this.state = 'paused';

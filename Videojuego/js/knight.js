@@ -1,5 +1,8 @@
 /*
  * Player Knight Class
+ * Enrique Antonio Pires A01424547
+ * Santiago Coronado A01785558
+ * Juan de Dios Gastelum A01784523
  */
 
 "use strict";
@@ -409,9 +412,10 @@ class Player extends AnimatedObject {
             if (this.isJumping && this.hasAirDashed) {
                 return; 
             }
+            // Get the velocity of the dash
             const dashSpeed = this.physics.walkSpeed * 3; 
             this.isDashing=true;
-            const dashTime = 250;
+            const dashTime = 250; // Duration of the dash in milliseconds
 
             if (this.isJumping) {
                 this.hasAirDashed = true;
@@ -427,7 +431,7 @@ class Player extends AnimatedObject {
 
             const originalColor = this.color;
             this.color = "cyan"; 
-            
+            // Make it so that when the dash ends, the player is not moving in the dashspeed anymore
             setTimeout(() => {
                 this.isDashing = false;
                 this.updateMovementState();
@@ -533,7 +537,7 @@ class Player extends AnimatedObject {
         if(this.position.y <this.heightThreshold && !this.inHigherLevel){
             this.inHigherLevel=true;
             if (game.currentLevelIndex < game.availableLevels.length - 1){
-
+                // Store the behaviour that the player has before changing levels
                 const currentXPosition = this.position.x;
                 const facingRight = this.isFacingRight;
                 const velocity = new Vec(this.velocity.x, this.velocity.y);
@@ -554,6 +558,7 @@ class Player extends AnimatedObject {
 
                 const bottomPosition = game.level.height - 5;
 
+                // Get player information and set it to the new level
                 game.player.position = new Vec(currentXPosition,bottomPosition);
                 game.player.isFacingRight = facingRight;
                 game.player.velocity = velocity;
@@ -588,7 +593,7 @@ class Player extends AnimatedObject {
     
     fallToLowerLevel(game){
         if(game.currentLevelIndex > 0){
-
+            // Store the behaviour that the player has before changing levels
             const currentXPosition = this.position.x;
             const facingRight = this.isFacingRight;
             const velocity = new Vec(this.velocity.x, this.velocity.y); 
@@ -608,7 +613,7 @@ class Player extends AnimatedObject {
             game.changeLevel(game.currentLevelIndex - 1);
 
             const topPosition = 3;
-
+            // Get player information and set it to the new level
             game.player.position = new Vec(currentXPosition, topPosition);
             game.player.isFacingRight = facingRight;
             game.player.velocity = velocity;
@@ -647,8 +652,8 @@ class Player extends AnimatedObject {
             this.initialPosition = new Vec(this.position.x, this.position.y);
         }
 
-        this.respawnLevelIndex = 0;
-        this.score = 0;
+        this.respawnLevelIndex = 0; // Reset respawn level index
+        this.score = 0; // Reset score on death
         this.speedMultiplier = 1; // Reset speed multiplier
         this.fatalFallVelocity = 0.045; // Reset fall velocity threshold
 
@@ -686,6 +691,7 @@ class Player extends AnimatedObject {
         this.deathTimer = this.deathDuration;
 
     }
+
     respawn(level) {
         if (level.contact(this.respawnPoint, this.size, 'wall')) {
             for (let y = this.respawnPoint.y; y > 0; y--) {
@@ -711,8 +717,6 @@ class Player extends AnimatedObject {
         this.movement.jump.status = false;
         this.movement.crouch.status = false;
 
-        
-        
         // Reset animation
         this.isFacingRight = true;
         this.setIdleAnimation();

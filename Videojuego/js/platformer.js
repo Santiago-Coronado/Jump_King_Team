@@ -186,9 +186,7 @@ function init() {
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
     ctx = canvas.getContext('2d');
-
-
-
+    
     gameStart();
 }
 
