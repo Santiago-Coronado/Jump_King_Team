@@ -1,5 +1,8 @@
 /*
  * BaseLevel Class
+ * Enrique Antonio Pires A01424547
+ * Santiago Coronado A01785558
+ * Juan de Dios Gastelum A01784523
  */
 
 "use strict";
@@ -24,19 +27,17 @@ class BaseLevel {
                 if ((ch === '$' && isPowerUpCollected(collectedPowerUps.dash, x, y)) ||
                 (ch === '%' && isPowerUpCollected(collectedPowerUps.charged, x, y)) ||
                 (ch === '&' && isPowerUpCollected(collectedPowerUps.double, x, y))) {
-                    // Solo agregar un suelo de fondo donde estaría el power-up
+                    // Only add a background floor where the power-up would be
                     this.addBackgroundFloor(x, y);
                     return "empty";
                 }
                 // Create a new instance of the type specified
                 let actor = new objClass("skyblue", 1, 1, x, y, item.label, physics);  // Pass physics to the constructor
                 // Configurations for each type of cell
-                // TODO: Simplify this code, sinde most of it is repeated
                 if (actor.type == "player") {
                     // Also instantiate a floor tile below the player
                     this.addBackgroundFloor(x, y);
 
-                    // Make the player larger
                     actor.position = actor.position.plus(new Vec(0, -3));
                     actor.size = new Vec(3, 3);
 
@@ -55,7 +56,6 @@ class BaseLevel {
                     this.princess = actor;
                     cellType = "empty";
                 } else if (actor.type == "powerup1") {
-                    // Also instantiate a floor tile below the player
                     this.addBackgroundFloor(x, y);
 
                     actor.position = actor.position.plus(new Vec(-1, -1));
@@ -68,7 +68,6 @@ class BaseLevel {
                     cellType = "empty";
                     
                 } else if (actor.type == "powerup2") {
-                    // Also instantiate a floor tile below the player
                     this.addBackgroundFloor(x, y);
 
                     actor.position = actor.position.plus(new Vec(-1, -1));
@@ -81,7 +80,6 @@ class BaseLevel {
                     cellType = "empty";
                     
                 } else if (actor.type == "powerup3") {
-                    // Also instantiate a floor tile below the player
                     this.addBackgroundFloor(x, y);
 
                     actor.position = actor.position.plus(new Vec(-1, -1));
@@ -94,7 +92,6 @@ class BaseLevel {
                     cellType = "empty";
                     
                 }else if (actor.type == "wall") {
-                    // Randomize sprites for each wall tile
                     actor.setSprite(item.sprite, item.rect);
                     this.actors.push(actor);
                     cellType = "wall";

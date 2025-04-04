@@ -1,5 +1,8 @@
 /*
  * Enemy Base Class
+ * Enrique Antonio Pires A01424547
+ * Santiago Coronado A01785558
+ * Juan de Dios Gastelum A01784523
  */
 
 "use strict";

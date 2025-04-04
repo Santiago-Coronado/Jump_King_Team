@@ -1,8 +1,9 @@
 /*
- * General classes that can be useful for a game
- *
- * Gilberto Echeverria
- * 2025-01-22
+ * General classes
+ * Enrique Antonio Pires A01424547
+ * Santiago Coronado A01785558
+ * Juan de Dios Gastelum A01784523
+ * 
  */
 
 "use strict";

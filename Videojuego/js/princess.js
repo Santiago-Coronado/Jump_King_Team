@@ -1,5 +1,8 @@
 /*
-Princess Stuff
+ * Princess Stuff
+ * Enrique Antonio Pires A01424547
+ * Santiago Coronado A01785558
+ * Juan de Dios Gastelum A01784523
 */
 
 "use strict";
@@ -8,14 +11,14 @@ class Princess extends AnimatedObject {
     constructor(color, width, height, x, y, physics) {
         super(color || "yellow", width, height, x, y);
         this.physics = physics;
-        this.detectionRange = 20; // Rango para detectar al jugador
+        this.detectionRange = 20; // Range to detect the player
         this.victorySequenceActive = false;
         this.sequenceStage = 'inactive';
         this.sequenceTimer = 0;
         this.animationTimer = 0;
         this.currentFrame = 0;
         this.isIdling = true;
-        this.victoryMusicStarted = false; // Bandera para evitar múltiples instancias del audio
+        this.victoryMusicStarted = false; // Flag to indicate if victory music has started
 
         this.movement = {
             celebration:{ 
@@ -51,7 +54,7 @@ class Princess extends AnimatedObject {
     update(deltaTime, player, game) {
         this.updateFrame(deltaTime);
 
-        // Ciclo manual de animación en estado idle
+        // Manual cycle through idle animation frames
         if (this.isIdling && !this.victorySequenceActive) {
             this.animationTimer += deltaTime;
             
@@ -60,22 +63,22 @@ class Princess extends AnimatedObject {
                 this.currentFrame = (this.currentFrame + 1) % this.movement.idle.frames.length;
                 const frame = this.movement.idle.frames[this.currentFrame];
                 
-                // Actualiza las propiedades de la imagen del sprite
+                // Update properties of sprite image
                 this.frame = frame;
                 this.spriteRect.x = frame % this.sheetCols;
                 this.spriteRect.y = Math.floor(frame / this.sheetCols);
             }
         }
         
-        // Lógica de la secuencia de victoria
+        // Logic to check if the player is nearby and start the victory sequence
         if (!this.victorySequenceActive) {
-            // Verifica si el jugador está cerca para iniciar la secuencia
+            // Verify player proximity
             if (this.isPlayerNearby(player)) {
                 this.isIdling = false;
                 this.startVictorySequence(player, game);
             }
         } else {
-            // Maneja la secuencia de victoria
+            // Manage the victory sequence
             this.sequenceTimer += deltaTime;
             this.updateVictorySequence(player, game);
         }
@@ -91,10 +94,10 @@ class Princess extends AnimatedObject {
         this.sequenceStage = 'approaching';
         this.sequenceTimer = 0;
         
-        // Deshabilita el control del jugador
+        // Disable controls
         player.disableControls = true;
         
-        // Define la dirección del jugador para que mire a la princesa
+        // Define direction the player is facing
         player.isFacingRight = this.position.x > player.position.x;
         
         console.log("Victory sequence activated!");
@@ -118,14 +121,14 @@ class Princess extends AnimatedObject {
     }
 
     handleApproachingStage(player) {
-        // Mueve al jugador hacia la princesa
+        // Move player towards the princess
         const targetX = this.position.x - (player.isFacingRight ? 1.5 : -1.5);
         const moveDirection = targetX > player.position.x ? 1 : -1;
         
-        // Mueve al jugador a un ritmo controlado
+        // Move player with a slower speed
         player.velocity.x = moveDirection * this.physics.walkSpeed * 0.8;
-        
-        // Actualiza la animación del jugador según su dirección
+
+        // Update animation of player based on direction
         if (player.isFacingRight) {
             player.movement.right.status = true;
             player.movement.left.status = false;
@@ -134,28 +137,28 @@ class Princess extends AnimatedObject {
             player.movement.left.status = true;
         }
         
-        // Cuando el jugador esté lo suficientemente cerca de la posición objetivo
+        // When the player is close enough to the target position
         if (Math.abs(player.position.x - targetX) < 0.2) {
             player.velocity.x = 0; // Detiene al jugador
-            
-            // Resetea el estado de movimiento del jugador
+
+            // Reset movement status
             player.movement.right.status = false;
             player.movement.left.status = false;
             
-            // Pasa a la etapa de celebración
+            // Go to celebrate state
             this.sequenceStage = 'celebrate';
             this.sequenceTimer = 0;
 
-            // Inicia la celebración
+            // Start the celebration
             this.movement.celebration.status = true;
-            
-            // Configura la animación usando los moveFrames de celebración
+
+            // Animation for celebration
             const celebrationFrames = this.movement.celebration.moveFrames;
             const minFrame = Math.min(...celebrationFrames);
             const maxFrame = Math.max(...celebrationFrames);
             this.setAnimation(minFrame, maxFrame, true, this.movement.celebration.duration);
             
-            // Reproduce el sonido de celebración si está disponible
+            // Put sound effects for celebration
             if (this.celebrateSound) {
                 this.celebrateSound.currentTime = 0;
                 this.celebrateSound.play().catch(error => console.log("Error playing celebrate sound:", error));
@@ -164,19 +167,19 @@ class Princess extends AnimatedObject {
     }
 
     handleCelebrateStage() {
-        // Celebra durante 2 segundos
+        // Celebrate for 2 seconds
         if (this.sequenceTimer >= 2000) {
-            // Pasa a la etapa del beso
+            // Go to kiss stage
             this.sequenceStage = 'kiss';
             this.sequenceTimer = 0;
-            
-            // Configura la animación del beso usando idleFrames (representa el beso)
+
+            // Animation of kiss
             const kissFrames = this.movement.celebration.idleFrames;
             const minFrame = Math.min(...kissFrames);
             const maxFrame = Math.max(...kissFrames);
             this.setAnimation(minFrame, maxFrame, false, 300);
-            
-            // Reproduce el sonido del beso si está disponible
+
+            // Put the sound effects for the kiss
             if (this.kissSound) {
                 this.kissSound.currentTime = 0;
                 this.kissSound.play().catch(error => console.log("Error playing kiss sound:", error));
@@ -185,14 +188,14 @@ class Princess extends AnimatedObject {
     }
 
     handleKissStage(player) {
-        // Primera mitad de la duración del beso: se muestra la animación sin salto
+        // First half of the kiss duration: show animation without jump
         if (this.sequenceTimer >= 500 && !player.isJumping) {
-            // Tras 500ms del beso, se hace que el jugador salte de alegría
+            // After 500ms, make the player jump in joy
             console.log("Kiss complete, player jumping in joy!");
             player.velocity.y = player.physics.initialJumpSpeed * 1.2;
             player.isJumping = true;
-            
-            // Configura la animación de salto usando los frames correspondientes del jugador
+
+            // Get the jump animation frames based on direction
             if (player.isFacingRight) {
                 const jumpFrames = player.movement.jump.right;
                 player.setAnimation(
@@ -212,7 +215,7 @@ class Princess extends AnimatedObject {
             }
         }
         
-        // Tras 1 segundo de beso, pasa a la etapa de victoria
+        // After 1 second of kissing, go to victory stage
         if (this.sequenceTimer >= 1000) {
             this.sequenceStage = 'victory';
             this.sequenceTimer = 0;
@@ -220,54 +223,72 @@ class Princess extends AnimatedObject {
     }
     
     handleVictoryStage(game) {
+        // Wait 2 seconds before showing the victory screen and only execute this once
         if (this.sequenceTimer >= 2000 && !this.victoryMusicStarted) {
+            // Set flag to prevent this code from running multiple times
             this.victoryMusicStarted = true;
-    
+            
+            // Calculate the total time played if not already calculated
             if (!gameElapsedTime) {
                 const now = Date.now();
                 gameElapsedTime = now - gameStartTime;
             }
-        
+            
+            // Get references to the HTML elements for the victory overlay
             const overlay = document.getElementById("gameCompleteOverlay");
             const scoreDisplay = document.getElementById("finalScore");
-        
+            
+            // Format time into minutes and seconds with leading zeros for seconds under 10
             const seconds = Math.floor((gameElapsedTime / 1000) % 60);
             const minutes = Math.floor((gameElapsedTime / 1000) / 60);
             const timeFormatted = `${minutes}m ${seconds < 10 ? "0" : ""}${seconds}s`;
-        
+            
+            // Update the score display with player's score and elapsed time
             scoreDisplay.textContent = `Puntaje: ${game.player.score} | Tiempo: ${timeFormatted}`;
+            // Make the overlay visible
             overlay.style.display = "flex";
-        
+            
+            // Use requestAnimationFrame to ensure the display change happens before changing opacity
+            // This creates a smooth fade-in effect for the overlay
             requestAnimationFrame(() => {
                 overlay.style.opacity = "1";
             });
-        
+            
+            // Stop the background music
             const mainMusic = document.getElementById("bgMusic");
             if (mainMusic) {
                 mainMusic.pause();
                 mainMusic.currentTime = 0;
             }
-        
+            
+            // Create and load the victory music
             const victoryMusic = new Audio("../Assets/Music/EndingSong.mp3");
             victoryMusic.volume = 0.5;
-        
+            
+            // Play the victory music once it's ready
             victoryMusic.addEventListener('canplaythrough', () => {
                 victoryMusic.play();
             });
-        
+            
+            // Start loading the music file
             victoryMusic.load();
-        
+            
+            // Set up handlers for the restart button
             const restartButton = document.getElementById("restartButton");
             restartButton.onclick = () => {
+                // Keep overlay visible during transition
                 overlay.style.display = "flex";
                 requestAnimationFrame(() => {
                     overlay.style.opacity = "1";
                 });
+                // Reload the page to restart the game
                 location.reload();
             };
-        
+
+            // Set up handlers for the main menu button
             const mainMenuButton = document.getElementById("mainMenuButton");
             mainMenuButton.onclick = () => {
+                // Redirect to the main menu page
                 window.location.href = "PantallaPrincipal.html";
             };
         }

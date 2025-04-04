@@ -1,5 +1,8 @@
 /*
  * Powerup Classes
+ * Enrique Antonio Pires A01424547
+ * Santiago Coronado A01785558
+ * Juan de Dios Gastelum A01784523
  */
 
 "use strict";
@@ -39,13 +42,13 @@ function isPowerUpCollected(collectedPowerUpsArray, x, y) {
     }
     
     for (let powerUp of collectedPowerUpsArray) {
-        // Comparación aproximada de posición para tener en cuenta los desplazamientos
+        // Approximate comparison of position to account for offsets
         const baseX = Math.floor(x);
         const baseY = Math.floor(y);
         const collectedX = Math.floor(powerUp.x);
         const collectedY = Math.floor(powerUp.y);
-        
-        // Verificar si están aproximadamente en la misma posición
+    
+        // Verify if they are approximately in the same position
         if (Math.abs(collectedX - baseX) <= 3 && Math.abs(collectedY - baseY) <= 3) {
             return true;
         }
