@@ -94,21 +94,28 @@ class BaseEnemy extends AnimatedObject {
     }
 
     hitPlayer(player) {
-        // Push player away from enemy
-        const pushDirection = player.position.x < this.position.x ? -1 : 1;
-        player.velocity.x = this.playerPushForce.x * pushDirection;
-        player.velocity.y = this.playerPushForce.y;
-        if (player.damageSound) {
-            player.damageSound.currentTime = 0;
-            player.damageSound.play();
+        if (!this.isDying) {
+            const pushDirection = player.position.x < this.position.x ? -1 : 1;
+            player.velocity.x = 0.02 * pushDirection; // Stronger horizontal push
+            player.velocity.y = -0.015; // Consistent vertical push
+
+            // Set high friction and timer
+            player.friction = player.hitFriction;
+            player.frictionResetTimer = 500; // Reset friction after 500ms
+
+            // Reset movement flags - this prevents the player from continuing to walk
+            // in the same direction after being hit
+            player.movement.right.status = false;
+            player.movement.left.status = false;
+
+            // Disable player controls temporarily
+            player.disableControls = true;
+            
+            // Create a timeout to re-enable controls slightly before friction resets
+            setTimeout(() => {
+                player.disableControls = false;
+            }, 200); // Re-enable controls after 300ms
         }
-
-        // Set high friction and timer
-        player.friction = player.hitFriction;
-        player.frictionResetTimer = 500; // Reset friction after 500ms
-
-        // Set cooldown
-        this.hitTimer = this.hitCooldown;
     }
 
     takeDamage() {
@@ -116,6 +123,9 @@ class BaseEnemy extends AnimatedObject {
         if (this.health <= 0) {
             if (game && game.player) {
                 game.player.score += this.scoreValue;
+            }
+            if (this.health <= 0 && gameStats) {
+                gameStats.recordEnemyDefeated();
             }
             this.die();
         }

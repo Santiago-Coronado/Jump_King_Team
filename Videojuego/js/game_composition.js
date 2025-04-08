@@ -553,6 +553,34 @@ class Game {
             ctx.fillStyle = 'white';
             ctx.fillText('Loading buttons...', canvasWidth/2, canvasHeight/2 + 20);
         }
+
+        // Display game statistics
+    if (gameStats) {
+        const stats = gameStats.getStats();
+        const statsY = this.pauseButtons.home.y - 100; // Position below buttons
+        
+        ctx.font = 'bold 20px "Press Start 2P", sans-serif';
+        ctx.fillStyle = '#ffd700'; // Gold color for the heading
+        ctx.fillText('ESTADÍSTICAS', canvasWidth/2, statsY);
+        
+        ctx.font = '12px "Press Start 2P", sans-serif';
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'left';
+        
+        const leftColX = canvasWidth/2 - 180;
+        const rightColX = canvasWidth/2 + 20;
+        
+        // Left column stats
+        ctx.fillText(`Tiempo Total: ${stats.totalTimePlayed.formatted}`, leftColX, statsY + 30);
+        ctx.fillText(`Muertes: ${stats.deaths}`, leftColX, statsY + 55);
+        ctx.fillText(`Partidas Jugadas: ${stats.gamesPlayed}`, leftColX, statsY + 80);
+        
+        // Right column stats
+        ctx.fillText(`Partidas Completadas: ${stats.gamesCompleted}`, rightColX, statsY + 30);
+        ctx.fillText(`Mejor Tiempo: ${stats.personalRecord.bestTime.formatted}`, rightColX, statsY + 55);
+        ctx.fillText(`Mejor Puntaje: ${stats.personalRecord.bestScore}`, rightColX, statsY + 80);
+        ctx.fillText(`Enemigos Derrotados: ${stats.enemiesDefeated}`, rightColX, statsY + 105);
+    }
         
         ctx.font = '14px "Press Start 2P", sans-serif';
         ctx.fillText('Presiona ESC para renaudar', canvasWidth/2, canvasHeight/2 + 150);

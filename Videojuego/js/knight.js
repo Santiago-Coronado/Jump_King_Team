@@ -16,6 +16,7 @@ class Player extends AnimatedObject {
         this.defaultFriction = 0.3; // Store default friction
         this.hitFriction = 0.9; // Higher friction value when hit (more sliding)
         this.frictionResetTimer = 0; // Timer to reset friction
+        this.inVictorySequence = false; // Flag to indicate if the player is in the victory sequence
         this.disableControls = false; // Flag to disable controls when the game is finished
 
         
@@ -137,6 +138,36 @@ class Player extends AnimatedObject {
     updateMovementState() {
         if (this.isCrouching || this.isJumping) return; // Don't change animations while jumping or crouching
         
+        // If controls are disabled, use push velocity from enemy but don't apply movement flags
+        if (this.disableControls) {
+            // If we're in victory sequence, allow animation updates based on velocity
+            if (this.inVictorySequence) {
+                // Update animation based on current velocity
+                if (this.velocity.x > 0) {
+                    // Right animation
+                    const rightData = this.movement.right;
+                    const minFrame = Math.min(...rightData.moveFrames);
+                    const maxFrame = Math.max(...rightData.moveFrames);
+                    if (this.frame < minFrame || this.frame > maxFrame) {
+                        this.setAnimation(minFrame, maxFrame, rightData.repeat, rightData.duration);
+                    }
+                } else if (this.velocity.x < 0) {
+                    // Left animation
+                    const leftData = this.movement.left;
+                    const minFrame = Math.min(...leftData.moveFrames);
+                    const maxFrame = Math.max(...leftData.moveFrames);
+                    if (this.frame < minFrame || this.frame > maxFrame) {
+                        this.setAnimation(minFrame, maxFrame, leftData.repeat, leftData.duration);
+                    }
+                } else {
+                    // Idle animation when stopped
+                    this.setIdleAnimation();
+                }
+            } else {
+                // Let friction handle slowing down, don't set any new velocity
+                return;
+            }
+        }
         const rightData = this.movement.right;
         const leftData = this.movement.left;
         
@@ -651,6 +682,7 @@ class Player extends AnimatedObject {
         if (!this.initialPosition) {
             this.initialPosition = new Vec(this.position.x, this.position.y);
         }
+        if (gameStats) gameStats.recordDeath(); // Record the death in the stats
 
         this.respawnLevelIndex = 0; // Reset respawn level index
         this.score = 0; // Reset score on death

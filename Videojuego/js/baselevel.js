@@ -84,8 +84,8 @@ class BaseLevel {
 
                     actor.position = actor.position.plus(new Vec(-1, -1));
                     actor.size = new Vec(2, 2); 
-                    
                     actor.setSprite(item.sprite, item.rect);
+                    
                     actor.sheetCols = item.sheetCols;
                     actor.setAnimation(...item.startFrame, true, 100);
                     this.actors.push(actor);
@@ -110,7 +110,8 @@ class BaseLevel {
                 } else if (actor.type == "demon") {
                     this.addBackgroundFloor(x, y);
                     actor.size = new Vec(3.25, 3.25);
-                    actor.setSprite(item.sprite, item.rect);
+                    let instanceRect = new Rect(0, 0, 81, 71);
+                    actor.setSprite(item.sprite, instanceRect);
                     actor.sheetCols = item.sheetCols;
                     actor.flySpeed = 0.008;
                     actor.velocity = new Vec(actor.flySpeed, 0);
@@ -121,8 +122,9 @@ class BaseLevel {
                 } else if (actor.type == "jumper") {
                     this.addBackgroundFloor(x, y);
                     actor.size = new Vec(4.5, 3);
+                    let instanceRect = new Rect(0, 0, 64, 32);
                     actor.position = actor.position.plus(new Vec(0, -2));
-                    actor.setSprite(item.sprite, item.rect);
+                    actor.setSprite(item.sprite, instanceRect);
                     actor.sheetCols = item.sheetCols;
                     actor.velocity = new Vec(0, 0);
                     actor.setIdleAnimation();
