@@ -21,6 +21,7 @@ let frameStart;
 let game;
 let player;
 let level;
+let gameStats;
 
 // Scale of the whole world, to be applied to all objects
 // Each unit in the level file will be drawn as these many square pixels
@@ -148,13 +149,11 @@ const levelChars = {
     "D": {objClass: EnemyDemon,
           label: "demon",
           sprite: '../assets/Demon/Demon_Assets.png',
-          rect: new Rect(0, 0, 81, 71),
           sheetCols: 7,
           startFrame: [0, 0]},
     "J": {objClass: EnemyJumper,
           label: "jumper",
           sprite: '../assets/Jumper/Jumper_Assets.png',
-          rect: new Rect(0, 0, 64, 32),
           sheetCols: 15,
           startFrame: [0, 0]},
     "P": {objClass: Princess,
@@ -195,6 +194,8 @@ function gameStart() {
     // a Register the game object, which creates all other objects
     game = new Game('playing', 0);  // Pass physics to Level
 
+    gameStats = new GameStats();
+    gameStats.startGame(); // Record a new game started
     setEventListeners();
 
     // Call the first frame with the current time

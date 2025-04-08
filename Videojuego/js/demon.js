@@ -116,6 +116,9 @@ class EnemyDemon extends BaseEnemy {
             if (game && game.player) {
                 game.player.score += this.scoreValue;
             }
+            if (this.health <= 0 && gameStats) {
+                gameStats.recordEnemyDefeated();
+            }
             //console.log("Demon dying");
             this.die();
         }
@@ -152,15 +155,27 @@ class EnemyDemon extends BaseEnemy {
     }
 
     hitPlayer(player) {
-        // Only hit the player if the demon is alive and not dying
-        if (!this.isDying && !this.deathAnimationStarted && this.hitTimer <= 0) {
+        if (!this.isDying) {
             const pushDirection = player.position.x < this.position.x ? -1 : 1;
-            player.velocity.x = this.playerPushForce.x * pushDirection;
-            player.velocity.y = this.playerPushForce.y;
+            player.velocity.x = 0.02 * pushDirection; // Stronger horizontal push
+            player.velocity.y = -0.015; // Consistent vertical push
+
             // Set high friction and timer
             player.friction = player.hitFriction;
             player.frictionResetTimer = 500; // Reset friction after 500ms
-            this.hitTimer = this.hitCooldown;
+
+            // Reset movement flags - this prevents the player from continuing to walk
+            // in the same direction after being hit
+            player.movement.right.status = false;
+            player.movement.left.status = false;
+
+            // Disable player controls temporarily
+            player.disableControls = true;
+            
+            // Create a timeout to re-enable controls slightly before friction resets
+            setTimeout(() => {
+                player.disableControls = false;
+            }, 300); // Re-enable controls after 300ms
         }
     }
 }

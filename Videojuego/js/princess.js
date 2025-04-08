@@ -96,6 +96,7 @@ class Princess extends AnimatedObject {
         
         // Disable controls
         player.disableControls = true;
+        player.inVictorySequence = true;
         
         // Define direction the player is facing
         player.isFacingRight = this.position.x > player.position.x;
@@ -121,44 +122,78 @@ class Princess extends AnimatedObject {
     }
 
     handleApproachingStage(player) {
+        // Check if player is in the air (jumping or falling)
+        if (player.isJumping || player.velocity.y !== 0) {
+            // Let gravity handle the fall naturally - don't modify movement yet
+            return;
+        }
+        
         // Move player towards the princess
         const targetX = this.position.x - (player.isFacingRight ? 1.5 : -1.5);
         const moveDirection = targetX > player.position.x ? 1 : -1;
         
-        // Move player with a slower speed
-        player.velocity.x = moveDirection * this.physics.walkSpeed * 0.8;
-
-        // Update animation of player based on direction
-        if (player.isFacingRight) {
-            player.movement.right.status = true;
-            player.movement.left.status = false;
+        // Check if we need to keep moving
+        if (Math.abs(player.position.x - targetX) > 0.2) {
+            // Calculate movement amount (use a fixed amount per frame rather than velocity)
+            const moveAmount = moveDirection * this.physics.walkSpeed * 0.02;
+            
+            // Directly update player position rather than setting velocity
+            const newX = player.position.x + moveAmount;
+            
+            // Check level boundaries
+            const levelWidth = player.currentLevel ? player.currentLevel.width : 30;
+            const playerWidth = player.size.x;
+            
+            if (newX >= 0 && newX + playerWidth <= levelWidth) {
+                // Directly move the player
+                player.position.x = newX;
+                
+                // Set velocity too (for animation purposes)
+                player.velocity.x = moveDirection * this.physics.walkSpeed * 0.6;
+                
+                // Force walking animation
+                if (moveDirection > 0) {
+                    player.isFacingRight = true;
+                    const rightData = player.movement.right;
+                    
+                    // Force animation directly
+                    const minFrame = Math.min(...rightData.moveFrames);
+                    const maxFrame = Math.max(...rightData.moveFrames);
+                    player.setAnimation(minFrame, maxFrame, rightData.repeat, rightData.duration);
+                    
+                    // Force movement status for animation
+                    player.movement.right.status = true;
+                    player.movement.left.status = false;
+                } else {
+                    player.isFacingRight = false;
+                    const leftData = player.movement.left;
+                    
+                    const minFrame = Math.min(...leftData.moveFrames);
+                    const maxFrame = Math.max(...leftData.moveFrames);
+                    player.setAnimation(minFrame, maxFrame, leftData.repeat, leftData.duration);
+                    
+                    // Force movement status for animation
+                    player.movement.right.status = false;
+                    player.movement.left.status = true;
+                }
+            }
         } else {
-            player.movement.right.status = false;
-            player.movement.left.status = true;
-        }
-        
-        // When the player is close enough to the target position
-        if (Math.abs(player.position.x - targetX) < 0.2) {
-            player.velocity.x = 0; // Detiene al jugador
-
-            // Reset movement status
+            // We've reached the target position
+            player.velocity.x = 0;
             player.movement.right.status = false;
             player.movement.left.status = false;
             
             // Go to celebrate state
             this.sequenceStage = 'celebrate';
             this.sequenceTimer = 0;
-
-            // Start the celebration
+            
+            // Rest of the celebration code remains the same...
             this.movement.celebration.status = true;
-
-            // Animation for celebration
             const celebrationFrames = this.movement.celebration.moveFrames;
             const minFrame = Math.min(...celebrationFrames);
             const maxFrame = Math.max(...celebrationFrames);
             this.setAnimation(minFrame, maxFrame, true, this.movement.celebration.duration);
             
-            // Put sound effects for celebration
             if (this.celebrateSound) {
                 this.celebrateSound.currentTime = 0;
                 this.celebrateSound.play().catch(error => console.log("Error playing celebrate sound:", error));
@@ -234,6 +269,10 @@ class Princess extends AnimatedObject {
                 gameElapsedTime = now - gameStartTime;
             }
             
+            // Record completion
+            if (gameStats) {
+                gameStats.completeGame(game.player.score, gameElapsedTime);
+            }
             // Get references to the HTML elements for the victory overlay
             const overlay = document.getElementById("gameCompleteOverlay");
             const scoreDisplay = document.getElementById("finalScore");

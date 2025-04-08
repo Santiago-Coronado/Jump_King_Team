@@ -102,6 +102,9 @@ class EnemyJumper extends BaseEnemy {
                     this.deathSound.currentTime = 0;
                     this.deathSound.play();
                 }
+                if (this.health <= 0 && gameStats) {
+                    gameStats.recordEnemyDefeated();
+                }
                 this.die();
             }
         }
@@ -116,6 +119,19 @@ class EnemyJumper extends BaseEnemy {
             // Set high friction and timer
             player.friction = player.hitFriction;
             player.frictionResetTimer = 500; // Reset friction after 500ms
+
+            // Reset movement flags - this prevents the player from continuing to walk
+            // in the same direction after being hit
+            player.movement.right.status = false;
+            player.movement.left.status = false;
+
+            // Disable player controls temporarily
+            player.disableControls = true;
+            
+            // Create a timeout to re-enable controls slightly before friction resets
+            setTimeout(() => {
+                player.disableControls = false;
+            }, 300); // Re-enable controls after 300ms
         }
     }
 
