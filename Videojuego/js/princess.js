@@ -260,6 +260,7 @@ class Princess extends AnimatedObject {
     handleVictoryStage(game) {
         // Wait 2 seconds before showing the victory screen and only execute this once
         if (this.sequenceTimer >= 2000 && !this.victoryMusicStarted) {
+            game.persistentPowerUps = { ...game.player.powerUps };
             // Set flag to prevent this code from running multiple times
             this.victoryMusicStarted = true;
             
