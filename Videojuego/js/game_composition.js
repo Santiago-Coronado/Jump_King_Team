@@ -29,10 +29,18 @@ class Game {
         this.availableLevels = GAME_LEVELS;
         this.loadedlevelPlans = []; // store the generated levels
 
+        // This tracks physical power-up locations that have been collected
         this.collectedPowerUps = {
             dash: [],
             charged: [],
             double: []
+        };
+
+        // This tracks which abilities the player has unlocked (persists across games)
+        this.persistentPowerUps = {
+            charged: false,
+            double: false,
+            dash: false
         };
 
         this.level = new BaseLevel (this.availableLevels[levelIndex], this.physics, this.collectedPowerUps)
@@ -352,6 +360,13 @@ class Game {
             console.warn(`Attempted to change to invalid level index: ${levelIndex}`);
             return;
         }
+        // Save current settings
+        const savedSoundEnabled = this.soundEnabled;
+        const savedEffectsEnabled = this.effectsEnabled;
+        
+        // Update sound/effects based on restored settings
+        toggleBackgroundMusic(this.soundEnabled);
+        updateSoundEffectsVolume(this.effectsEnabled);
 
         // Validate that the level exists
         const nextLevel = this.availableLevels[levelIndex];
@@ -426,6 +441,13 @@ class Game {
         this.player.initialPosition = new Vec(this.player.position.x, this.player.position.y);
 
         this.playerPowerUps = { ...powerUps };
+                
+         // Restore sound settings at the very end
+        this.soundEnabled = savedSoundEnabled;
+        this.effectsEnabled = savedEffectsEnabled;
+        // Update based on restored settings
+        toggleBackgroundMusic(this.soundEnabled);
+        updateSoundEffectsVolume(this.effectsEnabled);
     }
 
     draw(ctx, scale) {
@@ -553,41 +575,12 @@ class Game {
             ctx.fillStyle = 'white';
             ctx.fillText('Loading buttons...', canvasWidth/2, canvasHeight/2 + 20);
         }
-
-        // Display game statistics
-    if (gameStats) {
-        const stats = gameStats.getStats();
-        const statsY = this.pauseButtons.home.y - 100; // Position below buttons
-        
-        ctx.font = 'bold 20px "Press Start 2P", sans-serif';
-        ctx.fillStyle = '#ffd700'; // Gold color for the heading
-        ctx.fillText('ESTADÍSTICAS', canvasWidth/2, statsY);
-        
-        ctx.font = '12px "Press Start 2P", sans-serif';
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'left';
-        
-        const leftColX = canvasWidth/2 - 180;
-        const rightColX = canvasWidth/2 + 20;
-        
-        // Left column stats
-        ctx.fillText(`Tiempo Total: ${stats.totalTimePlayed.formatted}`, leftColX, statsY + 30);
-        ctx.fillText(`Muertes: ${stats.deaths}`, leftColX, statsY + 55);
-        ctx.fillText(`Partidas Jugadas: ${stats.gamesPlayed}`, leftColX, statsY + 80);
-        
-        // Right column stats
-        ctx.fillText(`Partidas Completadas: ${stats.gamesCompleted}`, rightColX, statsY + 30);
-        ctx.fillText(`Mejor Tiempo: ${stats.personalRecord.bestTime.formatted}`, rightColX, statsY + 55);
-        ctx.fillText(`Mejor Puntaje: ${stats.personalRecord.bestScore}`, rightColX, statsY + 80);
-        ctx.fillText(`Enemigos Derrotados: ${stats.enemiesDefeated}`, rightColX, statsY + 105);
-    }
-        
         ctx.font = '14px "Press Start 2P", sans-serif';
         ctx.fillText('Presiona ESC para renaudar', canvasWidth/2, canvasHeight/2 + 150);
         ctx.textAlign = 'left';
         ctx.restore();
     }
-    
+
     drawPauseButton(ctx, type, img, buttonPos, isPressed, isEnabled = true) {
         if (!img.complete) return; // Wait until image is loaded
         
@@ -612,8 +605,12 @@ class Game {
 
     respawnPlayer() {
         if (this.gameOverActive) {
-            const powerUpsToKeep = { ...this.playerPowerUps };
+            this.persistentPowerUps = { ...this.playerPowerUps };
             const scoreToKeep = this.player.score;
+
+            // Save current settings
+            const savedSoundEnabled = this.soundEnabled;
+            const savedEffectsEnabled = this.effectsEnabled;
 
             this.collectedPowerUps = {
                 dash: [],
@@ -633,7 +630,7 @@ class Game {
                 this.enemies = this.level.enemies;
             }
             this.player.respawn(this.level);
-            this.player.powerUps = powerUpsToKeep;
+            this.player.powerUps = this.persistentPowerUps;
             this.player.score = scoreToKeep;
 
             this.powerUpBar.updateFrame(
@@ -644,6 +641,13 @@ class Game {
 
             this.gameOverActive = false;
             this.gameOverAlpha = 0;
+            // After player is respawned, restore settings
+            this.soundEnabled = savedSoundEnabled;
+            this.effectsEnabled = savedEffectsEnabled;
+            
+            // Update sound/effects based on restored settings
+            toggleBackgroundMusic(this.soundEnabled);
+            updateSoundEffectsVolume(this.effectsEnabled);
         }
     }
     
