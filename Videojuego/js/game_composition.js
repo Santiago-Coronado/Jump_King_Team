@@ -43,7 +43,17 @@ class Game {
             dash: false
         };
 
-        this.level = new BaseLevel (this.availableLevels[levelIndex], this.physics, this.collectedPowerUps)
+        // Store powerups
+        this.powerUpMaps = {};
+
+        // Store the power-up map for a level for future visits
+        if (!this.powerUpMaps[levelIndex]) {
+            this.powerUpMaps[levelIndex] = {};
+        }
+
+        this.level = new BaseLevel (this.availableLevels[levelIndex], this.physics, 
+            this.collectedPowerUps, this.powerUpMaps[this.levelIndex]);
+
         // store level on loaded levels
         this.loadedlevelPlans[levelIndex] = this.availableLevels[levelIndex];
 
@@ -173,13 +183,19 @@ class Game {
                 } else if (actor.type == 'powerup2') {
                     this.player.powerUps.charged = true;
                     this.player.availableMiniLevels.charged = Object.keys(MINI_LEVELS.charged);
+
+                    this.collectedPowerUps.charged.push({
+                        levelIndex: this.currentLevelIndex,
+                        x: actor.position.x,
+                        y: actor.position.y
+                    });
                     this.player.score += 1000; // Increase score by 1000 when collecting a charged power-up
                     this.actors = this.actors.filter(item => item !== actor);
                 } else if (actor.type == 'powerup3') {
                     this.player.powerUps.double = true;
                     this.player.availableMiniLevels.double = Object.keys(MINI_LEVELS.double);
 
-                    this.collectedPowerUps.charged.push({
+                    this.collectedPowerUps.double.push({
                         levelIndex: this.currentLevelIndex, 
                         x: actor.position.x,
                         y: actor.position.y
@@ -375,7 +391,7 @@ class Game {
             return;
         }
         
-        // Guardar estado del jugador actual
+        // Save actual player state
         const oldPlayer = this.player;
         const powerUps = { ...oldPlayer.powerUps };
         const oldRespawnPoint = oldPlayer.respawnPoint;
@@ -384,7 +400,7 @@ class Game {
 
         const remainingCoolDownTime= oldPlayer.cooldownTime;
 
-        // Guarda la disponibilidad de mini-niveles
+        // Store the disponibility of mini-levels
         const availableMiniLevels = {
             normal: [...oldPlayer.availableMiniLevels.normal],
             dash: [...oldPlayer.availableMiniLevels.dash],
@@ -392,7 +408,7 @@ class Game {
             double: [...oldPlayer.availableMiniLevels.double]
         };
 
-        // Genera niveles con las areas randomizadas
+        // Generate levels with randomized areas
         let levelPlan;
         // Check if we already have a generated version of this level
         if (this.loadedlevelPlans[levelIndex]) {
@@ -404,8 +420,14 @@ class Game {
             this.loadedlevelPlans[levelIndex] = levelPlan;
         }
 
-        // Crear nuevo nivel
-        this.level = new BaseLevel(levelPlan, this.physics, this.collectedPowerUps);
+        // Ensure we have a power-up map for this level
+        if (!this.powerUpMaps[levelIndex]) {
+            this.powerUpMaps[levelIndex] = {};
+        }
+
+        // Create level
+        this.level = new BaseLevel(levelPlan, this.physics, 
+            this.collectedPowerUps, this.powerUpMaps[levelIndex]);
         if (levelIndex === this.availableLevels.length - 1) {
             let princessChar = levelChars['P'];
             let princessX = this.level.width - 4;
@@ -624,7 +646,8 @@ class Game {
             if (this.currentLevelIndex !== this.player.respawnLevelIndex) {
                 this.changeLevel(this.player.respawnLevelIndex);
             } else {
-                this.level = new BaseLevel(this.availableLevels[this.currentLevelIndex], this.physics, this.collectedPowerUps);
+                this.level = new BaseLevel(this.availableLevels[this.currentLevelIndex], this.physics, 
+                    this.collectedPowerUps, this.powerUpMaps[this.currentLevelIndex]);
                 this.player = this.level.player;
                 this.actors = this.level.actors;
                 this.enemies = this.level.enemies;
