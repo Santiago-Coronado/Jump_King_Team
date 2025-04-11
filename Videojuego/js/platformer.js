@@ -126,6 +126,10 @@ const levelChars = {
           rect: new Rect(0, 0, 32, 32),
           sheetCols: 3,
           startFrame: [0, 1]},
+    "?": {objClass: GameObject, 
+          label: "empty",
+          sprite: null,
+          rect: null},      
     "S": {objClass: EnemySkeleton,
           label: "skeleton",
           sprites: {

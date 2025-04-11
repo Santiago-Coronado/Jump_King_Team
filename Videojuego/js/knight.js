@@ -635,11 +635,16 @@ class Player extends AnimatedObject {
 
             const scoreKeep = this.score
 
-
             const movementState = {
                 right: this.movement.right.status,
                 left: this.movement.left.status
             };
+
+            // Ensure the power-up map exists for the lower level
+            const targetLevelIndex = game.currentLevelIndex - 1;
+            if (!game.powerUpMaps[targetLevelIndex]) {
+                game.powerUpMaps[targetLevelIndex] = {};
+            }
 
             game.changeLevel(game.currentLevelIndex - 1);
 

@@ -8,18 +8,58 @@
 "use strict";
 
 class BaseLevel {
-    constructor(plan, physics, collectedPowerUps = { dash: [], charged: [], double: [] }) {
+    constructor(plan, physics, collectedPowerUps = { dash: [], charged: [], double: [] }, powerUpMap = {}) {
         // Split the plan string into a matrix of strings
         let rows = plan.trim().split('\n').map(l => [...l]);
         this.height = rows.length;
         this.width = rows[0].length;
         this.actors = [];
         this.enemies = [];	// An array to store the enemies
-
+        
         // Fill the rows array with a label for the type of element in the cell
         // Most cells are 'empty', except for the 'wall'
         this.rows = rows.map((row, y) => {
             return row.map((ch, x) => {
+                // Check for potential power-up positions
+                if (ch === '?') {
+                    // Get position key for this power-up location
+                    const posKey = `${x},${y}`;
+                    
+                    // If we already decided about this position in a previous visit, use that decision
+                    if (posKey in powerUpMap) {
+                        ch = powerUpMap[posKey]; // This will be '$', '%', '&' or 'empty'
+                        
+                        // If it was decided to be empty, add background floor and return
+                        if (ch === 'empty') {
+                            this.addBackgroundFloor(x, y);
+                            return "empty";
+                        }
+                    } else {
+                        // Determine if a power-up appears 
+                        const powerUpChance = 0.5; 
+                        if (Math.random() < powerUpChance) {
+                            // Determine which power-up type appears (33.33% chance for each)
+                            const powerUpType = Math.floor(Math.random() * 3);
+                            
+                            // Convert to the appropriate character for the level design
+                            if (powerUpType === 0) {
+                                ch = '$'; // Dash power-up
+                            } else if (powerUpType === 1) {
+                                ch = '%'; // Charged power-up
+                            } else {
+                                ch = '&'; // Double power-up
+                            }
+                            // Store the decision for future level visits
+                            powerUpMap[posKey] = ch;
+                        } else {
+                            // No power-up appears, treat as empty space
+                            this.addBackgroundFloor(x, y);
+                            powerUpMap[posKey] = "empty";
+                            return "empty";
+                        }
+                    }
+                }
+
                 let item = levelChars[ch];
                 let objClass = item.objClass;
                 let cellType = item.label;
