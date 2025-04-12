@@ -7,7 +7,7 @@ INSERT INTO Usuario (nombre_usuario, contraseña) VALUES
 ('dragonSlayer', 'dragon123'),
 ('shadowKnight', 'shadow456');
 
--- Inserts para la tabla Jugador (corrigiendo el formato de TIMESTAMP)
+-- Inserts para la tabla Jugador
 INSERT INTO Jugador (id_usuario, velocidad, altura_salto, posicion_x, posicion_y, partidas_jugadas, partidas_completadas, saltos_hechos, enemigos_derrotados, mejor_tiempo, mejor_puntuacion, muertes, powerups_obtenidos) VALUES 
 (1, 5.5, 3.2, 10.0, 15.0, 25, 18, 1500, 350, '2024-04-01 00:15:30', 8500, 30, 45),
 (2, 6.0, 3.5, 8.5, 12.0, 15, 10, 800, 200, '2024-04-01 00:18:45', 6200, 20, 30),
@@ -15,7 +15,7 @@ INSERT INTO Jugador (id_usuario, velocidad, altura_salto, posicion_x, posicion_y
 (4, 5.2, 2.8, 9.0, 14.0, 10, 8, 600, 150, '2024-04-01 00:20:30', 5500, 12, 25),
 (5, 6.2, 3.8, 11.5, 18.0, 40, 32, 2500, 600, '2024-04-01 00:10:45', 12000, 25, 75);
 
--- Inserts para la tabla PowerUp (corrigiendo el formato de TIMESTAMP)
+-- Inserts para la tabla PowerUp 
 INSERT INTO PowerUp (tipo, tiempo_cooldown) VALUES 
 ('salto doble', '2024-04-01 00:00:15'),
 ('salto cargado', '2024-04-01 00:00:20'),
@@ -23,7 +23,7 @@ INSERT INTO PowerUp (tipo, tiempo_cooldown) VALUES
 ('salto doble', '2024-04-01 00:00:18'),
 ('salto cargado', '2024-04-01 00:00:25');
 
--- Inserts para la tabla Partida (corrigiendo el formato de TIMESTAMP)
+-- Inserts para la tabla Partida 
 INSERT INTO Partida (num_pantallas, tiempo) VALUES 
 (5, '2024-04-01 00:10:30'),
 (3, '2024-04-01 00:08:15'),
@@ -61,7 +61,7 @@ INSERT INTO Enemigo (tipo, valor_puntuacion, posicion_x, posicion_y) VALUES
 ('Jumper', 150, 400.0, 110.0),
 ('Esqueleto', 100, 180.0, 45.0);
 
--- Inserts para la tabla Jugador_PowerUp (corregido para evitar duplicados)
+-- Inserts para la tabla Jugador_PowerUp 
 INSERT INTO Jugador_PowerUp (id_jugador, id_powerup) VALUES 
 (1, 1),
 (1, 3),
@@ -81,7 +81,7 @@ INSERT INTO Partida_Jugador (id_partida, id_jugador) VALUES
 (2, 3),
 (3, 5);
 
--- Inserts para la tabla Pantalla_Enemigo (corregido para evitar duplicados)
+-- Inserts para la tabla Pantalla_Enemigo
 INSERT INTO Pantalla_Enemigo (id_pantalla, id_enemigo) VALUES 
 (1, 1),
 (1, 2),
@@ -93,7 +93,7 @@ INSERT INTO Pantalla_Enemigo (id_pantalla, id_enemigo) VALUES
 (4, 3),
 (5, 4);
 
--- Inserts para la tabla Pantalla_PowerUp (corregido para evitar duplicados)
+-- Inserts para la tabla Pantalla_PowerUp 
 INSERT INTO Pantalla_PowerUp (id_pantalla, id_powerup) VALUES 
 (1, 1),
 (2, 2),
