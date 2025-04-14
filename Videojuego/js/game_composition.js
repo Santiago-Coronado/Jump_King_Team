@@ -171,6 +171,7 @@ class Game {
             if (actor.type != 'floor' && overlapRectangles(this.player, actor)) {
                 if (actor.type == 'powerup1') {
                     this.player.powerUps.dash = true;
+                    if (gameStats) gameStats.setDashObtained(true);
                     this.player.availableMiniLevels.dash = Object.keys(MINI_LEVELS.dash);
 
                     this.collectedPowerUps.dash.push({
@@ -182,6 +183,7 @@ class Game {
                     this.actors = this.actors.filter(item => item !== actor);
                 } else if (actor.type == 'powerup2') {
                     this.player.powerUps.charged = true;
+                    if (gameStats) gameStats.setChargedJumpObtained(true);
                     this.player.availableMiniLevels.charged = Object.keys(MINI_LEVELS.charged);
 
                     this.collectedPowerUps.charged.push({
@@ -193,6 +195,7 @@ class Game {
                     this.actors = this.actors.filter(item => item !== actor);
                 } else if (actor.type == 'powerup3') {
                     this.player.powerUps.double = true;
+                    if (gameStats) gameStats.setDoubleJumpObtained(true);
                     this.player.availableMiniLevels.double = Object.keys(MINI_LEVELS.double);
 
                     this.collectedPowerUps.double.push({
@@ -566,6 +569,7 @@ class Game {
             ctx
             ctx.fillText('Press R to restart', canvasWidth/2 - 80, y + imgHeight + 40);
             ctx.restore();
+            
         }
 
     }

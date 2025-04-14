@@ -1,0 +1,139 @@
+"use strict"
+
+// Importing modules
+import express from 'express'
+
+// The mysql2/promise module is used to connect to the MySQL database. The promise version of the module is used to avoid the use of callbacks and instead use the async/await syntax.
+import mysql from 'mysql2/promise'
+import fs from 'fs'
+import statsRoutes from './routes/stats.js'
+
+
+const app = express()
+const port = 5000
+
+app.use(express.json())
+app.use('/html', express.static('../html'))
+app.use('/js', express.static('../js'))
+app.use('/css', express.static('../css'))
+app.use('/Assets', express.static('../Assets'))
+app.use('/GDD_Images', express.static('../GDD_Images'))
+app.use('/html_Images', express.static('../html_Images'))
+
+
+// Function to connect to the MySQL database
+async function connectToDB(){
+    return await mysql.createConnection({
+        host:'localhost',
+        user:'card_tony',
+        password:'asdf1234',
+        database:'knightsfall'
+    })
+}
+
+// Routes definition and handling
+app.get('/', (request,response)=>{
+    fs.readFile('../html/Estadistics.html', 'utf8', (err, html)=>{
+        if(err) response.status(500).send('There was an error: ' + err)
+        console.log('Loading page...')
+        response.send(html)
+    })
+})
+
+app.post('/api/login', async (request,response)=>{
+    let connection = null;
+
+    try{
+        const {nombre_usuario, password} = request.body
+
+        if(!nombre_usuario || !password){
+            return response.status(400).json({
+                success: false,
+                message: "Nombre de usuario y contraseña son requeridos"
+            });
+        }
+
+        connection = await connectToDB()
+        const [rows] = await connection.query('SELECT * FROM usuarios WHERE nombre_usuario = ? AND contraseña = ?', [nombre_usuario, password])
+        if(rows.length === 0){
+            return response.status(401).json({
+                success: false,
+                message: "Usuario o contraseña incorrectos"
+            });
+        }
+        const user = rows[0];
+        const userData = {
+            id_usuario: user.id_usuario,
+            nombre_usuario: user.nombre_usuario,
+    };
+    response.json({
+        success: true,
+        message: "Login exitoso",
+        user: userData
+    });
+} catch (error) {
+        console.error('Error en la conexión a la base de datos:', error);
+        response.status(500).json({
+            success: false,
+            message: "Error en el servidor"
+        });
+    } finally {
+        if (connection) {
+            connection.end();
+            console.log('Conexión cerrada');
+        }
+    }
+});
+
+app.post('/api/register', async (request,response)=>{
+    let connection = null;
+
+    try {
+        const { nombre_usuario, password } = request.body;
+        if (!nombre_usuario || !password) {
+            return response.status(400).json({
+                success: false,
+                message: "Nombre de usuario y contraseña son requeridos"
+            });
+        }
+        connection = await connectToDB()
+        const [rows] = await connection.query('SELECT * FROM usuarios WHERE nombre_usuario = ? AND contraseña', [nombre_usuario, password]);
+
+        if (rows.length === 0){
+            return response.status(401).json({
+                success: false,
+                message: "Usuario o contraseña incorrectos"
+            });
+        }
+
+        const user = rows[0];
+        const userData = {
+            id_usuario: user.id_usuario,
+            nombre_usuario: user.nombre_usuario,
+        };
+
+        response.json({
+            success: true,
+            message: "Registro exitoso",
+            user: userData
+        });
+    } catch (error) {
+        console.error('Error en la conexión a la base de datos:', error);
+        response.status(500).json({
+            success: false,
+            message: "Error en el servidor"
+        });
+    }
+    finally {
+        if (connection) {
+            connection.end();
+            console.log('Conexión cerrada');
+        }
+    }
+});
+
+app.use('/api/stats', statsRoutes)
+
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`)
+});

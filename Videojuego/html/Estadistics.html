@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knightsfall - Estadísticas del Jugador</title>
+    <link rel="stylesheet" href="../css/styles_Knight_Fall.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+        
+        h1 {
+            margin-bottom: 30px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .stats-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-group {
+            margin-bottom: 25px;
+        }
+        
+        .stat-group h2 {
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        
+        .stat-row:hover {
+            background-color: #e9f7fe;
+        }
+        
+        .stat-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .stat-value {
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .record-highlight {
+            background-color: #e9f7fe;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 30px;
+            font-size: 1.2rem;
+            color: #7f8c8d;
+        }
+        
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .button-container {
+            text-align: center;
+            margin-top: 25px;
+        }
+        
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .button:hover {
+            background-color: #2980b9;
+        }
+        
+        .login-prompt {
+            text-align: center;
+            background-color: #e9f7fe;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 50px auto;
+            max-width: 500px;
+        }
+        
+        .user-info {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .username {
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        #historial-section {
+            margin-top: 40px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .data-table th, .data-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .data-table th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .data-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .data-table tr:hover {
+            background-color: #e9f7fe;
+        }
+        
+        @media (max-width: 768px) {
+            .stat-row {
+                flex-direction: column;
+                padding: 15px;
+            }
+            
+            .stat-value {
+                margin-top: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="headerContainer">
+        <img src="../GDD_Images/LogoFinal_NoBG.png" alt="Knight's Fall Logo" id="logoHeader" />
+        <div id="navButtons">
+            <a href="../html/PantallaPrincipal.html" class="menu-button">Inicio</a>
+            <a href="../html/Estadistics.html" class="menu-button">Clasificaciones</a>
+            <a href="../html/DescyControl.html" class="menu-button">Controles y Descripción</a>
+            <a href="../html/Creditos.html" class="menu-button">Créditos</a>
+        </div>
+      </div>
+    <h1>KNIGHTSFALL - ESTADÍSTICAS</h1>
+    
+    <div id="user-info" class="user-info">
+        Cargando información de usuario...
+    </div>
+    
+    <div id="content-area">
+        <div class="loading">Cargando estadísticas...</div>
+    </div>
+    
+    <div class="button-container">
+        <a href="../html/index.html" class="button">Volver al Juego</a>
+    </div>
+    
+    <!-- Plantilla para estadísticas -->
+    <template id="stats-template">
+        <div class="stats-container">
+            <div class="stat-group">
+                <h2>Estadísticas Generales</h2>
+                <div class="stat-row">
+                    <span class="stat-label">Tiempo Total Jugado:</span>
+                    <span class="stat-value" id="tiempo-total">00h 00m 00s</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Partidas Jugadas:</span>
+                    <span class="stat-value" id="partidas-jugadas">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Partidas Completadas:</span>
+                    <span class="stat-value" id="partidas-completadas">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Muertes Totales:</span>
+                    <span class="stat-value" id="muertes">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Enemigos Derrotados:</span>
+                    <span class="stat-value" id="enemigos-derrotados">0</span>
+                </div>
+            </div>
+            
+            <div class="stat-group">
+                <h2>Récord Personal</h2>
+                <div class="record-highlight">
+                    <div class="stat-row">
+                        <span class="stat-label">Mejor Tiempo:</span>
+                        <span class="stat-value" id="mejor-tiempo">N/A</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Mejor Puntuación:</span>
+                        <span class="stat-value" id="mejor-puntuacion">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="historial-section" class="stat-group">
+                <h2>Historial de Partidas Recientes</h2>
+                <div id="historial-content">
+                    <!-- Aquí se añadirá la tabla de historial si hay datos disponibles -->
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    <!-- Plantilla para usuarios no logueados -->
+    <template id="login-template">
+        <div class="login-prompt">
+            <h2>¡Inicia sesión para ver tus estadísticas!</h2>
+            <p>Necesitas iniciar sesión para poder ver y registrar tus estadísticas de juego.</p>
+            <div class="button-container">
+                <a href="../html/Login.html" class="button">Iniciar Sesión</a>
+            </div>
+        </div>
+    </template>
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contentArea = document.getElementById('content-area');
+    const userInfo = document.getElementById('user-info');
+    
+    // Obtener ID de usuario (si existe)
+    const userId = localStorage.getItem('userId');
+    const username = localStorage.getItem('username');
+    
+    // Mostrar la plantilla de estadísticas
+    const statsTemplate = document.getElementById('stats-template');
+    contentArea.innerHTML = '';
+    contentArea.appendChild(statsTemplate.content.cloneNode(true));
+    
+    if (userId && username) {
+        // Usuario conectado - mostrar su nombre y cargar estadísticas del servidor
+        userInfo.innerHTML = `Jugador: <span class="username">${username}</span>`;
+        loadUserStats(userId);
+        loadUserHistory(userId);
+    } else {
+        // Usuario no conectado - mostrar estadísticas locales
+        userInfo.innerHTML = `Jugador: <span class="username">Anónimo</span> <small>(estadísticas guardadas localmente)</small>`;
+        loadLocalStats();
+    }
+});
+
+// Cargar estadísticas desde localStorage
+function loadLocalStats() {
+    try {
+        const savedStats = localStorage.getItem('knightsfall_stats');
+        
+        if (savedStats) {
+            const stats = JSON.parse(savedStats);
+            updateStatsDisplay(stats);
+            
+            // Mostrar historial local si existe
+            if (stats.historial && stats.historial.length > 0) {
+                displayHistorial(stats.historial);
+            } else {
+                document.getElementById('historial-content').innerHTML = 
+                    '<p>No hay historial de partidas disponible.</p>';
+            }
+        } else {
+            // No hay estadísticas guardadas
+            document.getElementById('tiempo-total').textContent = '00h 00m 00s';
+            document.getElementById('partidas-jugadas').textContent = '0';
+            document.getElementById('partidas-completadas').textContent = '0';
+            document.getElementById('muertes').textContent = '0';
+            document.getElementById('enemigos-derrotados').textContent = '0';
+            document.getElementById('mejor-tiempo').textContent = 'N/A';
+            document.getElementById('mejor-puntuacion').textContent = '0';
+            
+            document.getElementById('historial-content').innerHTML = 
+                '<p>No hay historial de partidas disponible.</p>';
+        }
+    } catch (error) {
+        console.error('Error al cargar estadísticas locales:', error);
+        document.getElementById('content-area').innerHTML = `
+            <div class="error-message">
+                Error al cargar estadísticas locales: ${error.message}
+            </div>
+        `;
+    }
+}
+
+function saveStatsToLocalStorage(stats) {
+    try {
+        localStorage.setItem('knightsfall_stats', JSON.stringify(stats));
+        console.log('Stats saved to localStorage:', stats);
+    } catch (error) {
+        console.error('Error saving stats to localStorage:', error);
+    }
+}
+
+// Modify your loadUserStats function:
+async function loadUserStats(userId) {
+    try {
+        console.log('Loading stats for user ID:', userId);
+        // Api request to get user stats
+        const response = await fetch(`/api/stats/${userId}`);
+        
+        if (!response.ok) {
+            throw new Error(`Error al cargar estadísticas: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Server response:', data);
+        
+        if (data.success) {
+            updateStatsDisplay(data.stats);
+            // Save stats to localStorage as backup
+            saveStatsToLocalStorage(data.stats);
+        } else {
+            throw new Error(data.message || 'Error desconocido al cargar estadísticas');
+        }
+    } catch (error) {
+        console.error('Error al cargar estadísticas del servidor:', error);
+        // if there's an error loading from the server, try to load local stats
+        loadLocalStats();
+    }
+}
+
+async function loadUserHistory(userId) {
+    try {
+        // Solicitud API para obtener historial del usuario
+        const response = await fetch(`/api/stats/historial/${userId}`);
+        
+        if (!response.ok) {
+            throw new Error(`Error al cargar historial: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            if (data.historial && data.historial.length > 0) {
+                displayHistorial(data.historial);
+            } else {
+                document.getElementById('historial-content').innerHTML = 
+                    '<p>No hay historial de partidas disponible.</p>';
+            }
+        } else {
+            throw new Error(data.message || 'Error desconocido al cargar historial');
+        }
+    } catch (error) {
+        console.error('Error al cargar historial del servidor:', error);
+        
+        // Si hay un error al cargar desde el servidor, intentamos cargar historial local
+        try {
+            const savedStats = localStorage.getItem('knightsfall_stats');
+            if (savedStats) {
+                const stats = JSON.parse(savedStats);
+                if (stats.historial && stats.historial.length > 0) {
+                    displayHistorial(stats.historial);
+                } else {
+                    document.getElementById('historial-content').innerHTML = 
+                        '<p>No hay historial de partidas disponible.</p>';
+                }
+            }
+        } catch (localError) {
+            console.error('Error al cargar historial local:', localError);
+        }
+    }
+}
+
+function updateStatsDisplay(stats) {
+    // Actualizar estadísticas generales
+    document.getElementById('tiempo-total').textContent = formatTimeDisplay(stats.tiempo_total_jugado);
+    document.getElementById('partidas-jugadas').textContent = stats.partidas_jugadas;
+    document.getElementById('partidas-completadas').textContent = stats.partidas_completadas;
+    document.getElementById('muertes').textContent = stats.muertes;
+    document.getElementById('enemigos-derrotados').textContent = stats.enemigos_derrotados;
+    
+    // Actualizar récord personal
+    document.getElementById('mejor-tiempo').textContent = 
+        stats.record_personal.mejor_tiempo ? 
+        formatTimeDisplay(stats.record_personal.mejor_tiempo) : 'N/A';
+    document.getElementById('mejor-puntuacion').textContent = 
+        stats.record_personal.mejor_puntaje || stats.record_personal.mejor_puntuacion || 0;
+}
+
+function displayHistorial(historial) {
+    const historialTable = document.createElement('table');
+    historialTable.className = 'data-table';
+    
+    // Crear encabezado
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    
+    const headers = [
+        'Fecha', 'Tiempo Jugado', 'Completada', 'Puntuación', 
+        'Muertes', 'Enemigos Derrotados'
+    ];
+    
+    headers.forEach(header => {
+        const th = document.createElement('th');
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+    
+    thead.appendChild(headerRow);
+    historialTable.appendChild(thead);
+    
+    // Crear cuerpo de la tabla
+    const tbody = document.createElement('tbody');
+    
+    historial.forEach(partida => {
+        const row = document.createElement('tr');
+        
+        // Formato de fecha
+        const fechaCell = document.createElement('td');
+        fechaCell.textContent = formatDateDisplay(partida.fecha);
+        row.appendChild(fechaCell);
+        
+        // Tiempo jugado
+        const tiempoCell = document.createElement('td');
+        tiempoCell.textContent = formatTimeDisplay(partida.tiempo_jugado);
+        row.appendChild(tiempoCell);
+        
+        // Completada
+        const completadaCell = document.createElement('td');
+        completadaCell.textContent = partida.completada ? 'Sí' : 'No';
+        row.appendChild(completadaCell);
+        
+        // Puntuación
+        const puntuacionCell = document.createElement('td');
+        puntuacionCell.textContent = partida.puntuacion;
+        row.appendChild(puntuacionCell);
+        
+        // Muertes
+        const muertesCell = document.createElement('td');
+        muertesCell.textContent = partida.muertes;
+        row.appendChild(muertesCell);
+        
+        // Enemigos derrotados
+        const enemigosCell = document.createElement('td');
+        enemigosCell.textContent = partida.enemigos_derrotados;
+        row.appendChild(enemigosCell);
+        
+        tbody.appendChild(row);
+    });
+    
+    historialTable.appendChild(tbody);
+    document.getElementById('historial-content').innerHTML = '';
+    document.getElementById('historial-content').appendChild(historialTable);
+}
+
+// Función para formatear tiempo en formato legible
+function formatTimeDisplay(timeObj) {
+    if (!timeObj) return 'N/A';
+    
+    const hours = timeObj.hours || 0;
+    const minutes = timeObj.minutes || 0;
+    const seconds = timeObj.seconds || 0;
+    
+    return `${hours}h ${minutes}m ${seconds < 10 ? '0' : ''}${seconds}s`;
+}
+
+// Función para formatear fecha
+function formatDateDisplay(dateString) {
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date)) {
+            return dateString; // Si no es una fecha válida, devolver el texto original
+        }
+        return date.toLocaleString();
+    } catch (error) {
+        return dateString;
+    }
+}
+    </script>
+</body>
+</html>
