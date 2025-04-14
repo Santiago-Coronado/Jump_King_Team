@@ -253,6 +253,15 @@ class Player extends AnimatedObject {
     }
 
     update(level, deltaTime) {
+        if (gameStats && game && game.player) {
+            // Inicializar los powerups desde gameStats
+            setTimeout(() => {
+                game.player.powerUps.double = gameStats.doubleJumpObtained;
+                game.player.powerUps.charged = gameStats.chargedJumpObtained;
+                game.player.powerUps.dash = gameStats.dashObtained;
+                console.log("Power-ups inicializados desde gameStats:", game.player.powerUps);
+            }, 500); // Pequeño retraso para asegurar que todo está cargado
+        }
 
         if (this.isDead) {
             this.updateFrame(deltaTime);
@@ -679,6 +688,13 @@ class Player extends AnimatedObject {
             this.deathSound.play();
         }
 
+        if (gameStats) {
+            const currentTime = Date.now();
+            const sessionTime = currentTime - gameStartTime;
+            gameStats.addTimePlayed(sessionTime);
+            gameStartTime = currentTime;
+        }
+
         if (!this.initialPosition) {
             this.initialPosition = new Vec(this.position.x, this.position.y);
         }
@@ -721,6 +737,7 @@ class Player extends AnimatedObject {
             this.spriteRect.y = Math.floor(this.frame / this.sheetCols);        
         }      
         this.deathTimer = this.deathDuration;
+
 
     }
 

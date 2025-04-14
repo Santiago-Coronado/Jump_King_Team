@@ -5,7 +5,10 @@
  * Juan de Dios Gastelum A01784523
  */
 
+
 "use strict";
+
+
 
 // Global variables
 const canvasWidth = 800;
@@ -22,6 +25,8 @@ let game;
 let player;
 let level;
 let gameStats;
+
+let statsManager; // Initialize the stats manager; // Global variable for stats manager
 
 // Scale of the whole world, to be applied to all objects
 // Each unit in the level file will be drawn as these many square pixels
@@ -180,16 +185,24 @@ function main() {
 }
 
 function init() {
+    
+
     const canvas = document.getElementById('canvas');
+    if (!canvas) {
+        console.error("Canvas element not found!");
+        return;
+    }
     //const canvas = document.querySelector('canvas');
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
     ctx = canvas.getContext('2d');
+
     
     gameStart();
 }
 
 function gameStart() {
+
     const physics = new BasePhysics();  // Create an instance of BasePhysics
     // a Register the game object, which creates all other objects
     game = new Game('playing', 0);  // Pass physics to Level
@@ -319,6 +332,13 @@ function updateCanvas(frameTime) {
         deltaTime = MAX_DELTA;
     }
 
+    const currentTime = Date.now();
+    if (gameStats && currentTime - gameStartTime > 10000) {
+        const sessionTime = currentTime - gameStartTime;
+        gameStats.addTimePlayed(sessionTime);
+        gameStartTime = currentTime; // Reiniciar para contar los próximos 10 segundos
+    }
+
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     if (game.state === 'playing') {
         game.update(deltaTime);
@@ -343,5 +363,11 @@ function updateCanvas(frameTime) {
     requestAnimationFrame(updateCanvas);
 }
 
+// Añade esta función a platformer.js si no existe
+function getFinalScore() {
+    return game && game.player ? game.player.score : 0;
+}
+
 // Call the start function to initiate the game
 main();
+

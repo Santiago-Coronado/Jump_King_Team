@@ -331,5 +331,21 @@ class Princess extends AnimatedObject {
                 window.location.href = "PantallaPrincipal.html";
             };
         }
+        if (typeof statsManager !== 'undefined' && statsManager) {
+            const finalScore = getFinalScore();
+            statsManager.endGame(true, finalScore);            
+        }
+    }
+    // En handleVictoryStage de princess.js
+    if (gameStats) {
+        // Registrar la partida completa
+        gameStats.registrarPartida(
+            gameElapsedTime,              // tiempo jugado
+            0,                            // muertes durante esta sesión final
+            true,                         // partida completada 
+            0,                            // enemigos derrotados en esta sesión
+            game.player.score,            // puntuación final
+            gameElapsedTime               // tiempo de completado
+        );
     }
 }
