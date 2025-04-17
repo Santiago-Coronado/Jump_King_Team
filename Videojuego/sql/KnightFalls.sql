@@ -24,6 +24,7 @@ CREATE TABLE Jugador (
     doublejump_obtenido BOOLEAN,
     chargedjump_obtenido BOOLEAN,
     dash_obtenido BOOLEAN,
+    tiempo_total_jugado TIME,
     CONSTRAINT fk_usuario_jugador
         FOREIGN KEY (id_usuario)
         REFERENCES Usuario(id_usuario)
