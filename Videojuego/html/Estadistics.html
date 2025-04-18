@@ -16,7 +16,7 @@
             <a href="../html/Creditos.html" class="menu-button">Créditos</a>
         </div>
       </div>
-    <h1>KNIGHTSFALL - ESTADÍSTICAS</h1>
+    <h1>ESTADÍSTICAS Y CLASIFICACIONES</h1>
     
     <div id="user-info" class="user-info">
         Cargando información de usuario...
@@ -70,11 +70,11 @@
                     </div>
                 </div>
             </div>
-            
-            <div id="historial-section" class="stat-group">
-                <h2>Historial de Partidas Recientes</h2>
-                <div id="historial-content">
-                    <!-- Aquí se añadirá la tabla de historial si hay datos disponibles -->
+
+            <div class="stat-group">
+                <h2>Clasificaciones</h2>
+                <div id="leaderboard-content" class="leaderboard">
+                    <div class="loading">Cargando leaderboard...</div>
                 </div>
             </div>
         </div>
@@ -92,7 +92,7 @@
     </template>
     
     <script>
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
     const contentArea = document.getElementById('content-area');
     const userInfo = document.getElementById('user-info');
     
@@ -109,12 +109,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Usuario conectado - mostrar su nombre y cargar estadísticas del servidor
         userInfo.innerHTML = `Jugador: <span class="username">${username}</span>`;
         loadUserStats(userId);
-        loadUserHistory(userId);
     } else {
         // Usuario no conectado - mostrar estadísticas locales
         userInfo.innerHTML = `Jugador: <span class="username">Anónimo</span> <small>(estadísticas guardadas localmente)</small>`;
         loadLocalStats();
     }
+    // Load leaderboard for all users
+    loadLeaderboard();
 });
 
 // Cargar estadísticas desde localStorage
@@ -125,14 +126,6 @@ function loadLocalStats() {
         if (savedStats) {
             const stats = JSON.parse(savedStats);
             updateStatsDisplay(stats);
-            
-            // Mostrar historial local si existe
-            if (stats.historial && stats.historial.length > 0) {
-                displayHistorial(stats.historial);
-            } else {
-                document.getElementById('historial-content').innerHTML = 
-                    '<p>No hay historial de partidas disponible.</p>';
-            }
         } else {
             // No hay estadísticas guardadas
             document.getElementById('tiempo-total').textContent = '00h 00m 00s';
@@ -193,46 +186,85 @@ async function loadUserStats(userId) {
     }
 }
 
-async function loadUserHistory(userId) {
+async function loadLeaderboard() {
     try {
-        // Solicitud API para obtener historial del usuario
-        const response = await fetch(`/api/stats/historial/${userId}`);
+        const response = await fetch('/api/leaderboard');
         
         if (!response.ok) {
-            throw new Error(`Error al cargar historial: ${response.status}`);
+            throw new Error(`Error al cargar leaderboard: ${response.status}`);
         }
         
         const data = await response.json();
         
-        if (data.success) {
-            if (data.historial && data.historial.length > 0) {
-                displayHistorial(data.historial);
-            } else {
-                document.getElementById('historial-content').innerHTML = 
-                    '<p>No hay historial de partidas disponible.</p>';
-            }
+        if (data.success && data.leaderboard) {
+            displayLeaderboard(data.leaderboard);
         } else {
-            throw new Error(data.message || 'Error desconocido al cargar historial');
+            throw new Error(data.message || 'Error desconocido al cargar leaderboard');
         }
     } catch (error) {
-        console.error('Error al cargar historial del servidor:', error);
-        
-        // Si hay un error al cargar desde el servidor, intentamos cargar historial local
-        try {
-            const savedStats = localStorage.getItem('knightsfall_stats');
-            if (savedStats) {
-                const stats = JSON.parse(savedStats);
-                if (stats.historial && stats.historial.length > 0) {
-                    displayHistorial(stats.historial);
-                } else {
-                    document.getElementById('historial-content').innerHTML = 
-                        '<p>No hay historial de partidas disponible.</p>';
-                }
-            }
-        } catch (localError) {
-            console.error('Error al cargar historial local:', localError);
-        }
+        console.error('Error al cargar leaderboard:', error);
+        document.getElementById('leaderboard-content').innerHTML = 
+            '<p class="error-message">No se pudo cargar el leaderboard.</p>';
     }
+}
+
+function displayLeaderboard(leaderboard) {
+    if (!leaderboard || leaderboard.length === 0) {
+        document.getElementById('leaderboard-content').innerHTML = 
+            '<p>No hay datos de leaderboard disponibles.</p>';
+        return;
+    }
+    
+    const leaderboardTable = document.createElement('table');
+    leaderboardTable.className = 'data-table';
+    
+    // Create header
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    
+    const headers = ['Posición', 'Jugador', 'Mejor Tiempo', 'Mejor Puntuación'];
+    
+    headers.forEach(header => {
+        const th = document.createElement('th');
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+    
+    thead.appendChild(headerRow);
+    leaderboardTable.appendChild(thead);
+    
+    // Create table body
+    const tbody = document.createElement('tbody');
+    
+    leaderboard.forEach(player => {
+        const row = document.createElement('tr');
+        
+        // Rank
+        const rankCell = document.createElement('td');
+        rankCell.textContent = player.rank;
+        row.appendChild(rankCell);
+        
+        // Username
+        const usernameCell = document.createElement('td');
+        usernameCell.textContent = player.username;
+        row.appendChild(usernameCell);
+        
+        // Best time
+        const timeCell = document.createElement('td');
+        timeCell.textContent = formatTimeDisplay(player.best_time);
+        row.appendChild(timeCell);
+        
+        // Best score
+        const scoreCell = document.createElement('td');
+        scoreCell.textContent = player.best_score;
+        row.appendChild(scoreCell);
+        
+        tbody.appendChild(row);
+    });
+    
+    leaderboardTable.appendChild(tbody);
+    document.getElementById('leaderboard-content').innerHTML = '';
+    document.getElementById('leaderboard-content').appendChild(leaderboardTable);
 }
 
 function updateStatsDisplay(stats) {
@@ -249,72 +281,6 @@ function updateStatsDisplay(stats) {
         formatTimeDisplay(stats.record_personal.mejor_tiempo) : 'N/A';
     document.getElementById('mejor-puntuacion').textContent = 
         stats.record_personal.mejor_puntaje || stats.record_personal.mejor_puntuacion || 0;
-}
-
-function displayHistorial(historial) {
-    const historialTable = document.createElement('table');
-    historialTable.className = 'data-table';
-    
-    // Crear encabezado
-    const thead = document.createElement('thead');
-    const headerRow = document.createElement('tr');
-    
-    const headers = [
-        'Fecha', 'Tiempo Jugado', 'Completada', 'Puntuación', 
-        'Muertes', 'Enemigos Derrotados'
-    ];
-    
-    headers.forEach(header => {
-        const th = document.createElement('th');
-        th.textContent = header;
-        headerRow.appendChild(th);
-    });
-    
-    thead.appendChild(headerRow);
-    historialTable.appendChild(thead);
-    
-    // Crear cuerpo de la tabla
-    const tbody = document.createElement('tbody');
-    
-    historial.forEach(partida => {
-        const row = document.createElement('tr');
-        
-        // Formato de fecha
-        const fechaCell = document.createElement('td');
-        fechaCell.textContent = formatDateDisplay(partida.fecha);
-        row.appendChild(fechaCell);
-        
-        // Tiempo jugado
-        const tiempoCell = document.createElement('td');
-        tiempoCell.textContent = formatTimeDisplay(partida.tiempo_jugado);
-        row.appendChild(tiempoCell);
-        
-        // Completada
-        const completadaCell = document.createElement('td');
-        completadaCell.textContent = partida.completada ? 'Sí' : 'No';
-        row.appendChild(completadaCell);
-        
-        // Puntuación
-        const puntuacionCell = document.createElement('td');
-        puntuacionCell.textContent = partida.puntuacion;
-        row.appendChild(puntuacionCell);
-        
-        // Muertes
-        const muertesCell = document.createElement('td');
-        muertesCell.textContent = partida.muertes;
-        row.appendChild(muertesCell);
-        
-        // Enemigos derrotados
-        const enemigosCell = document.createElement('td');
-        enemigosCell.textContent = partida.enemigos_derrotados;
-        row.appendChild(enemigosCell);
-        
-        tbody.appendChild(row);
-    });
-    
-    historialTable.appendChild(tbody);
-    document.getElementById('historial-content').innerHTML = '';
-    document.getElementById('historial-content').appendChild(historialTable);
 }
 
 // Función para formatear tiempo en formato legible

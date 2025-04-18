@@ -540,7 +540,8 @@ app.post('/api/stats/increment', async (req, res) => {
 });
 
 // Obtener historial de partidas
-app.get('/historial/:userId', async (req, res) => {
+// Get user game history
+app.get('/api/stats/historial/:userId', async (req, res) => {
     let connection = null;
     
     try {
@@ -554,31 +555,62 @@ app.get('/historial/:userId', async (req, res) => {
         }
         
         connection = await connectToKnightsFallDB();
-        const [rows] = await connection.query(
-            'SELECT * FROM historial_partidas WHERE id_usuario = ? ORDER BY fecha_partida DESC LIMIT 10',
-            [userId]
+        
+        // First, get user ID from database (in case userId is a username)
+        const [userRows] = await connection.query(
+            'SELECT id_usuario FROM Usuario WHERE nombre_usuario = ? OR id_usuario = ?',
+            [userId, isNaN(parseInt(userId)) ? 0 : parseInt(userId)]
         );
         
-        if (rows.length === 0) {
-            return res.json({
-                success: true,
-                message: "No hay historial de partidas para este usuario",
-                historial: []
+        if (userRows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Usuario no encontrado"
             });
         }
         
-        // Formatear el historial para el cliente
-        const historial = rows.map(partida => {
+        const dbUserId = userRows[0].id_usuario;
+        
+        // Get player's games from Partida table
+        // Join through Partida_Jugador to get only this player's games
+        const [historyRows] = await connection.query(`
+            SELECT 
+                p.id_partida,
+                p.puntuacion, 
+                p.tiempo as tiempo_completado,
+                p.duracion_segundos,
+                p.fecha_registro as fecha,
+                (p.tiempo IS NOT NULL) as completada,
+                pj.muertes,
+                pj.enemigos_derrotados
+            FROM 
+                Partida p
+            JOIN 
+                Partida_Jugador pj ON p.id_partida = pj.id_partida
+            JOIN
+                Jugador j ON pj.id_jugador = j.id_jugador
+            WHERE 
+                j.id_usuario = ?
+            ORDER BY 
+                p.fecha_registro DESC
+            LIMIT 10
+        `, [dbUserId]);
+        
+        // Format history data
+        const historial = historyRows.map(row => {
             return {
-                id_partida: partida.id_partida,
-                nombre_usuario: partida.nombre_usuario || "Jugador Desconocido",
-                fecha: partida.fecha_partida,
-                tiempo_jugado: JSON.parse(partida.tiempo_jugado),
-                muertes: partida.muertes,
-                completada: partida.partida_completada === 1,
-                tiempo_completado: partida.tiempo_completado ? JSON.parse(partida.tiempo_completado) : null,
-                puntuacion: partida.puntuacion,
-                enemigos_derrotados: partida.enemigos_derrotados
+                id: row.id_partida,
+                fecha: row.fecha,
+                tiempo_jugado: {
+                    hours: Math.floor(row.duracion_segundos / 3600),
+                    minutes: Math.floor((row.duracion_segundos % 3600) / 60),
+                    seconds: row.duracion_segundos % 60
+                },
+                completada: row.completada === 1,
+                tiempo_completado: mysqlTimeToTimeObject(row.tiempo_completado),
+                puntuacion: row.puntuacion,
+                muertes: row.muertes,
+                enemigos_derrotados: row.enemigos_derrotados
             };
         });
         
@@ -586,17 +618,66 @@ app.get('/historial/:userId', async (req, res) => {
             success: true,
             historial: historial
         });
+        
     } catch (error) {
-        console.error('Error al obtener historial de partidas:', error);
+        console.error('Error al obtener historial de usuario:', error);
         res.status(500).json({
             success: false,
-            message: "Error en el servidor"
+            message: "Error al obtener el historial"
         });
     } finally {
-        if (connection) {
-            connection.end();
-            console.log('Conexión cerrada');
-        }
+        if (connection) connection.end();
+    }
+});
+
+// Get leaderboard data
+app.get('/api/leaderboard', async (req, res) => {
+    let connection = null;
+    
+    try {
+        connection = await connectToKnightsFallDB();
+        
+        // Query to get top 5 players by completed games with best time and score
+        const [rows] = await connection.query(`
+            SELECT 
+                u.nombre_usuario,
+                j.mejor_tiempo,
+                j.mejor_puntuacion
+            FROM 
+                Jugador j
+            JOIN 
+                Usuario u ON j.id_usuario = u.id_usuario
+            WHERE 
+                j.partidas_completadas > 0 
+                AND j.mejor_tiempo IS NOT NULL
+            ORDER BY 
+                j.mejor_tiempo ASC, 
+                j.mejor_puntuacion DESC
+            LIMIT 5
+        `);
+        
+        // Format the leaderboard data
+        const leaderboard = rows.map((player, index) => {
+            return {
+                rank: index + 1,
+                username: player.nombre_usuario,
+                best_time: mysqlTimeToTimeObject(player.mejor_tiempo),
+                best_score: player.mejor_puntuacion,
+            };
+        });
+        
+        res.json({
+            success: true,
+            leaderboard: leaderboard
+        });
+    } catch (error) {
+        console.error('Error al obtener leaderboard:', error);
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener el leaderboard"
+        });
+    } finally {
+        if (connection) connection.end();
     }
 });
 

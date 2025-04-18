@@ -259,7 +259,7 @@ class Player extends AnimatedObject {
                 game.player.powerUps.double = gameStats.doubleJumpObtained;
                 game.player.powerUps.charged = gameStats.chargedJumpObtained;
                 game.player.powerUps.dash = gameStats.dashObtained;
-                console.log("Power-ups inicializados desde gameStats:", game.player.powerUps);
+                //console.log("Power-ups inicializados desde gameStats:", game.player.powerUps);
             }, 500); // Pequeño retraso para asegurar que todo está cargado
         }
 

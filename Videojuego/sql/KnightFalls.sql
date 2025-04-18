@@ -59,6 +59,9 @@ CREATE TABLE Partida_Jugador (
         ON UPDATE CASCADE
 ) ENGINE=InnoDB CHARSET=utf8mb4;
 
+ALTER TABLE jugador
+ADD COLUMN tiempo_total_jugado TIME;
+
 -- CONSULTAS COMIENZAN AQUÍ
 
 -- Consultar jugadores y sus power-ups globales 

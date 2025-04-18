@@ -3,7 +3,7 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    background-color:  rgba(0, 0, 0, 0.8);;
+    background-color:  #1b1a22;
 }
 
 h1, h2 {
@@ -13,13 +13,13 @@ h1, h2 {
 
 h1 {
     margin-bottom: 30px;
-    color: #2c3e50;
+    color: #c9a13d;
     border-bottom: 2px solid #3498db;
     padding-bottom: 10px;
 }
 
 .stats-container {
-    background-color: #fff;
+    background-color: #033761;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 25px;
@@ -31,7 +31,7 @@ h1 {
 }
 
 .stat-group h2 {
-    color: #2c3e50;
+    color: #c9a13d;
     border-bottom: 1px solid #eee;
     padding-bottom: 10px;
     margin-bottom: 20px;
@@ -44,7 +44,7 @@ h1 {
     margin-bottom: 15px;
     padding: 10px;
     border-radius: 4px;
-    background-color: #f9f9f9;
+    background-color: #4a96d4;
 }
 
 .stat-row:hover {
@@ -53,7 +53,7 @@ h1 {
 
 .stat-label {
     font-weight: 600;
-    color: #555;
+    color: #7e270d;
 }
 
 .stat-value {
@@ -62,7 +62,7 @@ h1 {
 }
 
 .record-highlight {
-    background-color: #e9f7fe;
+    background-color: #044377;
     border-left: 4px solid #3498db;
     padding: 15px;
     border-radius: 4px;
@@ -91,7 +91,7 @@ h1 {
 
 .button {
     background-color: #3498db;
-    color: white;
+    color: #721c24;
     border: none;
     border-radius: 4px;
     padding: 12px 24px;
@@ -120,7 +120,7 @@ h1 {
 .user-info {
     text-align: center;
     margin-bottom: 20px;
-    color: #7f8c8d;
+    color: #c9a13d;
     font-size: 1.1rem;
 }
 
@@ -159,13 +159,65 @@ h1 {
     background-color: #e9f7fe;
 }
 
-@media (max-width: 768px) {
-    .stat-row {
-        flex-direction: column;
-        padding: 15px;
-    }
-    
-    .stat-value {
-        margin-top: 5px;
-    }
+
+/* Leaderboard stuff */
+#leaderboard-content .data-table {
+    border: 2px solid #3498db;
+}
+
+#leaderboard-content .data-table thead th {
+    background-color: #2980b9;
+    color: white;
+    text-transform: uppercase;
+}
+
+/* First column (position/rank) */
+#leaderboard-content .data-table tbody td:first-child {
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Second column (username) */
+#leaderboard-content .data-table tbody td:nth-child(2) {
+    color: #c9a13d;
+    font-weight: bold;
+}
+
+/* Third column (best time) */
+#leaderboard-content .data-table tbody td:nth-child(3) {
+    color: #2ecc71;
+}
+
+/* Fourth column (best score) */
+#leaderboard-content .data-table tbody td:nth-child(4) {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+/* Highlight rows on hover */
+#leaderboard-content .data-table tbody tr:hover {
+    background-color: #044377;
+    cursor: pointer;
+}
+
+/* Alternate row styling */
+#leaderboard-content .data-table tbody tr:nth-child(odd) {
+    background-color: #033761;
+}
+
+#leaderboard-content .data-table tbody tr:nth-child(even) {
+    background-color: #022c4a;
+}
+
+/* Top 3 positions styling */
+#leaderboard-content .data-table tbody tr:nth-child(1) {
+    background-color: rgba(255, 215, 0, 0.2); /* Gold */
+}
+
+#leaderboard-content .data-table tbody tr:nth-child(2) {
+    background-color: rgba(192, 192, 192, 0.2); /* Silver */
+}
+
+#leaderboard-content .data-table tbody tr:nth-child(3) {
+    background-color: rgba(205, 127, 50, 0.2); /* Bronze */
 }
