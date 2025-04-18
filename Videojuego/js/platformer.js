@@ -26,7 +26,7 @@ let player;
 let level;
 let gameStats;
 
-let statsManager; // Initialize the stats manager; // Global variable for stats manager
+let statsManager; // Global variable for stats manager
 
 // Scale of the whole world, to be applied to all objects
 // Each unit in the level file will be drawn as these many square pixels
@@ -35,6 +35,7 @@ const scale = 14.3;
 let debugJump = false;
 
 let gameStartTime = Date.now();
+let gameActualStartTime = Date.now(); // This one is never reset (resetted ??? idk .-.)
 let gameElapsedTime = 0;
 
 class BasePhysics {

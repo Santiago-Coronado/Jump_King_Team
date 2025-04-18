@@ -267,12 +267,28 @@ class Princess extends AnimatedObject {
             // Calculate the total time played if not already calculated
             if (!gameElapsedTime) {
                 const now = Date.now();
-                gameElapsedTime = now - gameStartTime;
+                gameElapsedTime = now - gameActualStartTime;
             }
             
             // Record completion
             if (gameStats) {
-                gameStats.completeGame(game.player.score, gameElapsedTime);
+                // Convert milliseconds to time object
+                const timeObject = {
+                    hours: Math.floor((gameElapsedTime / 1000 / 3600)),
+                    minutes: Math.floor((gameElapsedTime / 1000 % 3600) / 60),
+                    seconds: Math.floor(gameElapsedTime / 1000 % 60)
+                };
+                gameStats.completeGame(game.player.score, timeObject);
+
+                // Register the game as completed 
+                gameStats.registrarPartida(
+                    gameElapsedTime,              // tiempo jugado
+                    0,                            // muertes durante esta sesión final
+                    true,                         // partida completada 
+                    0,                            // enemigos derrotados en esta sesión
+                    game.player.score,            // puntuación final
+                    gameElapsedTime               // tiempo de completado
+                );
             }
             // Get references to the HTML elements for the victory overlay
             const overlay = document.getElementById("gameCompleteOverlay");
@@ -336,17 +352,5 @@ class Princess extends AnimatedObject {
             const finalScore = getFinalScore();
             statsManager.endGame(true, finalScore);            
         }
-    }
-    // En handleVictoryStage de princess.js
-    if (gameStats) {
-        // Registrar la partida completa
-        gameStats.registrarPartida(
-            gameElapsedTime,              // tiempo jugado
-            0,                            // muertes durante esta sesión final
-            true,                         // partida completada 
-            0,                            // enemigos derrotados en esta sesión
-            game.player.score,            // puntuación final
-            gameElapsedTime               // tiempo de completado
-        );
     }
 }
