@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap');
-
+/* the import stuff is to use the Cinzel font .-. */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -38,7 +38,7 @@ body, html {
 .logo {
   max-width: 500px;
   height: auto;
-  margin-bottom: 2rem;
+  margin-bottom: 0.75rem;
 }
 
 /* Botones grandes */
@@ -102,6 +102,7 @@ body, html {
   cursor: pointer;
   font-family: 'Cinzel', serif;
   font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .small-button:hover {
