@@ -71,6 +71,11 @@ class Game {
         this.gameOverAlpha = 0; 
         this.fadeInSpeed = 0.005;
 
+        // Death Timer
+        this.maxTime = 180000; // 3 minutes in milliseconds
+        this.remainingTime = this.maxTime;
+        this.textTimer = new TextLabel(canvasWidth - 275, canvasHeight - 60, "20px 'Press Start 2P', sans-serif", "white");
+
         this.textScore = new TextLabel(70, canvasHeight - 60, "20px 'Press Start 2P', sans-serif", "white");
         this.textSpeedBoost = new TextLabel(70, canvasHeight - 30, "20px 'Press Start 2P', sans-serif", "white");
         this.textLevel = new TextLabel(70, canvasHeight, "20px 'Press Start 2P', sans-serif", "white");
@@ -118,6 +123,14 @@ class Game {
 
     update(deltaTime) {
         if (this.state === 'playing') {
+            // Update timer
+            if (!this.player.isDead && !this.gameOverActive && !(this.princess && this.princess.victorySequenceActive)) {
+                this.remainingTime -= deltaTime;
+                if (this.remainingTime <= 0) {
+                    this.remainingTime = 0;
+                    this.player.death();  // Kill player when time runs out
+                }
+            }
         if (this.player.isDead) {
             this.player.deathTimer -= deltaTime;
             this.player.updateFrame(deltaTime);
@@ -512,6 +525,15 @@ class Game {
 
         // Display current level
         this.textLevel.draw(ctx, `Level: ${this.currentLevelIndex + 1}`);
+
+        // Draw timer
+        const minutes = Math.floor(this.remainingTime / 60000);
+        const seconds = Math.floor((this.remainingTime % 60000) / 1000);
+        const timerText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        ctx.textAlign = 'right';  // Align timer to the right
+        this.textTimer.draw(ctx, `Time: ${timerText}`);
+        ctx.textAlign = 'left';   // Reset alignment
         
         // Draw powerup bar
         this.powerUpBar.draw(ctx);
@@ -633,6 +655,7 @@ class Game {
         if (this.gameOverActive) {
             this.persistentPowerUps = { ...this.playerPowerUps };
             const scoreToKeep = this.player.score;
+            this.remainingTime = this.maxTime;  // Reset timer when respawning
 
             // Save current settings
             const savedSoundEnabled = this.soundEnabled;
