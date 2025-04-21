@@ -36,3 +36,29 @@ FROM
     Jugador j
 JOIN 
     Usuario u ON j.id_usuario = u.id_usuario;
+    
+CREATE OR REPLACE VIEW JugadorView AS
+SELECT *
+FROM Jugador;
+
+CREATE OR REPLACE VIEW UsuarioIDView AS
+SELECT id_usuario, nombre_usuario
+FROM Usuario;
+
+CREATE OR REPLACE VIEW JugadorIDView AS
+SELECT id_jugador
+FROM Jugador;
+
+CREATE OR REPLACE VIEW TiempoJugadoView AS
+SELECT tiempo_total_jugado
+FROM Jugador;
+
+
+CREATE OR REPLACE VIEW VerificacionActualizacionView AS
+SELECT tiempo_total_jugado, mejor_tiempo, doublejump_obtenido, chargedjump_obtenido, dash_obtenido, mejor_puntuacion
+FROM Jugador;
+
+CREATE OR REPLACE VIEW AutenticacionUsuarioView AS
+SELECT id_usuario, nombre_usuario, contraseña
+FROM Usuario;
+
