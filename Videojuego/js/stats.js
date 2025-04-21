@@ -106,7 +106,7 @@ app.get('/api/stats/:userId', async (req, res) => {
         const userName = userRows[0].nombre_usuario;
         
         // Then get the player stats using the user ID
-        const [rows] = await connection.query('SELECT * FROM Jugador WHERE id_usuario = ?', [dbUserId]);
+        const [rows] = await connection.query('SELECT * FROM JugadorView WHERE id_usuario = ?', [dbUserId]);
         
         if(rows.length === 0) {
             // Return default stats if player record doesn't exist yet
@@ -184,7 +184,7 @@ app.post('/api/stats/update', async (req, res) => {
         
         // First, check if the user exists in Usuario table by username
         const [userRows] = await connection.query(
-            'SELECT id_usuario FROM Usuario WHERE nombre_usuario = ?',
+            'SELECT * FROM usuarioIDView WHERE nombre_usuario = ?',
             [userName]
         );
         
@@ -205,7 +205,7 @@ app.post('/api/stats/update', async (req, res) => {
         
         // Now check if player stats exist
         const [playerRows] = await connection.query(
-            'SELECT * FROM Jugador WHERE id_usuario = ?',
+            'SELECT * FROM JugadorView WHERE id_usuario = ?',
             [userId]
         );
         
@@ -340,7 +340,7 @@ app.post('/api/stats/increment', async (req, res) => {
         
         // First, get or create Usuario
         const [userRows] = await connection.query(
-            'SELECT id_usuario FROM Usuario WHERE nombre_usuario = ?',
+            'SELECT * FROM UsuarioIDView WHERE nombre_usuario = ?',
             [userName]
         );
         
@@ -358,7 +358,7 @@ app.post('/api/stats/increment', async (req, res) => {
         
         // Then look for existing player stats
         const [playerRows] = await connection.query(
-            'SELECT * FROM Jugador WHERE id_usuario = ?',
+            'SELECT * FROM JugadorView WHERE id_usuario = ?',
             [userId]
         );
         
@@ -422,7 +422,7 @@ app.post('/api/stats/increment', async (req, res) => {
             
             // Calculate total time
             const [currentTimeRow] = await connection.query(
-                'SELECT tiempo_total_jugado FROM Jugador WHERE id_usuario = ?',
+                'SELECT * FROM TiempoJugadoView WHERE id_usuario = ?',
                 [userId]
             );
             
@@ -485,7 +485,7 @@ app.post('/api/stats/increment', async (req, res) => {
         
         // Get the player's id_jugador
         const [jugadorRow] = await connection.query(
-            'SELECT id_jugador FROM Jugador WHERE id_usuario = ?', 
+            'SELECT * FROM JugadorIDView WHERE id_usuario = ?', 
             [userId]
         );
         
@@ -500,7 +500,7 @@ app.post('/api/stats/increment', async (req, res) => {
         
         // Check if the player record was updated correctly
         const [updatedPlayerRow] = await connection.query(
-            'SELECT tiempo_total_jugado, mejor_tiempo, doublejump_obtenido, chargedjump_obtenido, dash_obtenido, mejor_puntuacion FROM Jugador WHERE id_usuario = ?',
+            'SELECT * FROM VerificacionActualizacionView WHERE id_usuario = ?',
             [userId]
         );
         
@@ -594,7 +594,7 @@ app.post('/api/auth/login', async (req, res) => {
       
       // Find user in database
       const [users] = await connection.query(
-        'SELECT id_usuario, nombre_usuario, contraseña FROM Usuario WHERE nombre_usuario = ?',
+        'SELECT * FROM AutenticacionUsuarioView WHERE nombre_usuario = ?',
         [username]
       );
       
@@ -648,7 +648,7 @@ app.post('/api/auth/login', async (req, res) => {
       
       // Check if user already exists
       const [existingUsers] = await connection.query(
-        'SELECT id_usuario FROM Usuario WHERE nombre_usuario = ?',
+        'SELECT * FROM UsuarioIDView WHERE nombre_usuario = ?',
         [username]
       );
       
