@@ -110,3 +110,11 @@
 .form-container {
   margin-top: -120px; 
 }
+
+a {
+  text-decoration: none;
+}
+
+a img {
+  display: block;
+}

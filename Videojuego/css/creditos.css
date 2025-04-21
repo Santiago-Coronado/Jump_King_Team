@@ -1,0 +1,46 @@
+.creditos-wrapper {
+    padding: 2rem;
+    color: #ffffff;
+    max-width: 900px;
+    margin: 2rem auto;
+    background-color: #2a2f36;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(201, 161, 61, 0.2);
+    text-align: center;
+}
+  
+.creditos-wrapper h1 {
+    font-size: 2.5rem;
+    color: #ffd700;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #ffa500;
+    padding-bottom: 0.5rem;
+    display: inline-block;
+}
+  
+.creditos-seccion {
+    margin-bottom: 3rem;
+}
+  
+.creditos-seccion h2 {
+    font-size: 1.5rem;
+    color: #ffa500;
+    margin-bottom: 0.5rem;
+}
+  
+.creditos-seccion p {
+    font-size: 1.1rem;
+    color: #dddddd;
+    margin: 0;
+    line-height: 1.8;
+}
+  
+.creditos-wrapper a {
+    color: #ffffff;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+  
+.creditos-wrapper a:hover {
+    color: #c9a13d; 
+}
