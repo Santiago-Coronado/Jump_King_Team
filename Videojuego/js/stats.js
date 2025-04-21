@@ -77,13 +77,9 @@ async function connectToKnightsFallDB(){
 }
 
 // Routes definition and handling
-app.get('/', (request,response)=>{
-    fs.readFile('../html/Estadistics.html', 'utf8', (err, html)=>{
-        if(err) response.status(500).send('There was an error: ' + err)
-        console.log('Loading page...')
-        response.send(html)
-    })
-})
+app.get('/', (request, response) => {
+    response.redirect('/html/PantallaPrincipal.html');
+});
 
 app.get('/api/stats/:userId', async (req, res) => {
     let connection = null;
@@ -579,3 +575,108 @@ app.get('/api/leaderboard', async (req, res) => {
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`)
 });
+
+/* Login stuff */
+// Login endpoint
+app.post('/api/auth/login', async (req, res) => {
+    let connection = null;
+    try {
+      const { username, password } = req.body;
+      
+      if (!username || !password) {
+        return res.status(400).json({
+          success: false,
+          message: "Usuario y contraseña son requeridos"
+        });
+      }
+      
+      connection = await connectToKnightsFallDB();
+      
+      // Find user in database
+      const [users] = await connection.query(
+        'SELECT id_usuario, nombre_usuario, contraseña FROM Usuario WHERE nombre_usuario = ?',
+        [username]
+      );
+      
+      if (users.length === 0) {
+        return res.status(401).json({
+          success: false,
+          message: "Credenciales inválidas"
+        });
+      }
+      
+      const user = users[0];
+      
+      // Password check 
+      if (password === user.contraseña) {
+        return res.json({
+          success: true,
+          userId: user.id_usuario,
+          userName: user.nombre_usuario
+        });
+      } else {
+        return res.status(401).json({
+          success: false,
+          message: "Contraseña incorrecta"
+        });
+      }
+    } catch (error) {
+      console.error('Error de login:', error);
+      res.status(500).json({
+        success: false,
+        message: "Error en el servidor"
+      });
+    } finally {
+      if (connection) connection.end();
+    }
+  });
+  
+  // Registration endpoint
+  app.post('/api/auth/register', async (req, res) => {
+    let connection = null;
+    try {
+      const { username, password } = req.body;
+      
+      if (!username || !password) {
+        return res.status(400).json({
+          success: false,
+          message: "Usuario y contraseña son requeridos"
+        });
+      }
+      
+      connection = await connectToKnightsFallDB();
+      
+      // Check if user already exists
+      const [existingUsers] = await connection.query(
+        'SELECT id_usuario FROM Usuario WHERE nombre_usuario = ?',
+        [username]
+      );
+      
+      if (existingUsers.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: "El usuario ya existe"
+        });
+      }
+      
+      // Create new user with plain text password
+      const [result] = await connection.query(
+        'INSERT INTO Usuario (nombre_usuario, contraseña) VALUES (?, ?)',
+        [username, password]
+      );
+      
+      res.json({
+        success: true,
+        userId: result.insertId,
+        userName: username
+      });
+    } catch (error) {
+      console.error('Error de registro:', error);
+      res.status(500).json({
+        success: false,
+        message: "Error en el servidor"
+      });
+    } finally {
+      if (connection) connection.end();
+    }
+  });

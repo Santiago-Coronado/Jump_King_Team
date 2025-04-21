@@ -32,6 +32,7 @@
             <button class="icon-button" onclick="location.href='DescYControl.html'">🎮</button>
             <button class="small-button" onclick="location.href='Estadistics.html'">Clasificaciones</button>
             <button class="small-button">Créditos</button>
+            <button class="small-button" onclick="logout()">Cerrar Sesión</button>
         </div>
 
         <p class="copyright">© Middle Earth Studios 2025. All rights reserved.</p>
@@ -61,6 +62,12 @@
         bgMusic.muted = isMuted;
         volumeControl.textContent = isMuted ? '🔇' : '🔊';
     });
+
+    function logout() {
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        location.href = 'Login.html';
+    }
     </script>
 
 </body>
