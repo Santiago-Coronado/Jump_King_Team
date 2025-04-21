@@ -4,6 +4,115 @@
   <meta charset="UTF-8">
   <title>Knight's Fall - Iniciar Sesión</title>
   <link rel="stylesheet" href="../css/Login.css">
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if user is already logged in
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        // Already logged in, redirect to game
+        window.location.href = 'index.html';
+      }
+
+      // Get form and button elements
+      const form = document.querySelector('.form-container form');
+      const loginBtn = document.querySelector('.login-btn');
+      const registerBtn = document.querySelector('.login-btn-first');
+      
+      // Add error message element
+      const errorMsg = document.createElement('div');
+      errorMsg.id = 'error-message';
+      errorMsg.style.color = 'red';
+      errorMsg.style.marginBottom = '15px';
+      errorMsg.style.display = 'none';
+      form.insertBefore(errorMsg, form.firstChild);
+      // Prevent default form submission
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+      });
+      
+      // Login button handler
+      loginBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        if (!username || !password) {
+          errorMsg.textContent = 'Por favor complete todos los campos';
+          errorMsg.style.display = 'block';
+          return;
+        }
+        
+        try {
+          const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+          });
+          
+          const data = await response.json();
+          if (data.success) {
+            // Store user info in localStorage
+            localStorage.setItem('userId', data.userId);
+            localStorage.setItem('username', data.userName);
+            
+            // Redirect to game
+            window.location.href = 'index.html';
+          } else {
+            errorMsg.textContent = data.message || 'Error al iniciar sesión';
+            errorMsg.style.display = 'block';
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          errorMsg.textContent = 'Error de conexión al servidor';
+          errorMsg.style.display = 'block';
+        }
+      });
+      
+      // Register button handler
+      registerBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        if (!username || !password) {
+          errorMsg.textContent = 'Por favor complete todos los campos';
+          errorMsg.style.display = 'block';
+          return;
+        }
+        try {
+          const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            // Store user info in localStorage
+            localStorage.setItem('userId', data.userId);
+            localStorage.setItem('username', data.userName);
+            
+            // Redirect to game
+            window.location.href = 'index.html';
+          } else {
+            errorMsg.textContent = data.message || 'Error al registrarse';
+            errorMsg.style.display = 'block';
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          errorMsg.textContent = 'Error de conexión al servidor';
+          errorMsg.style.display = 'block';
+        }
+      });
+    });
+  </script>
 </head>
 <link rel="icon" type="png" href="../GDD_Images/Logo_web.png" />
 <body>
@@ -20,21 +129,17 @@
 
       <div class="form-container">
         <form>
-          <label for="username">Correo Electrónico:</label>
+          <label for="username">Nombre de Usuario:</label>
           <input type="text" id="username" name="username" required>
 
           <label for="password">Contraseña:</label>
           <input type="password" id="password" name="password" required>
 
           <button type="submit" class="login-btn">Iniciar Sesión</button>
+          <button type="submit" class="login-btn-first">Registrar</button>
         </form>
-
-        <p class="register-link">
-          ¿Primera vez? <a href="#" class="link">Regístrate</a>
-        </p>
       </div>
     </div>
-
   </div>
 </body>
 </html>
