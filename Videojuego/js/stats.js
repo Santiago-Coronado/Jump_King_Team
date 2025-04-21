@@ -1,4 +1,3 @@
-import { unsubscribe } from 'diagnostics_channel'
 import express from 'express'
 import fs from 'fs'
 import mysql from 'mysql2/promise'
@@ -99,7 +98,7 @@ app.get('/api/stats/:userId', async (req, res) => {
         
         // First, look for user by ID or name
         const [userRows] = await connection.query(
-            'SELECT id_usuario, nombre_usuario FROM Usuario WHERE nombre_usuario = ? OR id_usuario = ?',
+            'SELECT * FROM JugadorEstadisticasCompletas WHERE nombre_usuario = ? OR id_usuario = ?',
             [userId, isNaN(parseInt(userId)) ? 0 : parseInt(userId)]
         );
         
@@ -539,96 +538,6 @@ app.post('/api/stats/increment', async (req, res) => {
     }
 });
 
-// Obtener historial de partidas
-// Get user game history
-app.get('/api/stats/historial/:userId', async (req, res) => {
-    let connection = null;
-    
-    try {
-        const userId = req.params.userId;
-        
-        if (!userId) {
-            return res.status(400).json({
-                success: false,
-                message: "ID de usuario es requerido"
-            });
-        }
-        
-        connection = await connectToKnightsFallDB();
-        
-        // First, get user ID from database (in case userId is a username)
-        const [userRows] = await connection.query(
-            'SELECT id_usuario FROM Usuario WHERE nombre_usuario = ? OR id_usuario = ?',
-            [userId, isNaN(parseInt(userId)) ? 0 : parseInt(userId)]
-        );
-        
-        if (userRows.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: "Usuario no encontrado"
-            });
-        }
-        
-        const dbUserId = userRows[0].id_usuario;
-        
-        // Get player's games from Partida table
-        // Join through Partida_Jugador to get only this player's games
-        const [historyRows] = await connection.query(`
-            SELECT 
-                p.id_partida,
-                p.puntuacion, 
-                p.tiempo as tiempo_completado,
-                p.duracion_segundos,
-                p.fecha_registro as fecha,
-                (p.tiempo IS NOT NULL) as completada,
-                pj.muertes,
-                pj.enemigos_derrotados
-            FROM 
-                Partida p
-            JOIN 
-                Partida_Jugador pj ON p.id_partida = pj.id_partida
-            JOIN
-                Jugador j ON pj.id_jugador = j.id_jugador
-            WHERE 
-                j.id_usuario = ?
-            ORDER BY 
-                p.fecha_registro DESC
-            LIMIT 10
-        `, [dbUserId]);
-        
-        // Format history data
-        const historial = historyRows.map(row => {
-            return {
-                id: row.id_partida,
-                fecha: row.fecha,
-                tiempo_jugado: {
-                    hours: Math.floor(row.duracion_segundos / 3600),
-                    minutes: Math.floor((row.duracion_segundos % 3600) / 60),
-                    seconds: row.duracion_segundos % 60
-                },
-                completada: row.completada === 1,
-                tiempo_completado: mysqlTimeToTimeObject(row.tiempo_completado),
-                puntuacion: row.puntuacion,
-                muertes: row.muertes,
-                enemigos_derrotados: row.enemigos_derrotados
-            };
-        });
-        
-        res.json({
-            success: true,
-            historial: historial
-        });
-        
-    } catch (error) {
-        console.error('Error al obtener historial de usuario:', error);
-        res.status(500).json({
-            success: false,
-            message: "Error al obtener el historial"
-        });
-    } finally {
-        if (connection) connection.end();
-    }
-});
 
 // Get leaderboard data
 app.get('/api/leaderboard', async (req, res) => {
@@ -639,21 +548,7 @@ app.get('/api/leaderboard', async (req, res) => {
         
         // Query to get top 5 players by completed games with best time and score
         const [rows] = await connection.query(`
-            SELECT 
-                u.nombre_usuario,
-                j.mejor_tiempo,
-                j.mejor_puntuacion
-            FROM 
-                Jugador j
-            JOIN 
-                Usuario u ON j.id_usuario = u.id_usuario
-            WHERE 
-                j.partidas_completadas > 0 
-                AND j.mejor_tiempo IS NOT NULL
-            ORDER BY 
-                j.mejor_tiempo ASC, 
-                j.mejor_puntuacion DESC
-            LIMIT 5
+            SELECT * FROM LeaderboardView LIMIT 5
         `);
         
         // Format the leaderboard data
