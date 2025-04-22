@@ -10,6 +10,7 @@ CREATE TABLE Usuario (
     nombre_usuario VARCHAR(50) NOT NULL,
     contraseña VARCHAR(255) NOT NULL
 ) ENGINE=InnoDB CHARSET = utf8mb4;
+SELECT * FROM Usuario;
 
 -- Tabla Jugador con powerups globales
 CREATE TABLE Jugador (
@@ -41,6 +42,20 @@ CREATE TABLE Partida (
     duracion_segundos INT
 ) ENGINE=InnoDB CHARSET=utf8mb4;
 
+CREATE TABLE Login_History (
+    id_login INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT UNSIGNED NOT NULL,
+    fecha_login DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_login_usuario
+        FOREIGN KEY (id_usuario)
+        REFERENCES Usuario(id_usuario)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE=InnoDB CHARSET=utf8mb4;
+
+SELECT * FROM Login_History;
+DROP TABLE Login_History;
+
 -- Tabla intermedia Partida_Jugador
 CREATE TABLE Partida_Jugador (
     id_partida INT UNSIGNED,
@@ -61,6 +76,9 @@ CREATE TABLE Partida_Jugador (
 
 ALTER TABLE jugador
 ADD COLUMN tiempo_total_jugado TIME;
+
+ALTER TABLE Usuario
+ADD COLUMN ultimo_login DATETIME NULL;
 
 -- CONSULTAS COMIENZAN AQUÍ
 
