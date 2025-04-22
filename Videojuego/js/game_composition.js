@@ -656,6 +656,7 @@ class Game {
             this.persistentPowerUps = { ...this.playerPowerUps };
             const scoreToKeep = this.player.score;
             this.remainingTime = this.maxTime;  // Reset timer when respawning
+            gameActualStartTime = Date.now(); // Reset the game start time
 
             // Save current settings
             const savedSoundEnabled = this.soundEnabled;

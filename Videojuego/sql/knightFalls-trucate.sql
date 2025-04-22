@@ -7,7 +7,7 @@ TRUNCATE TABLE jugador;
 TRUNCATE TABLE partida;
 TRUNCATE TABLE partida_jugador;
 TRUNCATE TABLE usuario;
-
+TRUNCATE TABLE Login_History;
 
 -- Reactivar las restricciones de clave foránea
 SET FOREIGN_KEY_CHECKS = 1;

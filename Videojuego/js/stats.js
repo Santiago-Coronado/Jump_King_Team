@@ -609,6 +609,11 @@ app.post('/api/auth/login', async (req, res) => {
       
       // Password check 
       if (password === user.contraseña) {
+        // Update last login time directly
+        await connection.query(
+            'UPDATE Usuario SET ultimo_login = CURRENT_TIMESTAMP WHERE id_usuario = ?',
+            [user.id_usuario]
+          );
         return res.json({
           success: true,
           userId: user.id_usuario,

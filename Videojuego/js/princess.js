@@ -93,6 +93,12 @@ class Princess extends AnimatedObject {
         this.victorySequenceActive = true;
         this.sequenceStage = 'approaching';
         this.sequenceTimer = 0;
+
+        // Calculate the total time played if not already calculated
+        if (!gameElapsedTime) {
+            const now = Date.now();
+            gameElapsedTime = now - gameActualStartTime;
+        }
         
         // Disable controls
         player.disableControls = true;
@@ -263,12 +269,6 @@ class Princess extends AnimatedObject {
             game.persistentPowerUps = { ...game.player.powerUps };
             // Set flag to prevent this code from running multiple times
             this.victoryMusicStarted = true;
-            
-            // Calculate the total time played if not already calculated
-            if (!gameElapsedTime) {
-                const now = Date.now();
-                gameElapsedTime = now - gameActualStartTime;
-            }
             
             // Record completion
             if (gameStats) {
