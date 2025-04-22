@@ -28,7 +28,7 @@ class Player extends AnimatedObject {
             level3: false, // 4500 points - 7.5% boost
         };
 
-        this.jumpSound = new Audio("../Assets/Knight/EfectoDeSonido_SaltoCaballero.wav");
+        this.jumpSound = new Audio("../Assets/Knight/EfectoDeSonido_SaltoCaballeroN.wav");
         this.jumpSound.volume = 0.5;
 
         this.damageSound = new Audio("../Assets/Knight/EfectoDeSonido_DanoCaballero.wav");
