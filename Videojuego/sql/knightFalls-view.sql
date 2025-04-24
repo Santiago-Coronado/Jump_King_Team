@@ -46,18 +46,19 @@ SELECT id_usuario, nombre_usuario
 FROM Usuario;
 
 CREATE OR REPLACE VIEW JugadorIDView AS
-SELECT id_jugador
+SELECT id_jugador, id_usuario
 FROM Jugador;
-
+SELECT * FROM JugadorIDView;
 CREATE OR REPLACE VIEW TiempoJugadoView AS
-SELECT tiempo_total_jugado
+SELECT id_usuario, tiempo_total_jugado
 FROM Jugador;
 
+SELECT * FROM TiempoJugadoView;
 
 CREATE OR REPLACE VIEW VerificacionActualizacionView AS
-SELECT tiempo_total_jugado, mejor_tiempo, doublejump_obtenido, chargedjump_obtenido, dash_obtenido, mejor_puntuacion
+SELECT id_usuario, tiempo_total_jugado, mejor_tiempo, doublejump_obtenido, chargedjump_obtenido, dash_obtenido, mejor_puntuacion
 FROM Jugador;
-
+SELECT *FROM verificacionactualizacionview;
 CREATE OR REPLACE VIEW AutenticacionUsuarioView AS
 SELECT id_usuario, nombre_usuario, contraseña
 FROM Usuario;

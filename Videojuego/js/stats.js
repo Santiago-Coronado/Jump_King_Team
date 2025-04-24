@@ -458,9 +458,9 @@ app.post('/api/stats/increment', async (req, res) => {
                     enemigos_derrotados || 0,
                     puntuacion || 0,  // Always update best score regardless of completion
                     muertes || 0,
-                    tiempoCompletadoSQL,
-                    tiempoCompletadoSQL,
-                    tiempoCompletadoSQL,
+                    partida_completada ? tiempoCompletadoSQL : null,
+                    partida_completada ? tiempoCompletadoSQL : null,
+                    partida_completada ? tiempoCompletadoSQL : null,
                     newTotalTime,
                     doublejump_obtenido ? 1 : 0,
                     chargedjump_obtenido ? 1 : 0,
