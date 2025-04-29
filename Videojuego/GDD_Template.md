@@ -300,7 +300,118 @@ _(ejemplo)_
 ## _Gráficos_
 
 ---
+ 
+ ### **Atributos de Estilo**
 
-### **Atributos de Estilo**
+Los personajes tendrán un diseño pixelado con animaciones de ataque, movimiento y muerte. El protagonista siempre mostrará una animación al saltar y moverse. Los enemigos siempre se moverán y, si estás dentro de su alcance, te atacarán con una animación. La princesa mostrará una animación pidiendo ayuda. Los escenarios donde el jugador explorará e interactuará con el castillo serán pixelados, con variaciones según el nivel. Si estás en el nivel 1, tendrás una atmósfera medieval; en el nivel 2, el entorno cambiará a uno gélido; y el nivel 3 tendrá un estilo más animado, ya que a medida que te acercas a la princesa, esta se encuentra en mejor estado.
 
-Los personajes tendrán un diseño pixelado con animaciones de ataque, movimiento y muerte. El protagonista, al saltar y moverse, siempre hará una animación. Los enemigos siempre se estarán moviendo, y si estás en su rango, te atacarán con una animación. La princesa tendrá una animación pidiendo rescate. Los escenarios donde el jugador
+ ### **Gráficos necesarios**
+
+1. Personajes
+    1. Humano
+        1. Caballero (Quieto, moverse, saltar, morir, golpear)
+        2. Princesa (Celebración)
+
+            ![Rey saltando](GDD_Images/Knight_Princess_Spritesheet)
+
+    2. Otros
+        1. Esqueleto (Moverse, atacar, golpear, morir)
+
+            ![Mover](GDD_Images/GIFS_Skeleton/Skeleton_Walk.gif)
+            ![Atacar](GDD_Images/GIFS_Skeleton/Skeleton_Attack.gif)
+            ![Golpe](GDD_Images/GIFS_Skeleton/Skeleton_Hit.gif)
+            ![Muerte](GDD_Images/GIFS_Skeleton/Skeleton_Dead.gif)
+
+        2. Demonio (Volar, golpear, morir)
+
+            ![Volar](GDD_Images/with_outline_Demon_fly/FLYING.png)
+            
+            ![Golpe](GDD_Images/with_outline_Demon_fly/HURT.png)
+            
+            ![Muerte](GDD_Images/with_outline_Demon_fly/DEATH.png)
+ 
+         3.	Jumper (Idle,Salto,Muerte)
+ 
+            ![idle](GDD_Images/Blob_Character_Pack/Blue-Blob-sheets/Blue_Blob_Idle.png)
+           	
+            ![Salto](GDD_Images/Blob_Character_Pack/Blue-Blob-sheets/Blue_Blob_Jump.png)
+           	
+            ![Muerte](GDD_Images/Blob_Character_Pack/Blue-Blob-sheets/Blue_Blob_Dissasemble.png)
+           	
+ 3.	Bloques
+     1.	Ladrillos
+            ![Bloques](assets/BlueWalls.png)
+ 4. Fondo
+    ![Fondo](assets/Castle1.png)     
+ 5. Powerups
+     1. Salto DOble
+        
+        ![Double](GDD_Images/Double_Jump.gif)
+        
+     2. Salto Cargado
+      
+        ![Charged](GDD_Images/Charged_Jump.gif)
+        
+     3. Dash
+    
+        ![Charged](GDD_Images/Dash.gif)
+        
+     4. Barra de Powerups
+
+        ![Barra](Assets/PowerUpBar_Combinations.png)
+ 
+## _Sonidos/Música_
+
+## **i. Atributos de Estilo**
+Se mantendrá una banda sonora consistente de **16 bits de estilo medieval** durante todo el juego. Se utilizarán diversos efectos de sonido en diferentes     mecánicas para proporcionar al jugador una respuesta auditiva precisa a sus acciones.
+
+- **Efectos de Sonido:**
+    - Proporcionarán información al jugador sobre sus acciones.
+    - Al chocar con un enemigo, el jugador no recibe daño, pero es empujado hacia atrás, por lo que escuchará un sonido de respuesta correspondiente al empujón.
+
+- **Música:**
+    - Se utilizará una única canción de estilo medieval durante todo el juego.
+    - La canción será inmersiva para evitar la fatiga auditiva.
+ 
+## **ii. Sonidos necesarios**
+### **Atributos de estilo**
+
+### **1. Efectos**
+
+#### **Movimiento**
+- **i.** Pisadas suaves (tierra, madera, piedra).
+- **ii.** Sonido de salto.
+- **iii.** Sonido de carga para el salto cargado.
+- **iv.** Sonido de doble salto.
+- **v.** Sonido de carrera.
+
+#### **Caídas y aterrizajes**
+- **vi.** Aterrizaje suave (impacto de caída bajo).
+- **vii.** Sonido de caída mortal.
+
+#### **Interacciones con enemigos**
+- **viii.** Sonido de empuje al chocar con un enemigo.
+- **ix.** Sonidos específicos de los enemigos.
+ 
+ ---
+ 
+## **iii. Música necesaria**
+
+### **1. Tema principal**
+- Se usará una sola pista durante todo el juego.
+- Ambiente medieval.
+- Ritmo moderado para evitar la fatiga auditiva.
+
+### **2. Tema del menú**
+- Una versión más tranquila del tema principal con instrumentación reducida.
+
+### **3. Tema de fin de partida**
+- Un breve fragmento de sonido que indica el final del juego sin resultar frustrante.
+
+## _Cronograma_
+ 
+ ---
+ _(Definir las actividades principales y las fechas previstas de finalización. Esto es solo una referencia y puede cambiar a medida que se desarrolla el proyecto)_
+ 
+ 
+
