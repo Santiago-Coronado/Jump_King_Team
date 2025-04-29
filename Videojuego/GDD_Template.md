@@ -340,10 +340,14 @@ Los personajes tendrán un diseño pixelado con animaciones de ataque, movimient
            	
  3.	Bloques
      1.	Ladrillos
-            ![Bloques](assets/BlueWalls.png)
+        
+        ![Bloques](Assets/BlueWalls.png)
+       	
  4. Fondo
-    ![Fondo](assets/Castle1.png)     
- 5. Powerups
+    
+    ![Fondo](Assets/Castle1.png)
+    
+ 6. Powerups
      1. Salto DOble
         
         ![Double](GDD_Images/Double_Jump.gif)
