@@ -25,6 +25,7 @@
     </div>
 
     <div id="descJuego" class="descripcion">
+      <h2 class="subtitulo">Descripción de Knight's Fall</h2>
       <p class="texto-intro">
         Imagina el desafío divertido de juegos como Jump King pero con la jugabilidad adictiva de un roguelite. 
         Bienvenido a <strong>Knight's Fall</strong>, donde cada salto es una apuesta y cada caída es una lección. 
@@ -33,13 +34,138 @@
         A medida que escalas, desbloquearás nuevas habilidades de salto que te harán sentir más poderoso. 
         ¿Puedes romper el ciclo y llegar a la cima?
       </p>
+      <p class="texto-intro">
+        El juego se desarrolla en una torre con diferentes niveles, cada uno con su propio diseño y enemigos. 
+        El objetivo es llegar a la cima de la torre y rescatar a la princesa en menos de 3 minutos. 
+        A medida que avanzas, desbloquearás powerups que te ayudarán en tu misión. Pero tienes que poner atención, 
+        ya que la torre cambia cada vez que mueres, lo que significa que tendrás que adaptarte a nuevos desafíos y enemigos en cada intento.
+      </p>
+        
 
-      <h2 class="subtitulo">Controles del Juego</h2>
+      <h2 class="subtitulo">Enemigos</h2>
+      <p class="texto-intro">
+        Hay 3 tipos de enemigos el esqueleto, el demonio y el saltador.
+        Cada uno tiene su propio comportamiento y habilidades. Tambien cada uno da puntuacion diferente al ser derrotado.
+        El esqueleto es el enemigo más básico, que se mueve de un lado a otro. El demonio puede volar, 
+        mientras que el saltador tiene la capacidad de saltar cada cierto tiempo y cuando el jugador salta.
+      </p>
+      <div class="seccion-tabla">
+        <div class="table-container">
+          <table>
+            <tr>
+              <th>Enemigo</th>
+              <th>Puntaje</th>
+            </tr>
+            <tr>
+              <td>Esqueleto</td>
+              <td>300</td>
+            </tr>
+            <tr>
+              <td>Demonio</td>
+              <td>500</td>
+            </tr>
+            <tr>
+              <td>Saltador</td>
+              <td>400</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <h2 class="subtitulo">PowerUps</h2>
+      <p class="texto-intro">
+        Hay 3 tipos de powerups en el juego, el doble salto, el dash y el salto cargado.
+        Cada uno tiene su propio comportamiento.
+        El doble salto permite al jugador saltar una vez más en el aire (aunque la altura del segundo salto es menor que el primero),
+        el dash permite al jugador moverse rápidamente en una dirección (ya este en el suelo o en el aire) 
+        y el salto cargado permite al jugador saltar más alto (cargando el salto al agacharse, y luego salta sin poder moverse mucho horizontalmente).
+      </p>
+      <p class="texto-intro">
+        Estos powerups se obtienen a interactuar con su respectivo objeto en el juego, una vez desbloqueas un powerup, ya lo tienes para todas tus
+        futuras partidas. Una vez tiens algun powrup desbloqueado, puedes usarlo en cualquier momento, pero solo puedes usar un powerup cada 3 segundos,
+        si activas uno, no podras activar otro hasta que pasen los 3 segundos.
+      </p>
+      <p class="texto-intro">
+        Por último, los powerups tambien tienen un puntaje a la hora de ser desbloqueados.
+      </p>
+      <div class="seccion-tabla">
+        <div class="table-container">
+          <table>
+            <tr>
+              <th>Powerup</th>
+              <th>Puntaje</th>
+            </tr>
+            <tr>
+              <td>Doble salto
+                <img src="../GDD_Images/Double_Jump.gif" alt="Doble Salto" />
+              </td>
+              <td>1000</td>
+            </tr>
+            <tr>
+              <td>Salto Cargado
+                <img src="../GDD_Images/Charged_Jump.gif" alt="Salto Cargado" />
+              </td>
+              <td>1000</td>
+            </tr>
+            <tr>
+              <td>Dash
+                <img src="../GDD_Images/Dash.gif" alt="Dash" />
+              <td>1000</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <h2 class="subtitulo">Speed Boost Tier</h2>
+      <p class="texto-intro">
+        Cuando obtienes cierta cantidad de puntaje, el jugador obtiene un speed boost,
+        el cual aumenta la velocidad del jugador y su resistencia a morir (sube el limite de velocidad que puedes alcanzar antes de morir).
+      </p>
+      <div class="seccion-tabla">
+        <div class="table-container">
+          <table>
+            <tr>
+              <th>Speed Boost Tier</th>
+              <th>Puntaje</th>
+              <th>Efecto</th>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>2000</td>
+              <td>
+                +10% Velocidad
+                <br>
+                +5.5% Resistencia a morir
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>3000</td>
+              <td>
+                +20% Velocidad
+                <br>
+                +11.11% Resistencia a morir
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>4500</td>
+              <td>
+                +30% Velocidad
+                <br>
+                +12.22% Resistencia a morir
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <h2 class="subtitulo">Controles</h2>
       <p class="texto-controles">
         Utiliza las teclas indicadas para controlar al caballero y superar los desafíos de la torre.
       </p>
 
-      <div class="seccion-controles">
+      <div class="seccion-tabla">
         <div class="table-container">
           <table>
             <tr>
@@ -105,11 +231,5 @@
         </div>
       </div>
     </div>
-    <!-- Modal para ver GIF ampliado -->
-    <div id="gifModal" class="modal">
-    <span class="close">&times;</span>
-    <img class="modal-content" id="gifAmpliado">
-    <div id="caption"></div>
-  </div>
   </body>
 </html>

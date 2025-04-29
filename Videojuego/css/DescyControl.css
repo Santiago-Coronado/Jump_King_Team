@@ -53,10 +53,10 @@
   }
   
   /* Sección que contiene tabla y gifs */
-  .seccion-controles {
+  .seccion-tabla {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
     align-items: flex-start;
     gap: 2rem;
     background-color: #2A2F36;
@@ -69,6 +69,8 @@
   .table-container {
     flex: 1;
     min-width: 300px;
+    max-width: 600px;
+    margin: 0 auto; /* Centra contenedor*/
   }
   
   /* Gifs en lado derecho */
