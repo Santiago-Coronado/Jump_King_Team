@@ -32,7 +32,7 @@ CREATE TABLE Jugador (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 ) ENGINE=InnoDB CHARSET=utf8mb4;
-
+SELECT * FROM Jugador;
 -- Tabla Partida
 CREATE TABLE Partida (
     id_partida INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

@@ -409,7 +409,7 @@ app.post('/api/stats/increment', async (req, res) => {
                 mejor_puntuacion = GREATEST(IFNULL(mejor_puntuacion, 0), ?),
                 muertes = muertes + ?,
                 mejor_tiempo = CASE
-                    WHEN (mejor_tiempo IS NULL OR (? IS NOT NULL AND ? < mejor_tiempo)) THEN ?
+                    WHEN mejor_tiempo IS NULL OR ? < mejor_tiempo THEN ?
                     ELSE mejor_tiempo
                 END,
                 tiempo_total_jugado = ?,
@@ -458,7 +458,6 @@ app.post('/api/stats/increment', async (req, res) => {
                     enemigos_derrotados || 0,
                     puntuacion || 0,  // Always update best score regardless of completion
                     muertes || 0,
-                    partida_completada ? tiempoCompletadoSQL : null,
                     partida_completada ? tiempoCompletadoSQL : null,
                     partida_completada ? tiempoCompletadoSQL : null,
                     newTotalTime,
