@@ -369,7 +369,6 @@ Se mantendrá una banda sonora consistente de **16 bits de estilo medieval** dur
 
 - **Efectos de Sonido:**
     - Proporcionarán información al jugador sobre sus acciones.
-    - Al chocar con un enemigo, el jugador no recibe daño, pero es empujado hacia atrás, por lo que escuchará un sonido de respuesta correspondiente al empujón.
 
 - **Música:**
     - Se utilizará una única canción de estilo medieval durante todo el juego.
@@ -381,19 +380,14 @@ Se mantendrá una banda sonora consistente de **16 bits de estilo medieval** dur
 ### **1. Efectos**
 
 #### **Movimiento**
-- **i.** Pisadas suaves (tierra, madera, piedra).
-- **ii.** Sonido de salto.
-- **iii.** Sonido de carga para el salto cargado.
-- **iv.** Sonido de doble salto.
-- **v.** Sonido de carrera.
+- **i.** Sonido de salto.
 
 #### **Caídas y aterrizajes**
-- **vi.** Aterrizaje suave (impacto de caída bajo).
-- **vii.** Sonido de caída mortal.
+- **ii.** Sonido de caída mortal.
 
 #### **Interacciones con enemigos**
-- **viii.** Sonido de empuje al chocar con un enemigo.
-- **ix.** Sonidos específicos de los enemigos.
+- **iii.** Sonido cuando salta el enemigo jumper.
+- **iv.** Sonidos al matar a los enemigos.
  
  ---
  
@@ -405,10 +399,10 @@ Se mantendrá una banda sonora consistente de **16 bits de estilo medieval** dur
 - Ritmo moderado para evitar la fatiga auditiva.
 
 ### **2. Tema del menú**
-- Una versión más tranquila del tema principal con instrumentación reducida.
+- Una canción más tranquila para la pantalla principal.
 
 ### **3. Tema de fin de partida**
-- Un breve fragmento de sonido que indica el final del juego sin resultar frustrante.
+- Una canción de celebración cuando el jugador gana una partida.
 
 ## _Cronograma_
  
