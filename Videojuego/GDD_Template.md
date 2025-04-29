@@ -127,7 +127,7 @@ En este juego, las plataformas serán la jugabilidad principal. Por eso queremos
   - Tabla de controles (A, D, SPACEBAR, Q).
   - Breve descripción de cada control.
   - Texto que describe la premisa del juego.
-  - Texto que describe la premisa del juego.
+  - Texto que describe de algunos detalles del juego.
   - Texto que describe los enemigos del juego.
   - Texto que describe los powerups del juego.
   - Texto que describe el speed boost tier del juego.
