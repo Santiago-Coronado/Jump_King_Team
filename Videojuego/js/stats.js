@@ -409,7 +409,7 @@ app.post('/api/stats/increment', async (req, res) => {
                 mejor_puntuacion = GREATEST(IFNULL(mejor_puntuacion, 0), ?),
                 muertes = muertes + ?,
                 mejor_tiempo = CASE
-                    WHEN (mejor_tiempo IS NULL OR (? IS NOT NULL AND ? < mejor_tiempo)) THEN ?
+                    WHEN (mejor_tiempo IS NULL OR (? IS NOT NULL OR ? < mejor_tiempo)) THEN ?
                     ELSE mejor_tiempo
                 END,
                 tiempo_total_jugado = ?,
@@ -571,10 +571,60 @@ app.get('/api/leaderboard', async (req, res) => {
         if (connection) connection.end();
     }
 });
+// Añade este endpoint a tu archivo stats.js
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`)
+// Get graph data for leaderboard visualization
+app.get('/api/leaderboard/graph', async (req, res) => {
+    let connection = null;
+    
+    try {
+        connection = await connectToKnightsFallDB();
+        
+        // Query to get top 5 players by completed games with best time and score
+        const [rows] = await connection.query(`
+            SELECT * FROM LeaderboardView 
+        `);
+        
+        // Format the data for the graph
+        const graphData = rows.map(player => {
+            // Convert MySQL time (HH:MM:SS) to total seconds for X-axis
+            let totalSeconds = 0;
+            if (player.mejor_tiempo) {
+                const timeParts = player.mejor_tiempo.split(':');
+                totalSeconds = parseInt(timeParts[0]) * 3600 + 
+                               parseInt(timeParts[1]) * 60 + 
+                               parseInt(timeParts[2]);
+            }
+            
+            // Format time for tooltip display
+            const timeObj = mysqlTimeToTimeObject(player.mejor_tiempo);
+            const timeFormatted = timeObj ? 
+                `${timeObj.hours}h ${timeObj.minutes}m ${timeObj.seconds}s` : 
+                'N/A';
+            
+            return {
+                x: totalSeconds,               // X-axis: tiempo en segundos (menor es mejor)
+                y: player.mejor_puntuacion,    // Y-axis: puntuación (mayor es mejor)
+                username: player.nombre_usuario,
+                timeFormatted: timeFormatted
+            };
+        });
+        
+        res.json({
+            success: true,
+            graphData: graphData
+        });
+    } catch (error) {
+        console.error('Error al obtener datos para gráfica:', error);
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener datos para la gráfica"
+        });
+    } finally {
+        if (connection) connection.end();
+    }
 });
+
 
 /* Login stuff */
 // Login endpoint
@@ -680,3 +730,7 @@ app.post('/api/auth/login', async (req, res) => {
       if (connection) connection.end();
     }
   });
+
+  app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`)
+});
