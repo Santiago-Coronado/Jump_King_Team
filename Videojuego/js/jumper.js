@@ -25,7 +25,7 @@ class EnemyJumper extends BaseEnemy {
         this.isDying = false;
         this.health = 1;
         this.lastPlayerVelocityY = 0; // Track player's previous vertical velocity
-        this.scoreValue = 200; // Score value when defeated
+        this.scoreValue = 400; // Score value when defeated
 
 
         this.movement = {
