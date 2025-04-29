@@ -413,7 +413,73 @@ Se mantendrá una banda sonora consistente de **16 bits de estilo medieval** dur
 ## _Cronograma_
  
  ---
+
  _(Definir las actividades principales y las fechas previstas de finalización. Esto es solo una referencia y puede cambiar a medida que se desarrolla el proyecto)_
+
+## Sprint 1
+---
+- Modelo Entidad-Relación
+- Sprites de Enemigos
+- Sprites de Personaje Principal y Princesa
+- Encontrar Música
+- Tener Paleta de Color
+- Sprites de Powerups
+---
+## Sprint 2
+---
+- Movimiento Básico del Caballero
+- Hacer las primeras dos pantallas del juego
+- Hacer clase BasePhysics
+- Sprites Niveles
+- Empezar clase BaseLevel
+- Hacer primer prototipo
+- Sprites de Barra de Powerups
+- Empezar a hacer los enemigos
+---
+## Sprint 3
+---
+- Terminar clase Player
+- Terminar clase BaseEnemy y sus derivadas
+- Hacer primer borrador de mySQL
+- Hacer HTML de Descripcion y Controles
+- Hacer HTML de Pantalla Principal
+---
+## Sprint 4
+---
+- Hacer HTML de Inicio de Sesión
+- Hacer final del juego
+- Hacer clase Powerup
+- Hacer muertes y pantalla de Game Over
+- Empezar HTML de Inicio de Sesión
+- Hacer CSS de Pantalla del Juego
+- Hacer CSS de Inicio de Sesión
+- Hacer CSS de Pantalla Principal
+- Terminar HTML del juego
+- Terminar clase BaseLevel
+---
+## Sprint 5
+---
+- Empezar CSS de Descripción y Controles
+- Terminar HTML de Inicio de Sesión
+- Empezar HTML y CSS de Estadisticas y Clasificaciones
+- Empezar API
+- Aplicar Normalizacion en Base de Datos
+- Verificar ACID en Base de Datos
+- Terminar juego aislado
+- Terminar de implementar lo inicial de todas las clases 
+---
+## Sprint 6
+---
+- Terminar CSS de Descripción y Controles
+- Terminar HTML de Estadisticas y Clasificaciones
+---
+## Sprint 7
+---
+- Terminar todos los archivos HTML
+- Terminar todos los archivos CSS
+- Terminar API
+- Agregar Gráficas
+---
  
  
 
