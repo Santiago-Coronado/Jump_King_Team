@@ -66,9 +66,9 @@ En este juego, las plataformas serán la jugabilidad principal. Por eso queremos
 
 ## _Técnico_
 
----
+## _Pantallas_
 
-### **Pantallas**
+---
 
 ## 1. Pantalla de Inicio de Sesión/Registro (HTML)
 - **Descripción**: Pantalla inicial donde los jugadores pueden iniciar sesión o registrarse.
