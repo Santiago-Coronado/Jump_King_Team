@@ -1,6 +1,6 @@
 # **Knight's Fall**
 
-![Logo](GDD_Images/Knight_Fall_Logo.png)
+![Logo](GDD_Images/LogoFinal_NoBG.png)
 
 ## _Documento de Diseño del Juego_
 
@@ -87,9 +87,10 @@ En este juego, las plataformas serán la jugabilidad principal. Por eso queremos
   - Logo del juego.
   - Enlace "Juego".
   - Enlace "Estadísticas".
-  - Enlace "Información Relevante".
-  - Enlace "Tabla de Clasificación".
+  - Enlace "Créditos".
   - Enlace "Descripción del Juego y Controles".
+  - Enlace "Iniciar Sesión"
+  - Enlace "Cerrar Sesión"
 - **Interacción**: Los jugadores seleccionan una opción para navegar a la pantalla correspondiente.
 
 ---
@@ -98,7 +99,7 @@ En este juego, las plataformas serán la jugabilidad principal. Por eso queremos
 - **Descripción**: Pantalla donde se juega el nivel principal.
 - **Elementos**:
   - Área del juego.
-  - HUD (Heads-Up Display) que muestra la puntuación y los powerups disponibles.
+  - HUD (Heads-Up Display) que muestra la puntuación, el tiempo restante de la partida, el speed boost tier y los powerups disponibles.
 - **Interacción**: Los jugadores controlan al caballero usando los controles definidos (A, D, SPACEBAR, Q).
 
 ---
@@ -112,24 +113,24 @@ En este juego, las plataformas serán la jugabilidad principal. Por eso queremos
   - Número de juegos jugados (entero).
   - Mejor puntuación personal (mejor tiempo y mejor puntuación) (horas, minutos y segundos para el tiempo y entero para la puntuación).
   - Número de enemigos derrotados (entero).
+  - El top 5 partidas completadas en el mejor tiempo
+  - Gráfica de tiempo en relacion con su puntuación
+  - Gráfica
+  - Gráfica
 - **Interacción**: Los jugadores pueden revisar su progreso y logros.
 
 ---
 
-## 5. Pantalla de Tabla de Clasificación (HTML)
-- **Descripción**: Pantalla que muestra una tabla de clasificación con las puntuaciones más altas.
-- **Elementos**:
-  - Tabla con nombres de jugadores, sus puntuaciones y su tiempo de finalización.
-- **Interacción**: Los jugadores pueden ver cómo se comparan con otros.
-
----
-
-## 6. Pantalla de Controles y Descripción del Juego (HTML)
+## 5. Pantalla de Controles y Descripción del Juego (HTML)
 - **Descripción**: Pantalla que muestra los controles del juego y la descripción del juego.
 - **Elementos**:
   - Tabla de controles (A, D, SPACEBAR, Q).
   - Breve descripción de cada control.
   - Texto que describe la premisa del juego.
+  - Texto que describe la premisa del juego.
+  - Texto que describe los enemigos del juego.
+  - Texto que describe los powerups del juego.
+  - Texto que describe el speed boost tier del juego.
   - Imágenes o gráficos relacionados.
 - **Interacción**: Los jugadores pueden leer sobre la historia y el objetivo, y/o revisar los controles antes de jugar.
 
@@ -146,6 +147,8 @@ En este juego, las plataformas serán la jugabilidad principal. Por eso queremos
   - **SPACEBAR en el aire**: Doble salto.
 - **Dash**:
   - **Q**: Realizar un dash rápido en la dirección actual.
+- **Pausa**
+  - **ESC**: Pausa el juego     
 
 **Nota**: Los controles no son personalizables por el jugador.
 
@@ -194,17 +197,17 @@ Esto continuará hasta que llegues a la cima, donde la pantalla será solo el su
 - Plataformas
     - Las plataformas serán completamente interactuables con el jugador (lo que significa que el jugador nunca podrá saltar a través de la plataforma desde abajo. La única forma en que el jugador podrá usar la plataforma es parándose sobre ella).
 - Puntuación
-    - La puntuación tendrá un impacto en la jugabilidad. Cuando el jugador alcance un umbral, recibirá un aumento del 2.5% en la velocidad (por velocidad nos referimos al movimiento horizontal). Esto sucederá tres veces, por lo que si tienes una puntuación lo suficientemente buena, puedes obtener un aumento del 7.5% en tu movimiento horizontal.
+    - La puntuación tendrá un impacto en la jugabilidad. Cuando el jugador alcance un umbral, recibirá un aumento del 10% en la velocidad (por velocidad nos referimos al movimiento horizontal). Esto sucederá tres veces, por lo que si tienes una puntuación lo suficientemente buena, puedes obtener un aumento del 30% en tu movimiento horizontal. Tambien se incluira que el jugador tenga mas margen para caerse, ya que ira mas rapido, eso se hara subiendo el limite de velocidad que el jugador puede alcanzar antes de morirse.
 
-|**Umbral**  |  **Aumento de Velocidad**  |
-|-----------|------------------------|
-|1500       |   2.5%                 |
-|3000       |   5.0%                 |
-|4500       |   7.5%                 |
+|**Umbral**  |  **Aumento de Velocidad**  | **Aumento de limite de velocidad** |
+|-----------|------------------------|-----------------------------------------|
+|2000       |   10%                 | 0.0475                                   |
+|3000       |   20%                 | 0.05                                     |
+|4500       |   30%                 | 0.055                                    |
 
 - Muertes
     - Cuando el jugador muere, todo el juego se reiniciará. Lo único que permanecerá de tu partida anterior serán los powerups que desbloqueaste. El progreso, el aumento de estadísticas y otras cosas no se conservarán.
-    - El jugador morirá cuando la velocidad vertical alcance un umbral (este número se establecerá cuando probemos el juego), lo que significa que si el jugador cae desde una altura suficiente, alcanzará el umbral y morirá al impactar.
+    - El jugador morirá cuando la velocidad vertical alcance un umbral (0.045 m/s vertical), lo que significa que si el jugador cae desde una altura suficiente, alcanzará el umbral y morirá al impactar.
 
 ## Interacciones
 - Jugador con Enemigos
@@ -217,9 +220,9 @@ Esto continuará hasta que llegues a la cima, donde la pantalla será solo el su
     
 |**Enemigos**  |  **Puntuación**           |
 |-------------|----------------------|
-|Esqueleto     |   150                |
-|Demonio        |   400                |
-|Saltador       |    250               |
+|Esqueleto     |   300                |
+|Demonio        |   500                |
+|Saltador       |    400               |
 
 - Jugador con Plataformas
     - Como dijimos antes, el jugador solo podrá pararse sobre las plataformas. No podrá atravesarlas de ninguna manera. Una vez que el jugador esté sobre la plataforma, la usará para hacer el siguiente salto.
@@ -235,8 +238,6 @@ Esto continuará hasta que llegues a la cima, donde la pantalla será solo el su
     - Cuando el jugador llega a la parte superior de una pantalla, siempre habrá una sección del techo que estará vacía. El jugador tendrá que saltar a través de ese espacio para llegar a la siguiente pantalla.
 
     ![Ejemplo de Pantalla](GDD_Images/ScreenInteraction_example.jpg)
-
-    - Además, cuando el jugador completa una pantalla, recibirá 100 puntos para obtener aumentos de estadísticas y una posición en la tabla de clasificación. (El número es tentativo).
 
 ## _Diseño de Niveles_
 
@@ -277,23 +278,24 @@ _(ejemplo)_
 ### **Clases Abstractas / Componentes**
 
 1. BasePhysics
-2. BasePlayer
+2. Player
 3. BaseEnemy
-4. BaseObject
-5. BaseObstacle
+4. Background
+5. Game
 6. BaseLevel
-7. Game
+7. Vec
+8. Rect
+9. TextLabel
+10. Powerup
+11. GameObject
 
 ### **Clases Derivadas / Composiciones de Componentes**
 1. BaseEnemy
     1. EnemyDemon
     2. EnemySkeleton
     3. EnemyJumper
-2. BaseObject
-    1. ObjectPowerUp
-    2. ObjectScore
-3. BaseObstacle
-    1. ObstacleWall
+2. GameObject
+    1. AnimatedObject
 
 ## _Gráficos_
 
