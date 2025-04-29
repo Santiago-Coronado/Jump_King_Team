@@ -172,9 +172,9 @@ Tú, como el caballero, escalas la torre para salvar a la princesa. Lo haces sal
 El caballero puede moverse horizontal y verticalmente. También puede obtener más opciones de movimiento usando powerups. Con todas estas herramientas, el caballero puede alcanzar diferentes plataformas para completar cada pantalla o sección.
 
 ## Bucle de Pantalla
-Las primeras dos pantallas o secciones siempre serán las mismas, para que el jugador tenga tiempo de acostumbrarse a los controles. Al final de esa pantalla, siempre habrá un powerup, pero será aleatorio entre los tres powerups que crearemos: doble salto, salto cargado y dash.
+Las primeras dos pantallas o secciones siempre serán las mismas, para que el jugador tenga tiempo de acostumbrarse a los controles. Al final de esa pantalla, habrá un 50% de probabilidad que aparezca un powerup, pero será aleatorio entre los tres powerups que crearemos: doble salto, salto cargado y dash.
 
-Después de esa pantalla, cada nueva pantalla tendrá una base (algunas plataformas que nunca cambian) y luego un área que se generará aleatoriamente según las diferentes herramientas de movimiento que el jugador tenga en ese momento. Luego, los enemigos se generarán aleatoriamente y los powerups tendrán una posibilidad de aparecer en un área específica.
+Después de esa pantalla, cada nueva pantalla tendrá una base (algunas plataformas que nunca cambian) y luego un área que se generará aleatoriamente según las diferentes herramientas de movimiento que el jugador tenga en ese momento. Luego, los enemigos se generarán y los powerups tendrán una posibilidad de aparecer en un área específica.
 
 Esto continuará hasta que llegues a la cima, donde la pantalla será solo el suelo y la princesa al otro borde de la torre.
 
@@ -265,11 +265,9 @@ _(ejemplo)_
 1. El jugador comienza en la base de la torre.
 2. Pasa las primeras dos pantallas saltando de plataforma en plataforma y matando o evadiendo enemigos.
 3. Toma el primer powerup desde la última plataforma de la segunda pantalla.
-4. Salta a la siguiente pantalla, donde el nivel tendrá en cuenta tus saltos para generar sus plataformas.
+4. Salta a la siguiente pantalla, donde el nivel tendrá en cuenta tus powerups para generar sus plataformas.
 5. Completa cada pantalla hasta llegar a la cima. Mientras pasas cada pantalla, obtendrás puntos matando enemigos. Cuando alcances un cierto número, obtendrás un aumento de velocidad. También puedes encontrar más powerups en el camino, así que asegúrate de agarrarlos.
 6. Una vez que llegues a la cima, solo camina hacia la derecha y salva a la princesa.
-
-_(ejemplo)_
 
 ## _Desarrollo_
 
@@ -303,7 +301,7 @@ _(ejemplo)_
  
  ### **Atributos de Estilo**
 
-Los personajes tendrán un diseño pixelado con animaciones de ataque, movimiento y muerte. El protagonista siempre mostrará una animación al saltar y moverse. Los enemigos siempre se moverán y, si estás dentro de su alcance, te atacarán con una animación. La princesa mostrará una animación pidiendo ayuda. Los escenarios donde el jugador explorará e interactuará con el castillo serán pixelados, con variaciones según el nivel. Si estás en el nivel 1, tendrás una atmósfera medieval; en el nivel 2, el entorno cambiará a uno gélido; y el nivel 3 tendrá un estilo más animado, ya que a medida que te acercas a la princesa, esta se encuentra en mejor estado.
+Los personajes tendrán un diseño pixelado con animaciones de ataque, movimiento y muerte. El protagonista siempre mostrará una animación al saltar y moverse. Los enemigos siempre se moverán y, si estás dentro de su alcance, te atacarán con una animación. La princesa mostrará una animación al acercarte a ella. Los escenarios donde el jugador explorará e interactuará con el castillo serán pixelados.
 
  ### **Gráficos necesarios**
 
