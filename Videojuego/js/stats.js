@@ -409,7 +409,7 @@ app.post('/api/stats/increment', async (req, res) => {
                 mejor_puntuacion = GREATEST(IFNULL(mejor_puntuacion, 0), ?),
                 muertes = muertes + ?,
                 mejor_tiempo = CASE
-                    WHEN (mejor_tiempo IS NULL OR (? IS NOT NULL OR ? < mejor_tiempo)) THEN ?
+                    WHEN mejor_tiempo IS NULL OR ? < mejor_tiempo THEN ?
                     ELSE mejor_tiempo
                 END,
                 tiempo_total_jugado = ?,
@@ -458,9 +458,8 @@ app.post('/api/stats/increment', async (req, res) => {
                     enemigos_derrotados || 0,
                     puntuacion || 0,  // Always update best score regardless of completion
                     muertes || 0,
-                    tiempoCompletadoSQL,
-                    tiempoCompletadoSQL,
-                    tiempoCompletadoSQL,
+                    partida_completada ? tiempoCompletadoSQL : null,
+                    partida_completada ? tiempoCompletadoSQL : null,
                     newTotalTime,
                     doublejump_obtenido ? 1 : 0,
                     chargedjump_obtenido ? 1 : 0,
@@ -659,6 +658,11 @@ app.post('/api/auth/login', async (req, res) => {
       
       // Password check 
       if (password === user.contraseña) {
+        // Update last login time directly
+        await connection.query(
+            'UPDATE Usuario SET ultimo_login = CURRENT_TIMESTAMP WHERE id_usuario = ?',
+            [user.id_usuario]
+          );
         return res.json({
           success: true,
           userId: user.id_usuario,

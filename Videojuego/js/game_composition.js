@@ -656,6 +656,7 @@ class Game {
             this.persistentPowerUps = { ...this.playerPowerUps };
             const scoreToKeep = this.player.score;
             this.remainingTime = this.maxTime;  // Reset timer when respawning
+            gameActualStartTime = Date.now(); // Reset the game start time
 
             // Save current settings
             const savedSoundEnabled = this.soundEnabled;
@@ -705,11 +706,13 @@ class Game {
         if(this.state == 'playing'){
             this.state = 'paused';
             this.pauseAlpha = 0; // Reset fade-in effect
-            this.statePlayer = 'paused'; 
-            this.pauseAlpha = 0;
+            this.pauseStartTime = Date.now();
         } else if(this.state == 'paused'){
             this.state = 'playing';
             this.statePlayer = 'playing'; 
+            const pauseDuration = Date.now() - this.pauseStartTime;
+            gameStartTime += pauseDuration; // Adjust game start time
+            gameActualStartTime += pauseDuration; // Adjust actual start time
             frameStart=document.timeline.currentTime;
         }
 }
