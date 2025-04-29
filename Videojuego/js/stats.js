@@ -625,6 +625,84 @@ app.get('/api/leaderboard/graph', async (req, res) => {
 });
 
 
+app.get('/api/auth/daily-logins', async (req, res) => {
+    let connection = null;
+    try {
+        connection = await connectToKnightsFallDB();
+
+        const today = new Date();
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(today.getDate() - 6); 
+        
+        const formatSQLDate = (date) => {
+            return date.toISOString().split('T')[0];
+        };
+        
+        const startDate = formatSQLDate(sevenDaysAgo);
+        const endDate = formatSQLDate(today);
+        
+        
+        const [rows] = await connection.query(`
+            SELECT
+                DATE(fecha_login) AS fecha,
+                COUNT(DISTINCT id_usuario) AS usuarios_conectados
+            FROM
+                Login_History
+            WHERE
+                DATE(fecha_login) >= DATE(?) AND DATE(fecha_login) <= DATE(?)
+            GROUP BY
+                DATE(fecha_login)
+            ORDER BY
+                fecha ASC
+        `, [startDate, endDate]);
+
+        
+        // Crear un array con todas las fechas en el rango (7 días)
+        const dateRange = [];
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(sevenDaysAgo);
+            date.setDate(sevenDaysAgo.getDate() + i);
+            dateRange.push({
+                fecha: formatSQLDate(date),
+                usuarios_conectados: 0 
+            });
+        }
+        
+        // Reemplazar con datos reales donde existan
+        const usersByDate = {};
+        rows.forEach(row => {
+            const fechaStr = row.fecha instanceof Date ? formatSQLDate(row.fecha) : String(row.fecha);
+            const usuarios = parseInt(row.usuarios_conectados);
+            usersByDate[fechaStr] = isNaN(usuarios) ? 0 : usuarios;
+        });
+        
+        // Combinar con el rango completo de fechas
+        const completeData = dateRange.map(item => {
+            return {
+                fecha: item.fecha,
+                usuarios_conectados: usersByDate[item.fecha] || 0
+            };
+        });
+        
+        console.log('Datos finales enviados al cliente:', completeData);
+        
+        res.json({
+            success: true,
+            dailyLogins: completeData
+        });
+    } catch (error) {
+        console.error('Error al obtener los usuarios únicos por día:', error);
+        console.error('Detalles del error:', error.stack);
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener los datos de usuarios únicos por día: " + error.message
+        });
+    } finally {
+        if (connection) connection.end();
+    }
+});
+
+
 /* Login stuff */
 // Login endpoint
 app.post('/api/auth/login', async (req, res) => {
@@ -734,6 +812,8 @@ app.post('/api/auth/login', async (req, res) => {
       if (connection) connection.end();
     }
   });
+
+
 
   app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`)
