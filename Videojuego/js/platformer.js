@@ -222,7 +222,6 @@ function gameStart() {
 
 function setEventListeners() {
     window.addEventListener("keydown", event => {
-
         if(event.key == 'Escape'){
             game.togglepause();
             return;
@@ -239,29 +238,29 @@ function setEventListeners() {
         if (event.code == 'Space') {
             game.player.jump();
         }
-        if (event.key == 'a') {
+        if (event.key == 'a' || event.key == 'A') {
             game.player.startMovement("left");
         }
-        if (event.key == 'd') {
+        if (event.key == 'd' || event.key == 'D') {
             game.player.startMovement("right");
         }
-        if (event.key == 's') {
+        if (event.key == 's' || event.key == 'S') {
             game.player.crouch();
         }
-        if (event.key == 'q') {
+        if (event.key == 'q' || event.key == 'Q') {
             game.player.dash();
         }
     });
 
     window.addEventListener("keyup", event => {
 
-        if (event.key == 'a') {
+        if (event.key == 'a' || event.key == 'A') {
             game.player.stopMovement("left");
         }
-        if (event.key == 'd') {
+        if (event.key == 'd' || event.key == 'D') {
             game.player.stopMovement("right");
         }
-        if (event.key == 's') {
+        if (event.key == 's' || event.key == 'S') {
             game.player.standUp();
         }
     });
