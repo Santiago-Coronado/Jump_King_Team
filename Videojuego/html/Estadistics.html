@@ -6,6 +6,9 @@
     <title>Knightsfall - Estadísticas del Jugador</title>
     <link rel="stylesheet" href="../css/styles_Knight_Fall.css" />
     <link rel="stylesheet" href="../css/Statistics.css" />
+    <script src="../js/Graphs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
 <body>
     <div id="headerContainer">
         <img src="../GDD_Images/LogoFinal_NoBG.png" alt="Knight's Fall Logo" id="logoHeader" />
@@ -75,6 +78,9 @@
                 <h2>Clasificaciones</h2>
                 <div id="leaderboard-content" class="leaderboard">
                     <div class="loading">Cargando leaderboard...</div>
+                </div>
+                <div class="graph-container" style="height: 300px; margin-top: 20px;">
+                    <canvas id="Graph"></canvas>
                 </div>
             </div>
         </div>
@@ -307,5 +313,7 @@ function formatDateDisplay(dateString) {
     }
 }
     </script>
+
+
 </body>
 </html>
