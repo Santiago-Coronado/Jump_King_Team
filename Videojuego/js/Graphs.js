@@ -235,9 +235,9 @@ function initializePowerupGraph(powerupStats) {
     
     // Colores para cada power-up
     const backgroundColors = [
-        'rgba(54, 162, 235, 0.8)',   // Azul para Double Jump
-        'rgba(255, 206, 86, 0.8)',   // Amarillo para Charged Jump
-        'rgba(255, 99, 132, 0.8)'    // Rojo para Dash
+        'rgba(255, 99, 132, 0.8)',   // Rojo para Double Jump
+        'rgba(54, 162, 235, 0.8)',   // Azul para Charged Jump
+        'rgba(255, 206, 86, 0.8)'    // Amarillo para Dash
     ];
     
     const borderColors = [
