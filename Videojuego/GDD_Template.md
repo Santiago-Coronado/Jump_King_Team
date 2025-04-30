@@ -181,7 +181,7 @@ Esto continuará hasta que llegues a la cima, donde la pantalla será solo el su
 ## Reglas
 - Powerups
     - Habrá tres powerups: doble salto, salto cargado y dash.
-    - Doble Salto: Este powerup es el clásico. Solo necesitas presionar SPACEBAR después de hacer un salto para hacer un segundo salto. El segundo salto tendrá la mitad de altura que el primero. (Esto es tentativo, se probará al hacer el juego).
+    - Doble Salto: Este powerup es el clásico. Solo necesitas presionar SPACEBAR después de hacer un salto para hacer un segundo salto. El segundo salto tendrá el 80% de altura que el primero.
   
     ![Ejemplo de Doble Salto](GDD_Images/doublejump_example.gif)
   
