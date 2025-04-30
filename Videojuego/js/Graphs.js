@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const leaderboardContent = document.getElementById('leaderboard-content');
         const tableExists = leaderboardContent && leaderboardContent.querySelector('table');
         const dailyLoginsContainer = document.querySelector('.daily-logins-container');
+        const powerupsContainer = document.querySelector('.powerups-chart-container');
         
         if (tableExists) {
             console.log('Tabla del leaderboard encontrada, iniciando gráfica');
@@ -15,6 +16,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (dailyLoginsContainer) {
             console.log('Contenedor de logins diarios encontrado, iniciando gráfica');
             fetchDailyLoginsDataAndCreateGraph();
+        }
+
+        if (powerupsContainer) {
+            console.log('Contenedor de estadísticas de power-ups encontrado, iniciando gráfica');
+            fetchPowerupStatsAndCreateGraph();
         }
         
         if ((tableExists && dailyLoginsContainer) || 
@@ -38,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 10000);
 });
 
-// SECCIÓN: GRÁFICA DE LEADERBOARD
+// GRÁFICA DE LEADERBOARD
 async function fetchLeaderboardDataAndCreateGraph() {
     try {
         // Obtener datos del leaderboard desde la API
@@ -58,6 +64,28 @@ async function fetchLeaderboardDataAndCreateGraph() {
     } catch (error) {
         console.error('Error al cargar datos para la gráfica:', error);
         displayGraphError('.graph-container', error.message);
+    }
+}
+// Grafica de Powerups
+async function fetchPowerupStatsAndCreateGraph() {
+    try {
+        // Obtener datos de power-ups desde la API
+        const response = await fetch('/api/powerups/stats');
+        
+        if (!response.ok) {
+            throw new Error(`Error al cargar datos de power-ups: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && data.powerupStats) {
+            initializePowerupGraph(data.powerupStats);
+        } else {
+            throw new Error(data.message || 'Error desconocido al cargar datos de power-ups');
+        }
+    } catch (error) {
+        console.error('Error al cargar datos de power-ups:', error);
+        displayGraphError('.powerups-chart-container', error.message);
     }
 }
 
@@ -183,7 +211,136 @@ function initializeGraph(graphData) {
     }
 }
 
-// SECCIÓN: GRÁFICA DE LOGINS DIARIOS
+function initializePowerupGraph(powerupStats) {
+    // Encontrar el contenedor
+    const graphContainer = document.querySelector('.powerups-chart-container');
+    if (!graphContainer) {
+        console.error('No se encontró el contenedor para la gráfica de power-ups');
+        return;
+    }
+    
+    // Limpiar cualquier contenido anterior
+    graphContainer.innerHTML = '';
+    
+    // Crear un nuevo canvas
+    const canvas = document.createElement('canvas');
+    canvas.id = 'PowerupsGraph';
+    graphContainer.appendChild(canvas);
+    
+    // Establecer dimensiones 
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.width = graphContainer.clientWidth;
+    canvas.height = graphContainer.clientHeight;
+    
+    // Colores para cada power-up
+    const backgroundColors = [
+        'rgba(54, 162, 235, 0.8)',   // Azul para Double Jump
+        'rgba(255, 206, 86, 0.8)',   // Amarillo para Charged Jump
+        'rgba(255, 99, 132, 0.8)'    // Rojo para Dash
+    ];
+    
+    const borderColors = [
+        'rgb(255, 255, 255)',
+        'rgb(255, 255, 255)',
+        'rgb(255, 255, 255)'
+    ];
+    
+    try {
+        new Chart(canvas, {
+            type: 'doughnut',
+            data: {
+                labels: powerupStats.labels,
+                datasets: [{
+                    label: 'Porcentaje de jugadores',
+                    data: powerupStats.percentages,
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Porcentaje de Jugadores con Power-ups',
+                        font: {
+                            size: 18,
+                            weight: 'bold'
+                        },
+                        color: '#FFFFFF',
+                        padding: {
+                            top: 10,
+                            bottom: 20
+                        }
+                    },
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            color: '#FFFFFF',
+                            padding: 15,
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const count = powerupStats.counts[context.dataIndex] || 0;
+                                const total = powerupStats.totalPlayers;
+                                return `${label}: ${value}% (${count}/${total} jugadores)`;
+                            }
+                        }
+                    }
+                },
+                cutout: '50%'
+            }
+        });
+        
+        // Si no hay jugadores, mostrar mensaje
+        if (powerupStats.totalPlayers === 0) {
+            const noDataMsg = document.createElement('div');
+            noDataMsg.className = 'no-data-message';
+            noDataMsg.textContent = 'No hay datos de jugadores disponibles';
+            noDataMsg.style.position = 'absolute';
+            noDataMsg.style.top = '50%';
+            noDataMsg.style.left = '50%';
+            noDataMsg.style.transform = 'translate(-50%, -50%)';
+            noDataMsg.style.color = '#FFFFFF';
+            noDataMsg.style.fontSize = '16px';
+            graphContainer.style.position = 'relative';
+            graphContainer.appendChild(noDataMsg);
+        }
+        
+        console.log('Gráfico de power-ups creado exitosamente');
+    } catch (error) {
+        console.error('Error al crear el gráfico de power-ups:', error);
+        displayGraphError('.powerups-chart-container', error.message);
+    }
+}
+
+// Mostrar error en el contenedor de la gráfica si no hay una
+if (typeof displayGraphError !== 'function') {
+    function displayGraphError(container, errorMessage) {
+        const errorContainer = document.querySelector(container);
+        if (errorContainer) {
+            errorContainer.innerHTML = `
+                <div class="graph-error" style="text-align: center; padding: 20px; color: #FF6B6B;">
+                    <p>Error al cargar la gráfica</p>
+                    <small>${errorMessage}</small>
+                </div>
+            `;
+        }
+    }
+}
+
+// GRÁFICA DE LOGINS DIARIOS
 async function fetchDailyLoginsDataAndCreateGraph() {
     try {
         // Obtener datos de logins diarios desde la API
@@ -240,8 +397,6 @@ function initializeDailyLoginsGraph(dailyLoginsData) {
         dailyLoginsData = dailyLoginsData.slice(-7);
     }
     
-    // IMPORTANTE: Validar los datos para evitar valores incorrectos
-    // Esto asegura que usuario_conectados siempre sea un número válido
     const validatedData = dailyLoginsData.map(item => ({
         fecha: item.fecha,
         usuarios_conectados: typeof item.usuarios_conectados === 'number' && !isNaN(item.usuarios_conectados) 

@@ -702,6 +702,69 @@ app.get('/api/auth/daily-logins', async (req, res) => {
     }
 });
 
+app.get('/api/powerups/stats', async (req, res) => {
+    let connection = null;
+    
+    try {
+        connection = await connectToKnightsFallDB();
+        
+        // Query to get power-up stats
+        const [rows] = await connection.query(`
+            SELECT 
+                SUM(CASE WHEN doublejump_obtenido = 1 THEN 1 ELSE 0 END) as doublejump_count,
+                SUM(CASE WHEN chargedjump_obtenido = 1 THEN 1 ELSE 0 END) as chargedjump_count,
+                SUM(CASE WHEN dash_obtenido = 1 THEN 1 ELSE 0 END) as dash_count,
+                COUNT(*) as total_players
+            FROM Jugador
+            WHERE id_jugador IS NOT NULL
+        `);
+        
+        if (rows.length === 0 || !rows[0].total_players) {
+            return res.json({
+                success: true,
+                powerupStats: {
+                    labels: ['Double Jump', 'Charged Jump', 'Dash'],
+                    percentages: [0, 0, 0],
+                    counts: [0, 0, 0],
+                    totalPlayers: 0
+                }
+            });
+        }
+        
+        const stats = rows[0];
+        const totalPlayers = stats.total_players || 0;
+        
+        // Calculate percentages
+        const powerupStats = {
+            labels: ['Double Jump', 'Charged Jump', 'Dash'],
+            percentages: [
+                totalPlayers > 0 ? Math.round((stats.doublejump_count / totalPlayers) * 100) : 0,
+                totalPlayers > 0 ? Math.round((stats.chargedjump_count / totalPlayers) * 100) : 0,
+                totalPlayers > 0 ? Math.round((stats.dash_count / totalPlayers) * 100) : 0
+            ],
+            counts: [
+                stats.doublejump_count || 0,
+                stats.chargedjump_count || 0,
+                stats.dash_count || 0
+            ],
+            totalPlayers: totalPlayers
+        };
+        
+        res.json({
+            success: true,
+            powerupStats: powerupStats
+        });
+    } catch (error) {
+        console.error('Error al obtener estadísticas de power-ups:', error);
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener estadísticas de power-ups"
+        });
+    } finally {
+        if (connection) connection.end();
+    }
+});
+
 
 /* Login stuff */
 // Login endpoint
