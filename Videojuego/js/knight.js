@@ -23,9 +23,9 @@ class Player extends AnimatedObject {
         this.speedMultiplier = 1.0; // Initial multiplier (no boost)
         this.speedBoostLevel = 0; // Initial speed boost level 
         this.speedBoostApplied = {
-            level1: false, // 2000 points - 2.5% boost
-            level2: false, // 3000 points - 5% boost
-            level3: false, // 4500 points - 7.5% boost
+            level1: false, // 2000 points 
+            level2: false, // 3000 points 
+            level3: false, // 4500 points 
         };
 
         this.jumpSound = new Audio("../Assets/Knight/EfectoDeSonido_SaltoCaballeroN.wav");

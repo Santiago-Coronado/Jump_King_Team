@@ -44,3 +44,10 @@
 .creditos-wrapper a:hover {
     color: #c9a13d; 
 }
+
+.creditos-logo {
+    width: 400px; 
+    display: block;
+    margin: 1rem auto; 
+    border-radius: 6px; 
+  }
